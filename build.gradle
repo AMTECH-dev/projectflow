@@ -33,3 +33,45 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+project.ext.set("dbContainerName", "projectflow-db")
+project.ext.set("dbMigrationContainerName", "projectflow-db-migration")
+
+task runDockerDb(type: Exec) {
+    doFirst {
+        stopMigrationContainers()
+    }
+    commandLine 'docker', 'run', '--rm',
+        '--name', project.dbContainerName,
+        '-e', 'POSTGRES_USER=test',
+        '-e', 'POSTGRES_PASSWORD=test',
+        '-e', 'POSTGRES_DB=projectflow',
+        '-p', '15432:5432',
+        '-d', 'postgres:13.3'
+}
+
+task testDbMigration(type: Exec, dependsOn: [runDockerDb]) {
+    commandLine 'docker', 'run', '--rm',
+        '--name', project.dbMigrationContainerName,
+        '--link', "$project.dbContainerName:db_host",
+        '-v', "$projectDir/src/main/resources/db/migration:/flyway/sql",
+        'boxfuse/flyway:6',
+        "-url=jdbc:postgresql://db_host:5432/projectflow",
+        "-user=test",
+        '-password=test',
+        '-connectRetries=30',
+        '-schemas=pf',
+        'migrate'
+}
+
+def stopMigrationContainers() {
+    try {
+        [project.dbMigrationContainerName, project.dbContainerName].each {
+            print "Try stop runned docker containers: ${"docker stop $it".execute().text}"
+        }
+
+    } catch (Exception e) {
+        println e.message
+    }
+}
+
