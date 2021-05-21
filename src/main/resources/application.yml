@@ -1,0 +1,9 @@
+swagger:
+  enabled: true
+  title: "REST API Documentation"
+  description: "Public API Documentation"
+  version: "1.0"
+  contact:
+    name: "«АМ-интеллектуальные технологии»"
+    url: "https://www.am-intech.ru/"
+    email: "info@am-intech.ru"
