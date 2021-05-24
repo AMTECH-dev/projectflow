@@ -16,6 +16,7 @@ public class EmployeeCreateDto {
     @Length(max = 255)
     private String name;
     @Pattern(regexp = EMAIL_REGEXP, message = "Invalid email format")
+    @Length(max = 50)
     private String email;
     @Length(max = 50)
     private String phone;

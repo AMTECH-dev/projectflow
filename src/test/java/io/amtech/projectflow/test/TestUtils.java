@@ -67,6 +67,10 @@ public class TestUtils {
         return readClassPathResourceAsObject(path, clazz, objectMapper);
     }
 
+    public static String strMultiple(final String s, final int count) {
+        return s + s.repeat(Math.max(0, count - 1));
+    }
+
     private TestUtils() {
     }
 }
