@@ -7,3 +7,12 @@ swagger:
     name: "«АМ-интеллектуальные технологии»"
     url: "https://www.am-intech.ru/"
     email: "info@am-intech.ru"
+
+db:
+  username: test
+  password: test
+  driverClassName: org.postgresql.Driver
+  jdbcUrl: jdbc:postgresql://localhost:15432/projectflow?currentSchema=pf
+  maximumPoolSize: 20
+  minimumIdle: 1
+  idleTimeout: 60000

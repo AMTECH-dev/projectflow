@@ -18,7 +18,7 @@ create type project_status as enum(
 create table pf.employee(
     id serial primary key,
     name varchar(255) not null,
-    email varchar(50) check (email ~ $$^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$$),
+    email varchar(50) check (email ~ $$^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$$) not null,
     phone varchar(50),
     position user_position not null,
     is_fired boolean not null default false
