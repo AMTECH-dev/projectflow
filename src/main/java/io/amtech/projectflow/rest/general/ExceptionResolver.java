@@ -22,7 +22,7 @@ public class ExceptionResolver {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    ErrorMessage onConstraintValidationException(final MethodArgumentNotValidException e) {
+    ErrorMessage onMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         final ErrorMessage error = new ErrorMessage();
         error.setMessage("Validation error");
         for (FieldError er : e.getFieldErrors()) {

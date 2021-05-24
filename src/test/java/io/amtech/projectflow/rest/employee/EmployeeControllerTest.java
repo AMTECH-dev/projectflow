@@ -33,26 +33,26 @@ class EmployeeControllerTest extends IntegrationTest {
         final String fakeEmail = strMultiple("b", 38) + "@example.com";
         final String fakePhone = strMultiple("1", 50);
         return Stream.of(
-                Arguments.arguments(buildJson("full_request.json"),
-                        buildJson("full_response.json"),
+                Arguments.arguments(buildJson("createSuccessTest/full_request.json"),
+                        buildJson("createSuccessTest/full_response.json"),
                         new Employee()
                                 .setId(1L)
                                 .setName("Иван Копыто")
                                 .setEmail("kopito@example.com")
                                 .setPhone("+7 128 123 12 12")
                                 .setPosition(PROJECT_LEAD)),
-                Arguments.arguments(buildJson("without_phone_request.json"),
-                        buildJson("without_phone_response.json"),
+                Arguments.arguments(buildJson("createSuccessTest/without_phone_request.json"),
+                        buildJson("createSuccessTest/without_phone_response.json"),
                         new Employee()
                                 .setId(1L)
                                 .setName("А")
                                 .setEmail("a@b.ru")
                                 .setPosition(DIRECTOR)),
-                Arguments.arguments(buildJson("default_request.json.template", fakeName,
+                Arguments.arguments(buildJson("createSuccessTest/default_request.json.template", fakeName,
                         fakeEmail,
                         fakePhone,
                         PROJECT_LEAD.name()),
-                        buildJson("default_response.json.template", 1, fakeName,
+                        buildJson("createSuccessTest/default_response.json.template", 1, fakeName,
                                 fakeEmail,
                                 fakePhone,
                                 PROJECT_LEAD.name()),
@@ -72,13 +72,16 @@ class EmployeeControllerTest extends IntegrationTest {
             "classpath:db/EmployeeControllerTest/createSuccessTest/exists_employees.sql"
     })
     void createSuccessTest(final String request, final String response, final Employee e) {
+        // setup
 
+        // when
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
 
+        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .hasSize(3);
 
@@ -87,9 +90,34 @@ class EmployeeControllerTest extends IntegrationTest {
                 .contains(e);
     }
 
+    static Stream<Arguments> createFailTestArgs() {
+        return Stream.of(
+                Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
+                        buildJson("createFailTest/name_is_missing_response.json"),
+                        400)
+        );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("createFailTestArgs")
+    @SneakyThrows
+    void createFailTest(final String request, final String response, int httpStatus) {
+        // setup
+        mvc.perform(TestUtils
+                .createPost(BASE_URL)
+                .content(request))
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, true));
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
+                .isEmpty();
+    }
+
     private static String buildJson(final String resource, Object...args) {
         String template = TestUtils.readClassPathResourceAsString(
-                "json/EmployeeControllerTest/createSuccessTest/" + resource);
+                "json/EmployeeControllerTest/" + resource);
 
         return String.format(template, args);
     }
