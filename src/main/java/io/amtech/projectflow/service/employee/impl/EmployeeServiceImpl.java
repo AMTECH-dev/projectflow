@@ -1,7 +1,7 @@
 package io.amtech.projectflow.service.employee.impl;
 
 import io.amtech.projectflow.domain.employee.Employee;
-import io.amtech.projectflow.persistence.employee.EmployeeRepository;
+import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.service.employee.EmployeeCreateDto;
 import io.amtech.projectflow.service.employee.EmployeeDto;
 import io.amtech.projectflow.service.employee.EmployeeService;

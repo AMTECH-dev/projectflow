@@ -8,12 +8,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import static io.amtech.projectflow.util.ValidationUtil.EMAIL_REGEXP;
+
 @Data
 public class EmployeeCreateDto {
     @NotBlank
     @Length(max = 255)
     private String name;
-    @Pattern(regexp = "")
+    @Pattern(regexp = EMAIL_REGEXP, message = "Invalid email format")
     private String email;
     @Length(max = 50)
     private String phone;

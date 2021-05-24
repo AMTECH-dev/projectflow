@@ -9,21 +9,24 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
 @Testcontainers
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @SpringBootTest
 @ContextConfiguration(initializers = {IntegrationTest.Initializer.class})
+@SqlMergeMode(MERGE)
+@Sql(scripts = {
+        "classpath:db/clean.sql"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public abstract class IntegrationTest {
-
-    @Autowired
-    protected MockMvc mvc;
-
-    protected TransactionalUtils txUtil = new TransactionalUtils();
 
     private static final GenericContainer<?> dbContainer = new GenericContainer<>("postgres:13.3")
             .withExposedPorts(5432)
@@ -31,6 +34,9 @@ public abstract class IntegrationTest {
             .withEnv("POSTGRES_USER", "test")
             .withEnv("POSTGRES_DB", "projectflow");
 
+    protected TransactionalUtils txUtil = new TransactionalUtils();
+    @Autowired
+    protected MockMvc mvc;
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override

@@ -19,7 +19,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping
-    EmployeeDto create(@RequestBody EmployeeCreateDto dto) {
+    EmployeeDto create(@RequestBody @Valid EmployeeCreateDto dto) {
         return employeeService.create(dto);
     }
 }
