@@ -120,6 +120,49 @@ class EmployeeControllerTest extends IntegrationTest {
                 .isEmpty();
     }
 
+
+    static Stream<Arguments> deleteSuccessTestArgs() {
+        return Stream.of(Arguments.arguments(1, 200));
+    }
+
+    @ParameterizedTest
+    @MethodSource("deleteSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/deleteSuccessTest/create_employee.sql"
+    })
+    void deleteSuccessTest(long id, int httpStatus) {
+        // setup
+        mvc.perform(TestUtils
+                .createDelete(BASE_URL + "/" + id))
+                .andExpect(status().is(httpStatus));
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
+                .isEmpty();
+    }
+
+    static Stream<Arguments> deleteFailTestArgs() {
+        return Stream.of(Arguments.arguments(99, 404));
+    }
+
+    @ParameterizedTest
+    @MethodSource("deleteFailTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/deleteFailTest/deleteFailTest.sql"
+    })
+    void deleteFailTest(long id, int httpStatus) {
+        // setup
+        mvc.perform(TestUtils
+                .createDelete(BASE_URL + "/" + id))
+                .andExpect(status().is(httpStatus));
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
+                .isNotEmpty();
+    }
+
     private static String buildJson(final String resource, Object...args) {
         String template = TestUtils.readClassPathResourceAsString(
                 "json/EmployeeControllerTest/" + resource);
