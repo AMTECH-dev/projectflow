@@ -24,4 +24,9 @@ public class EmployeeController {
     EmployeeDto get(@PathVariable("id") long id) {
         return employeeService.get(id);
     }
+
+      @DeleteMapping("{id}")
+    void delete(@PathVariable long id) {
+        employeeService.delete(id);
+    }
 }
