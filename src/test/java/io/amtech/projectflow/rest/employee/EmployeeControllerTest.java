@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 
@@ -107,7 +108,7 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> deleteSuccessTestArgs() {
-        return Stream.of(Arguments.arguments(1));
+        return Stream.of(Arguments.arguments(1, 1000), Arguments.arguments(2000));
     }
 
     @ParameterizedTest
@@ -124,13 +125,12 @@ class EmployeeControllerTest extends IntegrationTest {
                 .createDelete(String.format(BASE_ID_URL, id)))
                 .andExpect(status().isOk());
 
-        Assertions.assertThat(employeesBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
-
         // then
         Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
                 .isFalse();
 
-        List<Employee> employeesAfterDelete = repository.findAll();
+        Assertions.assertThat(employeesBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
+        List<Employee> employeesAfterDelete = txUtil.txRun(() -> repository.findAll());
         for (Employee employee : employeesBeforeDelete) {
             Assertions.assertThat(employeesAfterDelete.stream().filter(employee::equals).findFirst())
                     .isNotEmpty();
@@ -138,7 +138,7 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> deleteFailTestArgs() {
-        return Stream.of(Arguments.arguments(99));
+        return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()), Arguments.arguments(99, HttpStatus.NOT_FOUND.value()));
     }
 
     @ParameterizedTest
@@ -147,19 +147,19 @@ class EmployeeControllerTest extends IntegrationTest {
     @Sql(scripts = {
             "classpath:db/EmployeeControllerTest/deleteTest/create_employee.sql"
     })
-    void deleteFailTest(long id) {
+    void deleteFailTest(long id, int httpStatus) {
         List<Employee> employeesBeforeDelete = repository.findAll();
 
         // setup
         mvc.perform(TestUtils
                 .createDelete(String.format(BASE_ID_URL, id)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().is(httpStatus));
 
         // then
         Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
                 .isFalse();
 
-        List<Employee> employeesAfterDelete = repository.findAll();
+        List<Employee> employeesAfterDelete = txUtil.txRun(() -> repository.findAll());
         for (Employee employee : employeesAfterDelete) {
             Assertions.assertThat(employeesBeforeDelete.stream().filter(employee::equals).findFirst())
                     .isNotEmpty();
