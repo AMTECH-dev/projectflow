@@ -4,10 +4,7 @@ import io.amtech.projectflow.service.employee.EmployeeCreateDto;
 import io.amtech.projectflow.service.employee.EmployeeDto;
 import io.amtech.projectflow.service.employee.EmployeeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -21,5 +18,10 @@ public class EmployeeController {
     @PostMapping
     EmployeeDto create(@RequestBody @Valid EmployeeCreateDto dto) {
         return employeeService.create(dto);
+    }
+
+    @DeleteMapping("{id}")
+    void delete(@PathVariable long id) {
+        employeeService.delete(id);
     }
 }
