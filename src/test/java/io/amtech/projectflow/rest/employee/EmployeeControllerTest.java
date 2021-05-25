@@ -179,10 +179,8 @@ class EmployeeControllerTest extends IntegrationTest {
         // setup
 
         mvc.perform(TestUtils
-                .createPost(BASE_URL + "/${id}" )
-                .content(request))
-                .andExpect(status().is(httpStatus))
-                .andExpect(content().json(response, true));
+                .createPut(BASE_URL + "/${id}" ).
+                .content(request));
 
         // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
