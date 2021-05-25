@@ -1,0 +1,8 @@
+{
+  "id": 1,
+  "name": "Кирилл",
+  "email": "some-email@example.com",
+  "phone": "89992410182",
+  "position": "DIRECTOR",
+  "faired": false
+}

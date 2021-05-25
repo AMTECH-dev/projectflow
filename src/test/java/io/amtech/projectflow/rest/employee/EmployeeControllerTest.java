@@ -29,6 +29,8 @@ class EmployeeControllerTest extends IntegrationTest {
     @Autowired
     EmployeeRepository repository;
 
+
+    // success create:
     static Stream<Arguments> createSuccessTestArgs() {
         final String fakeName = strMultiple("a", 255);
         final String fakeEmail = strMultiple("b", 38) + "@example.com";
@@ -49,11 +51,14 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setName("А")
                                 .setEmail("a@b.ru")
                                 .setPosition(DIRECTOR)),
-                Arguments.arguments(buildJson("default_request.json.template", fakeName,
+                Arguments.arguments(buildJson("default_request.json.template",
+                        fakeName,
                         fakeEmail,
                         fakePhone,
                         PROJECT_LEAD.name()),
-                        buildJson("createSuccessTest/default_response.json.template", 1, fakeName,
+                        buildJson("createSuccessTest/default_response.json.template",
+                                1L,
+                                fakeName,
                                 fakeEmail,
                                 fakePhone,
                                 PROJECT_LEAD.name()),
@@ -91,6 +96,8 @@ class EmployeeControllerTest extends IntegrationTest {
                 .contains(e);
     }
 
+
+    // failed create:
     static Stream<Arguments> createFailTestArgs() {
         final String fakeName = strMultiple("a", 256);
         return Stream.of(
@@ -119,6 +126,69 @@ class EmployeeControllerTest extends IntegrationTest {
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .isEmpty();
     }
+
+    // success update:
+    static Stream<Arguments> createSuccessUpdateArgs() {
+        return Stream.of(
+                Arguments.arguments(
+                        buildJson("createSuccessTest/updateRequestTest.json"),
+                        buildJson("createSuccessTest/update_response.json")
+                )
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("createSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/createSuccessTest/exists_employees.sql"
+    })
+    void kiraLis39Temporarytest(final String request, final String response, final Employee e) {
+        // setup
+
+        // when
+        mvc.perform(TestUtils
+                .createPut(BASE_URL)
+                .content(request))
+                .andExpect(status().isOk())
+                .andExpect(content().json(response, true));
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
+                .hasSize(1);
+
+        Assertions.assertThat(txUtil.txRun(() -> repository.findById(1L)))
+                .isPresent()
+                .contains(e);
+    }
+
+    // failed update:
+    static Stream<Arguments> createFailedUpdateArgs() {
+        return Stream.of(
+                Arguments.arguments(
+
+                )
+        );
+    }
+    @ParameterizedTest
+    @MethodSource("createSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/createSuccessTest/exists_employees.sql"})
+    void updateFailTest(final String request, final String response, int httpStatus) throws Exception {
+        // setup
+
+        mvc.perform(TestUtils
+                .createPost(BASE_URL + "/${id}" )
+                .content(request))
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, true));
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
+                .isEmpty();
+    }
+
 
     private static String buildJson(final String resource, Object...args) {
         String template = TestUtils.readClassPathResourceAsString(
