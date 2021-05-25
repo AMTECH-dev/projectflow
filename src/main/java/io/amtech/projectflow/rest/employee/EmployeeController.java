@@ -21,8 +21,8 @@ public class EmployeeController {
         return employeeService.create(dto);
     }
 
-    @PutMapping("/${id}")
-    EmployeeDto update(@PathVariable("id") long id, @RequestBody @Valid EmployeeUpdateDto dto) {
-        return employeeService.update(id, dto);
+    @PutMapping("/{id}")
+    void update(@PathVariable("id") long id, @RequestBody @Valid EmployeeUpdateDto dto) {
+        employeeService.update(id, dto);
     }
 }
