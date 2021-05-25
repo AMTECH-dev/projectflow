@@ -144,8 +144,8 @@ class EmployeeControllerTest extends IntegrationTest {
     void getFailTest(final long id, final String response, int httpStatus) {
         mvc.perform(TestUtils
                 .createGet(BASE_URL + "/" + id))
-                .andExpect(status().is(httpStatus));
-                //.andExpect(content().json(response, false));
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, false));
     }
 
     private static String buildJson(final String resource, Object...args) {
