@@ -1,6 +1,7 @@
 package io.amtech.projectflow.rest.employee;
 
 import io.amtech.projectflow.domain.employee.Employee;
+import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -48,7 +49,7 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setName("А")
                                 .setEmail("a@b.ru")
                                 .setPosition(DIRECTOR)),
-                Arguments.arguments(buildJson("createSuccessTest/default_request.json.template", fakeName,
+                Arguments.arguments(buildJson("default_request.json.template", fakeName,
                         fakeEmail,
                         fakePhone,
                         PROJECT_LEAD.name()),
@@ -91,13 +92,17 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> createFailTestArgs() {
+        final String fakeName = strMultiple("a", 256);
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
                         buildJson("createFailTest/name_is_missing_response.json"),
+                        400),
+                Arguments.arguments(buildJson("default_request.json.template",
+                        fakeName, "sd@mail.com", "293 3993 93939", PROJECT_LEAD),
+                        buildJson("createFailTest/name_is_too_long_response.json"),
                         400)
         );
     }
-
 
     @ParameterizedTest
     @MethodSource("createFailTestArgs")
