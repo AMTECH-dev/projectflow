@@ -3,6 +3,7 @@ package io.amtech.projectflow.rest.general;
 import io.amtech.projectflow.app.exception.DomainException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,5 +41,11 @@ public class ExceptionResolver {
         ErrorMessage errMsg = new ErrorMessage().setMessage(e.getMessage());
         return new ResponseEntity<>(errMsg, Optional.ofNullable(HttpStatus.resolve(e.getCode()))
                 .orElse(HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ResponseEntity<ErrorMessage> onHttpMessageNotReadableException() {
+        ErrorMessage errorMessage = new ErrorMessage().setMessage("Position value is not valid");
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 }

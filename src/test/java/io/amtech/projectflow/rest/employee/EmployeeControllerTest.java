@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.stream.Stream;
@@ -82,7 +83,6 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> createFailTestArgs() {
-        int badRequestCode = 400;
         final String longName = MAX_NAME_VALUE + 1;
         final String longEmail = 1 + MAX_EMAIL_VALUE;
         final String longPhone = MAX_PHONE_VALUE + 1;
@@ -90,28 +90,38 @@ class EmployeeControllerTest extends IntegrationTest {
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
                         buildJson("createFailTest/name_is_missing_response.json"),
-                        badRequestCode),
+                        HttpStatus.BAD_REQUEST.value()),
                 Arguments.arguments(buildJson("default_request.json.template",
                         longName, MAX_EMAIL_VALUE, MAX_PHONE_VALUE, PROJECT_LEAD),
                         buildJson("createFailTest/name_is_too_long_response.json"),
-                        badRequestCode),
+                        HttpStatus.BAD_REQUEST.value()),
+
                 Arguments.arguments(buildJson("createFailTest/invalid_email_format_request.json"),
                         buildJson("createFailTest/invalid_email_format_response.json"),
-                        badRequestCode),
+                        HttpStatus.BAD_REQUEST.value()),
                 Arguments.arguments(buildJson("default_request.json.template",
                         MAX_NAME_VALUE, longEmail, MAX_PHONE_VALUE, DIRECTION_LEAD),
                         buildJson("createFailTest/email_is_too_long_response.json"),
-                        badRequestCode),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments(buildJson("createFailTest/email_is_missing_request.json"),
+                        buildJson("createFailTest/email_is_missing_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+
                 Arguments.arguments(buildJson("default_request.json.template",
                         MAX_NAME_VALUE, MAX_EMAIL_VALUE, longPhone, DIRECTION_LEAD),
                         buildJson("createFailTest/phone_is_too_long_response.json"),
-                        badRequestCode),
+                        HttpStatus.BAD_REQUEST.value()),
+
                 Arguments.arguments(buildJson("createFailTest/without_position_request.json"),
                         buildJson("createFailTest/without_position_response.json"),
-                        badRequestCode),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments(buildJson("createFailTest/wrong_position_request.json"),
+                        buildJson("createFailTest/wrong_position_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+
                 Arguments.arguments(buildJson("createFailTest/empty_with_email_request.json"),
                         buildJson("createFailTest/empty_response.json"),
-                        badRequestCode)
+                        HttpStatus.BAD_REQUEST.value())
         );
     }
 
