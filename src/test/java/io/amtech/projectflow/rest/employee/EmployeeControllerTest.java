@@ -108,6 +108,9 @@ class EmployeeControllerTest extends IntegrationTest {
                         badRequestCode),
                 Arguments.arguments(buildJson("createFailTest/without_position_request.json"),
                         buildJson("createFailTest/without_position_response.json"),
+                        badRequestCode),
+                Arguments.arguments(buildJson("createFailTest/empty_with_email_request.json"),
+                        buildJson("createFailTest/empty_response.json"),
                         badRequestCode)
         );
     }
