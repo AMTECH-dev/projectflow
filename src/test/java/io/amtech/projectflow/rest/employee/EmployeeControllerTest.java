@@ -7,6 +7,7 @@ import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -118,6 +119,14 @@ class EmployeeControllerTest extends IntegrationTest {
         // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .isEmpty();
+    }
+
+    @Test
+    @SneakyThrows
+    void searchSuccessTest() {
+        // setup
+        mvc.perform(TestUtils.createGet(BASE_URL))
+                .andExpect(status().isOk());
     }
 
     private static String buildJson(final String resource, Object...args) {
