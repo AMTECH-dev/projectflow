@@ -1,7 +1,6 @@
 package io.amtech.projectflow.rest.employee;
 
 import io.amtech.projectflow.domain.employee.Employee;
-import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -13,14 +12,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
 
 import java.util.stream.Stream;
 
 import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
 import static io.amtech.projectflow.domain.employee.UserPosition.PROJECT_LEAD;
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
-import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -123,9 +121,13 @@ class EmployeeControllerTest extends IntegrationTest {
 
     @Test
     @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/searchSuccessTest/data.sql"
+    })
     void searchSuccessTest() {
         // setup
         mvc.perform(TestUtils.createGet(BASE_URL))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 

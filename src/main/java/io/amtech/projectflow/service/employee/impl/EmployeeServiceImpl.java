@@ -61,6 +61,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public PagedData<EmployeeDto> search(SearchCriteria criteria) {
-        return PagedData.empty();
+        return employeeRepository.search(criteria).map(EmployeeDto::new);
     }
 }

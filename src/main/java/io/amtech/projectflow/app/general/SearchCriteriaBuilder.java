@@ -1,20 +1,14 @@
 package io.amtech.projectflow.app.general;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SearchCriteriaBuilder {
     private final int maxLimit;
     private Integer limit;
     private Integer offset;
     private Map<String, String> filters = new HashMap<>();
-    private List<String> orders = new ArrayList<>();
+    private String order;
 
     public SearchCriteriaBuilder() {
         this(SearchCriteria.MAX_LIMIT);
@@ -43,21 +37,8 @@ public class SearchCriteriaBuilder {
 
     public SearchCriteriaBuilder order(String order) {
         if (order != null) {
-            this.orders.add(order);
+            this.order = order;
         }
-        return this;
-    }
-
-    public SearchCriteriaBuilder orders(String value) {
-        if (StringUtils.isEmpty(value) || "".equals(value.trim())) {
-            return null;
-        }
-
-        List<String> ordersList = Arrays.stream(value.split(","))
-                .map(String::trim)
-                .collect(Collectors.toList());
-
-        this.orders.addAll(ordersList);
         return this;
     }
 
@@ -81,6 +62,6 @@ public class SearchCriteriaBuilder {
     }
 
     public SearchCriteria build() {
-        return new SearchCriteria(getLimit(), getOffset(), this.filters, this.orders);
+        return new SearchCriteria(getLimit(), getOffset(), this.filters, this.order);
     }
 }

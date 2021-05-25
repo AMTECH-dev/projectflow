@@ -47,7 +47,7 @@ public class EmployeeController {
                 .filter("phone", phone)
                 .filter("position", Optional.ofNullable(position).map(UserPosition::name).orElse(null))
                 .filter("fired", Optional.ofNullable(fired).map(Object::toString).orElse(null))
-                .orders(orders)
+                .order(orders)
                 .build();
 
         return employeeService.search(criteria);
