@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EmployeeControllerTest extends IntegrationTest {
 
     private static final String BASE_URL = "/employees";
+    private static final String BASE_ID_URL = BASE_URL + "/%d";
     @Autowired
     EmployeeRepository repository;
 
@@ -104,23 +106,67 @@ class EmployeeControllerTest extends IntegrationTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("createFailTestArgs")
-    @SneakyThrows
-    void createFailTest(final String request, final String response, int httpStatus) {
-        // setup
-        mvc.perform(TestUtils
-                .createPost(BASE_URL)
-                .content(request))
-                .andExpect(status().is(httpStatus))
-                .andExpect(content().json(response, true));
-
-        // then
-        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
-                .isEmpty();
+    static Stream<Arguments> deleteSuccessTestArgs() {
+        return Stream.of(Arguments.arguments(1));
     }
 
-    private static String buildJson(final String resource, Object...args) {
+    @ParameterizedTest
+    @MethodSource("deleteSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/deleteTest/create_employee.sql"
+    })
+    void deleteSuccessTest(long id) {
+        List<Employee> employeesBeforeDelete = repository.findAll();
+
+        // setup
+        mvc.perform(TestUtils
+                .createDelete(String.format(BASE_ID_URL, id)))
+                .andExpect(status().isOk());
+
+        Assertions.assertThat(employeesBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
+                .isFalse();
+
+        List<Employee> employeesAfterDelete = repository.findAll();
+        for (Employee employee : employeesBeforeDelete) {
+            Assertions.assertThat(employeesAfterDelete.stream().filter(employee::equals).findFirst())
+                    .isNotEmpty();
+        }
+    }
+
+    static Stream<Arguments> deleteFailTestArgs() {
+        return Stream.of(Arguments.arguments(99));
+    }
+
+    @ParameterizedTest
+    @MethodSource("deleteFailTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/deleteTest/create_employee.sql"
+    })
+    void deleteFailTest(long id) {
+        List<Employee> employeesBeforeDelete = repository.findAll();
+
+        // setup
+        mvc.perform(TestUtils
+                .createDelete(String.format(BASE_ID_URL, id)))
+                .andExpect(status().isNotFound());
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
+                .isFalse();
+
+        List<Employee> employeesAfterDelete = repository.findAll();
+        for (Employee employee : employeesAfterDelete) {
+            Assertions.assertThat(employeesBeforeDelete.stream().filter(employee::equals).findFirst())
+                    .isNotEmpty();
+        }
+    }
+
+    private static String buildJson(final String resource, Object... args) {
         String template = TestUtils.readClassPathResourceAsString(
                 "json/EmployeeControllerTest/" + resource);
 
