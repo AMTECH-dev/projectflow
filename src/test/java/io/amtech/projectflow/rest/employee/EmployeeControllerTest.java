@@ -6,7 +6,6 @@ import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -119,16 +118,27 @@ class EmployeeControllerTest extends IntegrationTest {
                 .isEmpty();
     }
 
-    @Test
+    static Stream<Arguments> searchSuccessTestArgs() {
+        return Stream.of(
+                Arguments.arguments("",
+                        buildJson("searchSuccessTest/all.json")),
+                Arguments.arguments("?limit=3&offset=2&orders=-name",
+                        buildJson("searchSuccessTest/reverse_order_with_limit_and_offset.json"))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("searchSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
             "classpath:db/EmployeeControllerTest/searchSuccessTest/data.sql"
     })
-    void searchSuccessTest() {
+    void searchSuccessTest(final String url, final String response) {
         // setup
-        mvc.perform(TestUtils.createGet(BASE_URL))
+        mvc.perform(TestUtils.createGet(BASE_URL + url))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().json(response, true));
     }
 
     private static String buildJson(final String resource, Object...args) {

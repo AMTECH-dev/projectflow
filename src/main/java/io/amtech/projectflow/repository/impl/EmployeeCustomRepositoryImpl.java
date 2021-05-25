@@ -42,7 +42,10 @@ public class EmployeeCustomRepositoryImpl implements EmployeeCustomRepository {
         query.where(predicates.toArray(new Predicate[0]))
                 .orderBy(parseOrder(root, criteria.getOrder()));
 
-        List<Employee> result = em.createQuery(query).getResultList();
+        List<Employee> result = em.createQuery(query)
+                .setFirstResult(criteria.getOffset())
+                .setMaxResults(criteria.getLimit())
+                .getResultList();
 
         return new PagedData<>(result, criteria);
     }
