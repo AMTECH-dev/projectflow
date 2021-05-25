@@ -63,7 +63,7 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setEmail(fakeEmail)
                                 .setPhone(fakePhone)
                                 .setPosition(PROJECT_LEAD))
-        );
+                );
     }
 
     @ParameterizedTest
@@ -118,6 +118,34 @@ class EmployeeControllerTest extends IntegrationTest {
         // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .isEmpty();
+    }
+
+    static Stream<Arguments> getSuccessTestArgs() {
+        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/full_response.json"), 200));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getSuccessTestArgs")
+    @SneakyThrows
+    void getSuccessTest(final long id, final String response, int httpStatus) {
+        mvc.perform(TestUtils
+                .createGet(BASE_URL+"/"+id))
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, true));
+    }
+
+    static Stream<Arguments> getFailTestArgs() {
+        return Stream.of(Arguments.arguments(99, buildJson("getSuccessTest/full_response.json"), 404));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getFailTestArgs")
+    @SneakyThrows
+    void getFailTest(final long id, final String response, int httpStatus) {
+        mvc.perform(TestUtils
+                .createGet(BASE_URL + "/" + id))
+                .andExpect(status().is(httpStatus));
+                //.andExpect(content().json(response, false));
     }
 
     private static String buildJson(final String resource, Object...args) {
