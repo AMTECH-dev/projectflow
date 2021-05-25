@@ -1,7 +1,6 @@
 package io.amtech.projectflow.rest.employee;
 
 import io.amtech.projectflow.domain.employee.Employee;
-import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -12,14 +11,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
 
 import java.util.stream.Stream;
 
-import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
-import static io.amtech.projectflow.domain.employee.UserPosition.PROJECT_LEAD;
+import static io.amtech.projectflow.domain.employee.UserPosition.*;
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
-import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,10 +25,11 @@ class EmployeeControllerTest extends IntegrationTest {
     @Autowired
     EmployeeRepository repository;
 
+    private final static String MAX_NAME_VALUE = strMultiple("a", 255);
+    private final static String MAX_EMAIL_VALUE = strMultiple("b", 38) + "@example.com";
+    private final static String MAX_PHONE_VALUE = strMultiple("1", 50);
+
     static Stream<Arguments> createSuccessTestArgs() {
-        final String fakeName = strMultiple("a", 255);
-        final String fakeEmail = strMultiple("b", 38) + "@example.com";
-        final String fakePhone = strMultiple("1", 50);
         return Stream.of(
                 Arguments.arguments(buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
@@ -49,19 +46,15 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setName("А")
                                 .setEmail("a@b.ru")
                                 .setPosition(DIRECTOR)),
-                Arguments.arguments(buildJson("default_request.json.template", fakeName,
-                        fakeEmail,
-                        fakePhone,
-                        PROJECT_LEAD.name()),
-                        buildJson("createSuccessTest/default_response.json.template", 1, fakeName,
-                                fakeEmail,
-                                fakePhone,
-                                PROJECT_LEAD.name()),
+                Arguments.arguments(buildJson("default_request.json.template",
+                        MAX_NAME_VALUE, MAX_EMAIL_VALUE, MAX_PHONE_VALUE, PROJECT_LEAD),
+                        buildJson("createSuccessTest/default_response.json.template",
+                                1, MAX_NAME_VALUE, MAX_EMAIL_VALUE, MAX_PHONE_VALUE, PROJECT_LEAD),
                         new Employee()
                                 .setId(1L)
-                                .setName(fakeName)
-                                .setEmail(fakeEmail)
-                                .setPhone(fakePhone)
+                                .setName(MAX_NAME_VALUE)
+                                .setEmail(MAX_EMAIL_VALUE)
+                                .setPhone(MAX_PHONE_VALUE)
                                 .setPosition(PROJECT_LEAD))
         );
     }
@@ -73,16 +66,13 @@ class EmployeeControllerTest extends IntegrationTest {
             "classpath:db/EmployeeControllerTest/createSuccessTest/exists_employees.sql"
     })
     void createSuccessTest(final String request, final String response, final Employee e) {
-        // setup
 
-        // when
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
 
-        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .hasSize(3);
 
@@ -92,15 +82,33 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> createFailTestArgs() {
-        final String fakeName = strMultiple("a", 256);
+        int badRequestCode = 400;
+        final String longName = MAX_NAME_VALUE + 1;
+        final String longEmail = 1 + MAX_EMAIL_VALUE;
+        final String longPhone = MAX_PHONE_VALUE + 1;
+
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
                         buildJson("createFailTest/name_is_missing_response.json"),
-                        400),
+                        badRequestCode),
                 Arguments.arguments(buildJson("default_request.json.template",
-                        fakeName, "sd@mail.com", "293 3993 93939", PROJECT_LEAD),
+                        longName, MAX_EMAIL_VALUE, MAX_PHONE_VALUE, PROJECT_LEAD),
                         buildJson("createFailTest/name_is_too_long_response.json"),
-                        400)
+                        badRequestCode),
+                Arguments.arguments(buildJson("createFailTest/invalid_email_format_request.json"),
+                        buildJson("createFailTest/invalid_email_format_response.json"),
+                        badRequestCode),
+                Arguments.arguments(buildJson("default_request.json.template",
+                        MAX_NAME_VALUE, longEmail, MAX_PHONE_VALUE, DIRECTION_LEAD),
+                        buildJson("createFailTest/email_is_too_long_response.json"),
+                        badRequestCode),
+                Arguments.arguments(buildJson("default_request.json.template",
+                        MAX_NAME_VALUE, MAX_EMAIL_VALUE, longPhone, DIRECTION_LEAD),
+                        buildJson("createFailTest/phone_is_too_long_response.json"),
+                        badRequestCode),
+                Arguments.arguments(buildJson("createFailTest/without_position_request.json"),
+                        buildJson("createFailTest/without_position_response.json"),
+                        badRequestCode)
         );
     }
 
@@ -108,19 +116,18 @@ class EmployeeControllerTest extends IntegrationTest {
     @MethodSource("createFailTestArgs")
     @SneakyThrows
     void createFailTest(final String request, final String response, int httpStatus) {
-        // setup
+
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
 
-        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .isEmpty();
     }
 
-    private static String buildJson(final String resource, Object...args) {
+    private static String buildJson(final String resource, Object... args) {
         String template = TestUtils.readClassPathResourceAsString(
                 "json/EmployeeControllerTest/" + resource);
 
