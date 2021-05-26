@@ -13,15 +13,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
-import static io.amtech.projectflow.domain.employee.UserPosition.PROJECT_LEAD;
+import static io.amtech.projectflow.domain.employee.UserPosition.*;
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
-import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,6 +28,10 @@ class EmployeeControllerTest extends IntegrationTest {
     private static final String BASE_ID_URL = BASE_URL + "/%d";
     @Autowired
     EmployeeRepository repository;
+
+    private final static String MAX_NAME_VALUE = strMultiple("a", 255);
+    private final static String MAX_EMAIL_VALUE = strMultiple("b", 38) + "@example.com";
+    private final static String MAX_PHONE_VALUE = strMultiple("1", 50);
 
     static Stream<Arguments> createSuccessTestArgs() {
         final String fakeName = strMultiple("a", 255);
@@ -95,16 +96,63 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> createFailTestArgs() {
-        final String fakeName = strMultiple("a", 256);
+        final String longName = "extra" + MAX_NAME_VALUE;
+        final String longEmail = "extra" + MAX_EMAIL_VALUE;
+        final String longPhone = "extra" + MAX_PHONE_VALUE;
+
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
                         buildJson("createFailTest/name_is_missing_response.json"),
-                        400),
+                        HttpStatus.BAD_REQUEST.value()),
                 Arguments.arguments(buildJson("default_request.json.template",
-                        fakeName, "sd@mail.com", "293 3993 93939", PROJECT_LEAD),
+                        longName, MAX_EMAIL_VALUE, MAX_PHONE_VALUE, PROJECT_LEAD),
                         buildJson("createFailTest/name_is_too_long_response.json"),
-                        400)
+                        HttpStatus.BAD_REQUEST.value()),
+
+                Arguments.arguments(buildJson("createFailTest/invalid_email_format_request.json"),
+                        buildJson("createFailTest/invalid_email_format_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments(buildJson("default_request.json.template",
+                        MAX_NAME_VALUE, longEmail, MAX_PHONE_VALUE, DIRECTION_LEAD),
+                        buildJson("createFailTest/email_is_too_long_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments(buildJson("createFailTest/email_is_missing_request.json"),
+                        buildJson("createFailTest/email_is_missing_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+
+                Arguments.arguments(buildJson("default_request.json.template",
+                        MAX_NAME_VALUE, MAX_EMAIL_VALUE, longPhone, DIRECTION_LEAD),
+                        buildJson("createFailTest/phone_is_too_long_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+
+                Arguments.arguments(buildJson("createFailTest/without_position_request.json"),
+                        buildJson("createFailTest/without_position_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments(buildJson("createFailTest/wrong_position_request.json"),
+                        buildJson("createFailTest/wrong_position_response.json.template",
+                                "I love my job", UserPosition.class.getSimpleName()),
+                        HttpStatus.BAD_REQUEST.value()),
+
+                Arguments.arguments(buildJson("createFailTest/empty_with_email_request.json"),
+                        buildJson("createFailTest/empty_response.json"),
+                        HttpStatus.BAD_REQUEST.value())
         );
+    }
+
+    @ParameterizedTest
+    @MethodSource("createFailTestArgs")
+    @SneakyThrows
+    void createFailTest(final String request, final String response, int httpStatus) {
+        // setup
+        mvc.perform(TestUtils
+                .createPost(BASE_URL)
+                .content(request))
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, true));
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
+                .isEmpty();
     }
 
     static Stream<Arguments> deleteSuccessTestArgs() {

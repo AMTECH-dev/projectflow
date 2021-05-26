@@ -1,0 +1,7 @@
+{
+  "message": "Validation error",
+  "errors": {
+    "name": "must not be blank",
+    "position": "must not be null"
+  }
+}
