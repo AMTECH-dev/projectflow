@@ -30,7 +30,7 @@ public class EmployeeCustomRepositoryImpl implements EmployeeCustomRepository {
         Root<Employee> root = query.from(Employee.class);
         List<Predicate> predicates = new ArrayList<>();
         criteria.getFilter("name")
-                .ifPresent(v -> predicates.add(builder.like(root.get("name"), "%" + v + "%")));
+                .ifPresent(v -> predicates.add(builder.like(builder.lower(root.get("name")), "%" + v + "%")));
         criteria.getFilter("name")
                 .ifPresent(v -> predicates.add(builder.like(root.get("email"), "%" + v + "%")));
         criteria.getFilter("email")

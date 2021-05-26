@@ -123,7 +123,9 @@ class EmployeeControllerTest extends IntegrationTest {
                 Arguments.arguments("",
                         buildJson("searchSuccessTest/all.json")),
                 Arguments.arguments("?limit=3&offset=2&orders=-name",
-                        buildJson("searchSuccessTest/reverse_order_with_limit_and_offset.json"))
+                        buildJson("searchSuccessTest/reverse_order_with_limit_and_offset.json")),
+                Arguments.arguments("?name=й",
+                        buildJson("searchSuccessTest/filter_by_name.json"))
         );
     }
 
