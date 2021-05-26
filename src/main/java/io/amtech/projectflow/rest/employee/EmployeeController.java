@@ -20,12 +20,12 @@ public class EmployeeController {
         return employeeService.create(dto);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     EmployeeDto get(@PathVariable("id") long id) {
         return employeeService.get(id);
     }
 
-      @DeleteMapping("{id}")
+    @DeleteMapping("{id}")
     void delete(@PathVariable long id) {
         employeeService.delete(id);
     }
