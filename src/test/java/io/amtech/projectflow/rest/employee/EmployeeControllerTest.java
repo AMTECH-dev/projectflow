@@ -1,6 +1,7 @@
 package io.amtech.projectflow.rest.employee;
 
 import io.amtech.projectflow.domain.employee.Employee;
+import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -83,9 +84,9 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> createFailTestArgs() {
-        final String longName = MAX_NAME_VALUE + 1;
-        final String longEmail = 1 + MAX_EMAIL_VALUE;
-        final String longPhone = MAX_PHONE_VALUE + 1;
+        final String longName = "extra" + MAX_NAME_VALUE;
+        final String longEmail = "extra" + MAX_EMAIL_VALUE;
+        final String longPhone = "extra" + MAX_PHONE_VALUE;
 
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
@@ -116,7 +117,8 @@ class EmployeeControllerTest extends IntegrationTest {
                         buildJson("createFailTest/without_position_response.json"),
                         HttpStatus.BAD_REQUEST.value()),
                 Arguments.arguments(buildJson("createFailTest/wrong_position_request.json"),
-                        buildJson("createFailTest/wrong_position_response.json"),
+                        buildJson("createFailTest/wrong_position_response.json.template",
+                                "I love my job", UserPosition.class.getSimpleName()),
                         HttpStatus.BAD_REQUEST.value()),
 
                 Arguments.arguments(buildJson("createFailTest/empty_with_email_request.json"),

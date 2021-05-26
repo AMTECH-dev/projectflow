@@ -1,5 +1,6 @@
 package io.amtech.projectflow.rest.general;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.amtech.projectflow.app.exception.DomainException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,8 +45,13 @@ public class ExceptionResolver {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    ResponseEntity<ErrorMessage> onHttpMessageNotReadableException() {
-        ErrorMessage errorMessage = new ErrorMessage().setMessage("Position value is not valid");
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorMessage onHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
+        if (e.getCause() instanceof InvalidFormatException) {
+            InvalidFormatException formatException = (InvalidFormatException) e.getCause();
+            return new ErrorMessage().setMessage(String.format("%s is invalid value for %s data type",
+                    formatException.getValue(), formatException.getTargetType().getSimpleName()));
+        }
+        return new ErrorMessage().setMessage("Not readable data");
     }
 }
