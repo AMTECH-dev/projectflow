@@ -17,22 +17,6 @@
       "fired": false
     },
     {
-      "id": 9,
-      "name": "Васильев Василий Васильевич",
-      "email": "vasya4@example.com",
-      "phone": null,
-      "position": "PROJECT_LEAD",
-      "fired": true
-    },
-    {
-      "id": 6,
-      "name": "Выкатывающий Василий Сергеевич",
-      "email": "vasya2@example.com",
-      "phone": null,
-      "position": "PROJECT_LEAD",
-      "fired": false
-    },
-    {
       "id": 5,
       "name": "Копающий Василий Андреевич",
       "email": "vasya1@example.com",

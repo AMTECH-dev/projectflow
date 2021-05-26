@@ -1,1 +1,0 @@
-create index if not exists employee_name_lower_indx on pf.employee (lower(name));

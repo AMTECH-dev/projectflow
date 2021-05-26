@@ -2,7 +2,6 @@ package io.amtech.projectflow.app.general;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 public class SearchCriteria {
     public static final int MAX_LIMIT = 100;

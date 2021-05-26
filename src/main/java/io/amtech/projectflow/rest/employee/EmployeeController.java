@@ -37,7 +37,7 @@ public class EmployeeController {
                                          @RequestParam(required = false) String name,
                                          @RequestParam(required = false) String email,
                                          @RequestParam(required = false) String phone,
-                                         @RequestParam(required = false) UserPosition position,
+                                         @RequestParam(required = false) String position,
                                          @RequestParam(required = false) Boolean fired) {
         SearchCriteria criteria = new SearchCriteriaBuilder()
                 .limit(limit)
@@ -45,8 +45,10 @@ public class EmployeeController {
                 .filter("name", name)
                 .filter("email", email)
                 .filter("phone", phone)
-                .filter("position", Optional.ofNullable(position).map(UserPosition::name).orElse(null))
-                .filter("fired", Optional.ofNullable(fired).map(Object::toString).orElse(null))
+                .filter("position", position)
+                .filter("fired", Optional.ofNullable(fired)
+                        .map(Object::toString)
+                        .orElse(null))
                 .order(orders)
                 .build();
 

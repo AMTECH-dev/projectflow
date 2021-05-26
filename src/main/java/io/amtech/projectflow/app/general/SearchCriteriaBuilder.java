@@ -7,15 +7,15 @@ public class SearchCriteriaBuilder {
     private final int maxLimit;
     private Integer limit;
     private Integer offset;
-    private Map<String, String> filters = new HashMap<>();
+    private final Map<String, String> filters = new HashMap<>();
     private String order;
 
     public SearchCriteriaBuilder() {
         this(SearchCriteria.MAX_LIMIT);
     }
 
-    public SearchCriteriaBuilder(Integer maxLimit) {
-        this.maxLimit = SearchCriteria.MAX_LIMIT;
+    public SearchCriteriaBuilder(final Integer maxLimit) {
+        this.maxLimit = maxLimit;
     }
 
     public SearchCriteriaBuilder limit(Integer limit) {
