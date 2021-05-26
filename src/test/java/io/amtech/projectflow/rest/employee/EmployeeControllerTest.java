@@ -173,6 +173,9 @@ class EmployeeControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("getSuccessTestArgs")
     @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
+    })
     void getSuccessTest(final long id, final String response, int httpStatus) {
         mvc.perform(TestUtils
                 .createGet(BASE_URL+"/"+id))
@@ -187,6 +190,9 @@ class EmployeeControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("getFailTestArgs")
     @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
+    })
     void getFailTest(final long id, final String response, int httpStatus) {
         mvc.perform(TestUtils
                 .createGet(BASE_URL + "/" + id))

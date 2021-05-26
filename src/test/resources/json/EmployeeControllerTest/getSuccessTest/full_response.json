@@ -1,8 +1,8 @@
 {
   "id": 1,
-  "name": "Иван Копыто",
-  "email": "kopito@example.com",
-  "phone": "+7 128 123 12 12",
-  "position": "PROJECT_LEAD",
+  "name": "Одинцов Андрей Артёмович",
+  "email": "Odinchov@example.com",
+  "phone": "+7 9810482171",
+  "position": "DIRECTOR",
   "fired": false
 }

@@ -1,0 +1,11 @@
+insert into pf.employee(id, name, email, phone, position, is_fired) values
+(1, 'Одинцов Андрей Артёмович', 'Odinchov@example.com', '+7 9810482171', 'DIRECTOR', false),
+(2, 'Рыбакова Алиса Максимовна', 'Rubakov@example.com', '+7 2071180235', 'PROJECT_LEAD', false),
+(3, 'Филиппова Варвара Артёмовна', 'Fillopova@example.com', '+7 9633457509', 'PROJECT_LEAD', false),
+(4, 'Тихонов Даниил Артёмович', 'Tihonov@example.com', '+7 5840448528', 'DIRECTION_LEAD', false),
+(5, 'Филатова Элина Артёмовна', 'Filatova@example.com', '+7 6142737207', 'DIRECTION_LEAD', false),
+(6, 'Ефимов Артём Максимович', 'Efimov@example.com', '+7 1732740993', 'DIRECTION_LEAD', false),
+(7, 'Булгаков Глеб Родионович', 'Bulgakov@example.com', '+7 1419038839', 'PROJECT_LEAD', false),
+(8, 'Сорокина Арина Ярославовна', 'Sorokina@example.com', '+7 7672538813', 'PROJECT_LEAD', false),
+(9, 'Лебедева Кристина Билаловна', 'Lebedeva@example.com', '+7 0797246409', 'PROJECT_LEAD', false),
+(10, 'Аксенов Станислав Дмитриевич', 'Aksenov@example.com', '+7 0900764430', 'PROJECT_LEAD', false);
