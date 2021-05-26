@@ -1,6 +1,8 @@
 {
   "message": "Validation error",
   "errors": {
-    "name": "must not be blank"
+    "isFired": "must not be null",
+    "name": "must not be blank",
+    "position": "must not be null"
   }
 }

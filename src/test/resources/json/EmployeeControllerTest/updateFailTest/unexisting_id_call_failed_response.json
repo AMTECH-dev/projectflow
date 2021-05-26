@@ -1,6 +1,4 @@
 {
-  "message": "Validation error",
-  "errors": {
-    "name": "must not be blank"
-  }
+  "message": "Employee not found by 102",
+  "errors": {}
 }

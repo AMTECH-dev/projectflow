@@ -199,15 +199,15 @@ class EmployeeControllerTest extends IntegrationTest {
                 Arguments.arguments(1L,
                         buildJson("updateFailTest/update_request_fired_is_null.json"),
                         buildJson("updateFailTest/update_fired_is_null_response.json"),
-                        HttpStatus.BAD_REQUEST.value())
-//                Arguments.arguments(2L,
-//                        buildJson("updateFailTest/update_request_empty_failed.json"),
-//                        buildJson("updateFailTest/update_empty_response.json"),
-//                        HttpStatus.BAD_REQUEST.value()),
-//                Arguments.arguments(102L,
-//                        buildJson("updateFailTest/unexisting_id_call_failed.json"),
-//                        buildJson("updateFailTest/unexisting_id_call_failed_response.json"),
-//                        HttpStatus.NOT_FOUND.value())
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments(2L,
+                        buildJson("updateFailTest/update_request_empty_failed.json"),
+                        buildJson("updateFailTest/update_empty_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments(102L,
+                        buildJson("updateFailTest/unexisting_id_call_failed.json"),
+                        buildJson("updateFailTest/unexisting_id_call_failed_response.json"),
+                        HttpStatus.NOT_FOUND.value())
         );
     }
 
