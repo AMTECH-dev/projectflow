@@ -54,11 +54,14 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setName("А")
                                 .setEmail("a@b.ru")
                                 .setPosition(DIRECTOR)),
-                Arguments.arguments(buildJson("default_request.json.template", fakeName,
+                Arguments.arguments(buildJson("default_request.json.template",
+                        fakeName,
                         fakeEmail,
                         fakePhone,
                         PROJECT_LEAD.name()),
-                        buildJson("createSuccessTest/default_response.json.template", 1, fakeName,
+                        buildJson("createSuccessTest/default_response.json.template",
+                                1,
+                                fakeName,
                                 fakeEmail,
                                 fakePhone,
                                 PROJECT_LEAD.name()),
@@ -75,6 +78,7 @@ class EmployeeControllerTest extends IntegrationTest {
     @MethodSource("createSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
+            "classpath:db/clean.sql",
             "classpath:db/EmployeeControllerTest/createSuccessTest/exists_employees.sql"
     })
     void createSuccessTest(final String request, final String response, final Employee e) {
