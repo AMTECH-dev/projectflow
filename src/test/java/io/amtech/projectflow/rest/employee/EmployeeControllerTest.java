@@ -13,10 +13,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -24,7 +22,6 @@ import java.util.stream.Stream;
 import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
 import static io.amtech.projectflow.domain.employee.UserPosition.PROJECT_LEAD;
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
-import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -133,14 +130,35 @@ class EmployeeControllerTest extends IntegrationTest {
     // success update:
     static Stream<Arguments> updateSuccessArgs() {
         return Stream.of(
-                Arguments.arguments(
-                        buildJson("updateSuccessTest/full_update_request.json")
+                Arguments.arguments(1,
+                        buildJson("updateSuccessTest/full_update_request.json"),
+                        new Employee()
+                                .setId(1L)
+                                .setName("mr.Propper")
+                                .setEmail("poshta@mail.ru")
+                                .setPhone("+70002410182")
+                                .setPosition(PROJECT_LEAD)
+                                .setFired(true)
                 ),
-                Arguments.arguments(
-                        buildJson("updateSuccessTest/mail_fired_update_request.json")
-                ),
-                Arguments.arguments(
-                        buildJson("updateSuccessTest/phone_position_update_request.json")
+        Arguments.arguments(2,
+                buildJson("updateSuccessTest/mail_fired_update_request.json"),
+                new Employee()
+                        .setId(2L)
+                        .setName("Кирилл")
+                        .setEmail("some-email@example.com")
+                        .setPhone("89992410182")
+                        .setPosition(DIRECTOR)
+                        .setFired(true)
+        ),
+                Arguments.arguments(3,
+                        buildJson("updateSuccessTest/phone_position_update_request.json"),
+                        new Employee()
+                                .setId(3L)
+                                .setName("Кирилл")
+                                .setEmail("kira@example.com")
+                                .setPhone("89991112233")
+                                .setPosition(PROJECT_LEAD)
+                                .setFired(true)
                 )
         );
     }
@@ -149,25 +167,28 @@ class EmployeeControllerTest extends IntegrationTest {
     @MethodSource("updateSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {"classpath:db/EmployeeControllerTest/updateSuccessTest/createEmployees.sql"})
-    void updateSuccessTest(final String request) {
+    void updateSuccessTest(final long id, final String request, final Employee expect) {
         List<Employee> existEmpBefore = repository.findAll();
 
-        ArrayList<Long> ids = new ArrayList<Long>();
+        mvc.perform(TestUtils
+                .createPut(BASE_URL + "/" + id)
+                .content(request))
+                .andExpect(status().isOk());
+
+
         for (Employee employee : existEmpBefore) {
-            ids.add(employee.getId());
-        }
+            Optional<Employee> optionalUser = repository.findById(expect.getId());
+            Optional<Employee> optionalUser2 = repository.findById(employee.getId());
 
-        for (Long idSuccess : ids) {
-            final Optional<Employee> BEFORE = repository.findById(idSuccess);
-
-            mvc.perform(TestUtils
-                    .createPut(BASE_URL + "/" + idSuccess)
-                    .content(request))
-                    .andExpect(status().isOk());
-
-            final Optional<Employee> AFTER = repository.findById(idSuccess);
-
-            Assertions.assertThat(BEFORE).isNotEqualTo(AFTER);
+            if (employee.getId() == id) {
+                Assertions.assertThat(repository.findById(id))
+                        .isPresent()
+                        .isEqualTo(optionalUser);
+            } else {
+                Assertions.assertThat(repository.findById(employee.getId()))
+                        .isPresent()
+                        .isEqualTo(optionalUser2);
+            }
         }
     }
 
@@ -175,48 +196,37 @@ class EmployeeControllerTest extends IntegrationTest {
     // failed update:
     static Stream<Arguments> updateFailedArgs() {
         return Stream.of(
-                Arguments.arguments(
+                Arguments.arguments(1L,
                         buildJson("updateFailTest/update_request_fired_is_null.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(
-                        buildJson("updateFailTest/update_request_empty_failed.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(
-                        buildJson("updateFailTest/unexisting_id_call_failed.json"),
-                        HttpStatus.NOT_FOUND.value())
+                        buildJson("updateFailTest/update_request_fired_is_null_response.json"),
+                        HttpStatus.BAD_REQUEST.value())
+//                Arguments.arguments(2L,
+//                        buildJson("updateFailTest/update_request_empty_failed.json"),
+//                        buildJson("updateFailTest/update_request_empty_response.json"),
+//                        HttpStatus.BAD_REQUEST.value()),
+//                Arguments.arguments(102L,
+//                        buildJson("updateFailTest/unexisting_id_call_failed.json"),
+//                        buildJson("updateFailTest/unexisting_id_call_failed_response.json"),
+//                        HttpStatus.NOT_FOUND.value())
         );
     }
-    static int testCounter = 0;
+
 
     @ParameterizedTest
     @MethodSource("updateFailedArgs")
     @SneakyThrows
     @Sql(scripts = {"classpath:db/EmployeeControllerTest/updateSuccessTest/createEmployees.sql"})
-    void updateFailTest(final String request, int expectedStatus) {
+    void updateFailTest(final Long id, final String request, final String response, int expectedStatus) {
         List<Employee> existEmpBefore = repository.findAll();
 
-        ArrayList<Long> ids = new ArrayList<Long>();
-        for (Employee employee : existEmpBefore) {
-            ids.add(employee.getId());
-        }
-
-        testCounter++;
-        System.out.println("#" + testCounter);
-        for (Long idFail : ids) {
-            final Optional<Employee> BEFORE = repository.findById(idFail);
-
-            mvc.perform(TestUtils
-                    .createPut(BASE_URL + "/" + (testCounter == 3 ? idFail + 99 : idFail))
-                    .content(request))
-                    .andExpect(status().is(expectedStatus));
-
-            final Optional<Employee> AFTER = repository.findById(idFail);
-
-            Assertions.assertThat(BEFORE).isEqualTo(AFTER);
-        }
+        mvc.perform(TestUtils
+                .createPut(BASE_URL + "/" + id)
+                .content(request))
+                .andExpect(status().is(expectedStatus))
+                .andExpect(content().json(response, true));
     }
 
-    private static String buildJson(final String resource, Object...args) {
+    private static String buildJson(final String resource, Object... args) {
         String template = TestUtils.readClassPathResourceAsString(
                 "json/EmployeeControllerTest/" + resource);
 
