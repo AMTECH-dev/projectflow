@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static io.amtech.projectflow.domain.employee.UserPosition.*;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EmployeeControllerTest extends IntegrationTest {
 
     private static final String BASE_URL = "/employees";
+    private static final String BASE_ID_URL = BASE_URL + "/%d";
     @Autowired
     EmployeeRepository repository;
 
@@ -32,6 +34,9 @@ class EmployeeControllerTest extends IntegrationTest {
     private final static String MAX_PHONE_VALUE = strMultiple("1", 50);
 
     static Stream<Arguments> createSuccessTestArgs() {
+        final String fakeName = strMultiple("a", 255);
+        final String fakeEmail = strMultiple("b", 38) + "@example.com";
+        final String fakePhone = strMultiple("1", 50);
         return Stream.of(
                 Arguments.arguments(buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
@@ -48,15 +53,19 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setName("А")
                                 .setEmail("a@b.ru")
                                 .setPosition(DIRECTOR)),
-                Arguments.arguments(buildJson("default_request.json.template",
-                        MAX_NAME_VALUE, MAX_EMAIL_VALUE, MAX_PHONE_VALUE, PROJECT_LEAD),
-                        buildJson("createSuccessTest/default_response.json.template",
-                                1, MAX_NAME_VALUE, MAX_EMAIL_VALUE, MAX_PHONE_VALUE, PROJECT_LEAD),
+                Arguments.arguments(buildJson("default_request.json.template", fakeName,
+                        fakeEmail,
+                        fakePhone,
+                        PROJECT_LEAD.name()),
+                        buildJson("createSuccessTest/default_response.json.template", 1, fakeName,
+                                fakeEmail,
+                                fakePhone,
+                                PROJECT_LEAD.name()),
                         new Employee()
                                 .setId(1L)
-                                .setName(MAX_NAME_VALUE)
-                                .setEmail(MAX_EMAIL_VALUE)
-                                .setPhone(MAX_PHONE_VALUE)
+                                .setName(fakeName)
+                                .setEmail(fakeEmail)
+                                .setPhone(fakePhone)
                                 .setPosition(PROJECT_LEAD))
         );
     }
@@ -68,13 +77,16 @@ class EmployeeControllerTest extends IntegrationTest {
             "classpath:db/EmployeeControllerTest/createSuccessTest/exists_employees.sql"
     })
     void createSuccessTest(final String request, final String response, final Employee e) {
+        // setup
 
+        // when
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
 
+        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .hasSize(3);
 
@@ -131,15 +143,75 @@ class EmployeeControllerTest extends IntegrationTest {
     @MethodSource("createFailTestArgs")
     @SneakyThrows
     void createFailTest(final String request, final String response, int httpStatus) {
-
+        // setup
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
 
+        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .isEmpty();
+    }
+
+    static Stream<Arguments> deleteSuccessTestArgs() {
+        return Stream.of(Arguments.arguments(1, 1000), Arguments.arguments(2000));
+    }
+
+    @ParameterizedTest
+    @MethodSource("deleteSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/deleteTest/create_employee.sql"
+    })
+    void deleteSuccessTest(long id) {
+        List<Employee> employeesBeforeDelete = repository.findAll();
+
+        // setup
+        mvc.perform(TestUtils
+                .createDelete(String.format(BASE_ID_URL, id)))
+                .andExpect(status().isOk());
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
+                .isFalse();
+
+        Assertions.assertThat(employeesBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
+        List<Employee> employeesAfterDelete = txUtil.txRun(() -> repository.findAll());
+        for (Employee employee : employeesBeforeDelete) {
+            Assertions.assertThat(employeesAfterDelete.stream().filter(employee::equals).findFirst())
+                    .isNotEmpty();
+        }
+    }
+
+    static Stream<Arguments> deleteFailTestArgs() {
+        return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()), Arguments.arguments(99, HttpStatus.NOT_FOUND.value()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("deleteFailTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/deleteTest/create_employee.sql"
+    })
+    void deleteFailTest(long id, int httpStatus) {
+        List<Employee> employeesBeforeDelete = repository.findAll();
+
+        // setup
+        mvc.perform(TestUtils
+                .createDelete(String.format(BASE_ID_URL, id)))
+                .andExpect(status().is(httpStatus));
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
+                .isFalse();
+
+        List<Employee> employeesAfterDelete = txUtil.txRun(() -> repository.findAll());
+        for (Employee employee : employeesAfterDelete) {
+            Assertions.assertThat(employeesBeforeDelete.stream().filter(employee::equals).findFirst())
+                    .isNotEmpty();
+        }
     }
 
     private static String buildJson(final String resource, Object... args) {
