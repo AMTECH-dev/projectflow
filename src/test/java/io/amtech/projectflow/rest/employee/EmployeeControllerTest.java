@@ -167,7 +167,8 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> getSuccessTestArgs() {
-        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/full_response.json"), 200));
+        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/full_response.json"), HttpStatus.OK.value()),
+                Arguments.arguments(7, buildJson("getSuccessTest/full_response_second.json"), HttpStatus.OK.value()));
     }
 
     @ParameterizedTest
@@ -178,13 +179,15 @@ class EmployeeControllerTest extends IntegrationTest {
     })
     void getSuccessTest(final long id, final String response, int httpStatus) {
         mvc.perform(TestUtils
-                .createGet(BASE_URL+"/"+id))
+                .createGet(String.format(BASE_ID_URL,id)))
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
     }
 
     static Stream<Arguments> getFailTestArgs() {
-        return Stream.of(Arguments.arguments(99, buildJson("getSuccessTest/full_response.json"), 404));
+        return Stream.of(Arguments.arguments(99, buildJson("getFailTest/wrong_response.json"), HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(0, buildJson("getFailTest/wrong_response.json"), HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(-1, buildJson("getFailTest/wrong_response.json"), HttpStatus.NOT_FOUND.value()));
     }
 
     @ParameterizedTest
@@ -194,10 +197,15 @@ class EmployeeControllerTest extends IntegrationTest {
             "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
     })
     void getFailTest(final long id, final String response, int httpStatus) {
+        // setup
         mvc.perform(TestUtils
-                .createGet(BASE_URL + "/" + id))
+                .createGet(String.format(BASE_ID_URL,id)))
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, false));
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
+                .isFalse();
     }
 
     private static String buildJson(final String resource, Object... args) {
