@@ -167,8 +167,8 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> getSuccessTestArgs() {
-        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/full_response.json"), HttpStatus.OK.value()),
-                Arguments.arguments(7, buildJson("getSuccessTest/full_response_second.json"), HttpStatus.OK.value()));
+        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/first_employee_response.json"), HttpStatus.OK.value()),
+                Arguments.arguments(7, buildJson("getSuccessTest/7th_employee_response.json"), HttpStatus.OK.value()));
     }
 
     @ParameterizedTest
