@@ -1,7 +1,6 @@
 package io.amtech.projectflow.rest.employee;
 
 import io.amtech.projectflow.domain.employee.Employee;
-import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -14,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
@@ -56,7 +53,7 @@ class EmployeeControllerTest extends IntegrationTest {
                         fakeEmail,
                         fakePhone,
                         PROJECT_LEAD.name()),
-                        buildJson("createSuccessTest/default_response.json.template",
+                        buildJson("default_response.json.template",
                                 1,
                                 fakeName,
                                 fakeEmail,
@@ -140,16 +137,16 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setPosition(PROJECT_LEAD)
                                 .setFired(true)
                 ),
-        Arguments.arguments(2,
-                buildJson("updateSuccessTest/mail_fired_update_request.json"),
-                new Employee()
-                        .setId(2L)
-                        .setName("Кирилл")
-                        .setEmail("some-email@example.com")
-                        .setPhone("89992410182")
-                        .setPosition(DIRECTOR)
-                        .setFired(true)
-        ),
+                Arguments.arguments(2,
+                        buildJson("updateSuccessTest/mail_fired_update_request.json"),
+                        new Employee()
+                                .setId(2L)
+                                .setName("Кирилл")
+                                .setEmail("some-email@example.com")
+                                .setPhone("89992410182")
+                                .setPosition(DIRECTOR)
+                                .setFired(true)
+                ),
                 Arguments.arguments(3,
                         buildJson("updateSuccessTest/phone_position_update_request.json"),
                         new Employee()
@@ -158,7 +155,7 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setEmail("kira@example.com")
                                 .setPhone("89991112233")
                                 .setPosition(PROJECT_LEAD)
-                                .setFired(true)
+                                .setFired(false)
                 )
         );
     }
@@ -176,18 +173,23 @@ class EmployeeControllerTest extends IntegrationTest {
                 .andExpect(status().isOk());
 
 
-        for (Employee employee : existEmpBefore) {
-            Optional<Employee> optionalUser = repository.findById(expect.getId());
-            Optional<Employee> optionalUser2 = repository.findById(employee.getId());
+        for (Employee before : existEmpBefore) {
+            if (before.getId() == id) {
 
-            if (employee.getId() == id) {
                 Assertions.assertThat(repository.findById(id))
                         .isPresent()
-                        .isEqualTo(optionalUser);
-            } else {
-                Assertions.assertThat(repository.findById(employee.getId()))
-                        .isPresent()
-                        .isEqualTo(optionalUser2);
+                        .get()
+                        .isEqualTo(expect);
+
+                for (Employee employee : repository.findAll()) {
+                    if (employee.getId() != id) {
+                        Assertions.assertThat(repository.findById(employee.getId()))
+                                .isPresent()
+                                .get()
+                                .isNotEqualTo(expect);
+                    }
+                }
+
             }
         }
     }
@@ -210,7 +212,6 @@ class EmployeeControllerTest extends IntegrationTest {
                         HttpStatus.NOT_FOUND.value())
         );
     }
-
 
     @ParameterizedTest
     @MethodSource("updateFailedArgs")
