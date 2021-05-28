@@ -16,12 +16,17 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping
-    EmployeeDto create(@RequestBody @Valid EmployeeCreateDto dto) {
+    public EmployeeDto create(@RequestBody @Valid EmployeeCreateDto dto) {
         return employeeService.create(dto);
     }
 
+    @GetMapping("{id}")
+    public EmployeeDto get(@PathVariable("id") long id) {
+        return employeeService.get(id);
+    }
+
     @DeleteMapping("{id}")
-    void delete(@PathVariable long id) {
+    public void delete(@PathVariable long id) {
         employeeService.delete(id);
     }
 }

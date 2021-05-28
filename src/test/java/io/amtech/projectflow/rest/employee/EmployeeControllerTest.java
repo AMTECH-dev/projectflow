@@ -1,7 +1,6 @@
 package io.amtech.projectflow.rest.employee;
 
 import io.amtech.projectflow.domain.employee.Employee;
-import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -67,7 +66,7 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setEmail(fakeEmail)
                                 .setPhone(fakePhone)
                                 .setPosition(PROJECT_LEAD))
-        );
+                );
     }
 
     @ParameterizedTest
@@ -186,7 +185,8 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> deleteFailTestArgs() {
-        return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()), Arguments.arguments(99, HttpStatus.NOT_FOUND.value()));
+        return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(99, HttpStatus.NOT_FOUND.value()));
     }
 
     @ParameterizedTest
@@ -212,6 +212,53 @@ class EmployeeControllerTest extends IntegrationTest {
             Assertions.assertThat(employeesBeforeDelete.stream().filter(employee::equals).findFirst())
                     .isNotEmpty();
         }
+    }
+
+    static Stream<Arguments> getSuccessTestArgs() {
+        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/first_employee_response.json"),
+                HttpStatus.OK.value()),
+                Arguments.arguments(7, buildJson("getSuccessTest/7th_employee_response.json"),
+                        HttpStatus.OK.value()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
+    })
+    void getSuccessTest(final long id, final String response, int httpStatus) {
+        mvc.perform(TestUtils
+                .createGet(String.format(BASE_ID_URL,id)))
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, true));
+    }
+
+    static Stream<Arguments> getFailTestArgs() {
+        return Stream.of(Arguments.arguments(99, buildJson("getFailTest/wrong_response.json"),
+                HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(0, buildJson("getFailTest/wrong_response.json"),
+                        HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(-1, buildJson("getFailTest/wrong_response.json"),
+                        HttpStatus.NOT_FOUND.value()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getFailTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
+    })
+    void getFailTest(final long id, final String response, int httpStatus) {
+        // setup
+        mvc.perform(TestUtils
+                .createGet(String.format(BASE_ID_URL,id)))
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, false));
+
+        // then
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
+                .isFalse();
     }
 
     private static String buildJson(final String resource, Object... args) {
