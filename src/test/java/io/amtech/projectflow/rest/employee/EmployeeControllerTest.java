@@ -1,7 +1,6 @@
 package io.amtech.projectflow.rest.employee;
 
 import io.amtech.projectflow.domain.employee.Employee;
-import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -13,7 +12,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -21,7 +19,6 @@ import java.util.stream.Stream;
 import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
 import static io.amtech.projectflow.domain.employee.UserPosition.PROJECT_LEAD;
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
-import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -138,7 +135,8 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> deleteFailTestArgs() {
-        return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()), Arguments.arguments(99, HttpStatus.NOT_FOUND.value()));
+        return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(99, HttpStatus.NOT_FOUND.value()));
     }
 
     @ParameterizedTest
@@ -167,8 +165,10 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> getSuccessTestArgs() {
-        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/first_employee_response.json"), HttpStatus.OK.value()),
-                Arguments.arguments(7, buildJson("getSuccessTest/7th_employee_response.json"), HttpStatus.OK.value()));
+        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/first_employee_response.json"),
+                HttpStatus.OK.value()),
+                Arguments.arguments(7, buildJson("getSuccessTest/7th_employee_response.json"),
+                        HttpStatus.OK.value()));
     }
 
     @ParameterizedTest
@@ -185,9 +185,12 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     static Stream<Arguments> getFailTestArgs() {
-        return Stream.of(Arguments.arguments(99, buildJson("getFailTest/wrong_response.json"), HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments(0, buildJson("getFailTest/wrong_response.json"), HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments(-1, buildJson("getFailTest/wrong_response.json"), HttpStatus.NOT_FOUND.value()));
+        return Stream.of(Arguments.arguments(99, buildJson("getFailTest/wrong_response.json"),
+                HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(0, buildJson("getFailTest/wrong_response.json"),
+                        HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(-1, buildJson("getFailTest/wrong_response.json"),
+                        HttpStatus.NOT_FOUND.value()));
     }
 
     @ParameterizedTest
