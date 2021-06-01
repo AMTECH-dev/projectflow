@@ -28,8 +28,16 @@ public class Project {
     @Column(name = "project_lead_id")
     long projectLeadId;
 
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "project_lead")
+//    Employee projectLead;
+
     @Column(name = "direction_id")
     long directionId;
+
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "direction", referencedColumnName = "id")
+//    Direction direction;
 
     @Column(name = "description")
     String description;

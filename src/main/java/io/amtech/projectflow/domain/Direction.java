@@ -18,6 +18,10 @@ public class Direction {
     @Column(name = "lead_id", nullable = false)
     long lead_id;
 
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name="lead")
+//    Employee lead;
+
     @Column(name = "name", nullable = false)
     String name;
 
