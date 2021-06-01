@@ -42,7 +42,7 @@ public class Project {
     @Column(name = "description")
     String description;
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     Object createDate;
 
     @Enumerated(EnumType.STRING)
