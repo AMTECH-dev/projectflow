@@ -25,13 +25,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EmployeeControllerTest extends IntegrationTest {
     private static final String BASE_URL = "/employees";
     @Autowired
-    EmployeeRepository repository;
-
+    private EmployeeRepository repository;
 
     static Stream<Arguments> createSuccessTestArgs() {
         final String fakeName = strMultiple("a", 255);
         final String fakeEmail = strMultiple("b", 38) + "@example.com";
         final String fakePhone = strMultiple("1", 50);
+
         return Stream.of(
                 Arguments.arguments(buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
@@ -76,16 +76,12 @@ class EmployeeControllerTest extends IntegrationTest {
             "classpath:db/EmployeeControllerTest/createSuccessTest/exists_employees.sql"
     })
     void createSuccessTest(final String request, final String response, final Employee e) {
-        // setup
-
-        // when
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
 
-        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .hasSize(3);
 
@@ -96,6 +92,7 @@ class EmployeeControllerTest extends IntegrationTest {
 
     static Stream<Arguments> createFailTestArgs() {
         final String fakeName = strMultiple("a", 256);
+
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
                         buildJson("createFailTest/name_is_missing_response.json"),
@@ -127,7 +124,7 @@ class EmployeeControllerTest extends IntegrationTest {
     // success update:
     static Stream<Arguments> updateSuccessArgs() {
         return Stream.of(
-                Arguments.arguments(1,
+                Arguments.arguments(1L,
                         buildJson("updateSuccessTest/full_update_request.json"),
                         new Employee()
                                 .setId(1L)
@@ -137,7 +134,7 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setPosition(PROJECT_LEAD)
                                 .setFired(true)
                 ),
-                Arguments.arguments(2,
+                Arguments.arguments(2L,
                         buildJson("updateSuccessTest/mail_fired_update_request.json"),
                         new Employee()
                                 .setId(2L)
@@ -147,7 +144,7 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setPosition(DIRECTOR)
                                 .setFired(true)
                 ),
-                Arguments.arguments(3,
+                Arguments.arguments(3L,
                         buildJson("updateSuccessTest/phone_position_update_request.json"),
                         new Employee()
                                 .setId(3L)
@@ -175,21 +172,15 @@ class EmployeeControllerTest extends IntegrationTest {
 
         for (Employee before : existEmpBefore) {
             if (before.getId() == id) {
-
                 Assertions.assertThat(repository.findById(id))
                         .isPresent()
                         .get()
                         .isEqualTo(expect);
-
-                for (Employee employee : repository.findAll()) {
-                    if (employee.getId() != id) {
-                        Assertions.assertThat(repository.findById(employee.getId()))
-                                .isPresent()
-                                .get()
-                                .isNotEqualTo(expect);
-                    }
-                }
-
+            } else {
+                Assertions.assertThat(repository.findById(before.getId()))
+                        .isPresent()
+                        .get()
+                        .isEqualTo(before);
             }
         }
     }
