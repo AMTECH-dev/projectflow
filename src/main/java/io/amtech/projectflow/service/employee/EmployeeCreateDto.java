@@ -3,8 +3,6 @@ package io.amtech.projectflow.service.employee;
 import io.amtech.projectflow.domain.employee.UserPosition;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

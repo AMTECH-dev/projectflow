@@ -12,10 +12,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
-
 import java.util.List;
 import java.util.stream.Stream;
-
 import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
 import static io.amtech.projectflow.domain.employee.UserPosition.PROJECT_LEAD;
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
@@ -185,7 +183,6 @@ class EmployeeControllerTest extends IntegrationTest {
         }
     }
 
-
     // failed update:
     static Stream<Arguments> updateFailedArgs() {
         return Stream.of(
@@ -217,6 +214,7 @@ class EmployeeControllerTest extends IntegrationTest {
                 .andExpect(status().is(expectedStatus))
                 .andExpect(content().json(response, true));
     }
+
 
     private static String buildJson(final String resource, Object... args) {
         String template = TestUtils.readClassPathResourceAsString(
