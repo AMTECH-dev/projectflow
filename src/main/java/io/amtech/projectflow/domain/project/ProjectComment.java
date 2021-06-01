@@ -23,8 +23,8 @@ public class ProjectComment {
     @Column(name = "message", nullable = false)
     String message;
 
-    @Column(name="create_date", nullable = false) // default now()
-    Object createDate;
+    @Column(name="create_date", nullable = false)
+    Object createDate; // default now()
 
     @Column(name="login", nullable = false)
     String login;
