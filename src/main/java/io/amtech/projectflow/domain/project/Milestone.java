@@ -15,6 +15,9 @@ public class Milestone {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "project_id")
+    private Long project_id;
+
 //    @ManyToOne(fetch = FetchType.EAGER)
 //    @Column(name = "project", nullable = false)
 //    Project project;

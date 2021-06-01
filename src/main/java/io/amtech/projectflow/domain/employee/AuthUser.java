@@ -3,7 +3,10 @@ package io.amtech.projectflow.domain.employee;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Data
 @Accessors(chain = true)
@@ -11,9 +14,12 @@ import javax.persistence.*;
 @Table(name = "auth_user", schema = "pf")
 public class AuthUser {
     @Id
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="employee")
-    Employee employee;
+    @Column(name = "employee_id")
+    Long employeeId;
+
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name="employee")
+//    Employee employee;
 
     @Column(name="login", nullable = false)
     String login;
