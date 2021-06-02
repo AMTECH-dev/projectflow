@@ -3,7 +3,6 @@ package io.amtech.projectflow.service.employee;
 import io.amtech.projectflow.domain.employee.UserPosition;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -17,6 +16,7 @@ public class EmployeeCreateDto {
     private String name;
     @Pattern(regexp = EMAIL_REGEXP, message = "Invalid email format")
     @Length(max = 50)
+    @NotNull
     private String email;
     @Length(max = 50)
     private String phone;
