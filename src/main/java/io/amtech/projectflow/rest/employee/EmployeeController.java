@@ -1,6 +1,7 @@
 package io.amtech.projectflow.rest.employee;
 
 import io.amtech.projectflow.service.employee.EmployeeCreateDto;
+import io.amtech.projectflow.service.employee.EmployeeUpdateDto;
 import io.amtech.projectflow.service.employee.EmployeeDto;
 import io.amtech.projectflow.service.employee.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,11 @@ public class EmployeeController {
     @PostMapping
     public EmployeeDto create(@RequestBody @Valid EmployeeCreateDto dto) {
         return employeeService.create(dto);
+    }
+
+    @PutMapping("/{id}")
+    void update(@PathVariable("id") long id, @RequestBody @Valid EmployeeUpdateDto dto) {
+        employeeService.update(id, dto);
     }
 
     @GetMapping("{id}")
