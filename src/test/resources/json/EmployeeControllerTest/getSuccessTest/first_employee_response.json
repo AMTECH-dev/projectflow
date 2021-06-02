@@ -1,0 +1,8 @@
+{
+  "id": 1,
+  "name": "Одинцов Андрей Артёмович",
+  "email": "Odinchov@example.com",
+  "phone": "+7 9810482171",
+  "position": "DIRECTOR",
+  "fired": false
+}

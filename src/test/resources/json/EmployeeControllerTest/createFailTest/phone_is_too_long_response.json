@@ -1,0 +1,6 @@
+{
+  "message": "Validation error",
+  "errors": {
+    "phone": "length must be between 0 and 50"
+  }
+}
