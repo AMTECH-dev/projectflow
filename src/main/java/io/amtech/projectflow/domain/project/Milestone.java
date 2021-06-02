@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.sql.Date;
 
 @Data
 @Accessors(chain = true)
@@ -15,12 +16,9 @@ public class Milestone {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "project_id")
-    private Long project_id;
-
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @Column(name = "project", nullable = false)
-//    Project project;
+    @ManyToOne() // fetch = FetchType.EAGER
+    @JoinColumn(name = "project_id")
+    Project project;
 
     @Column(name="name", nullable = false)
     String name;
@@ -29,19 +27,17 @@ public class Milestone {
     String description;
 
     @Column(name = "planned_start_date", nullable = false)
-    Object plannedStartDate;
+    Date plannedStartDate;
 
     @Column(name = "planned_finish_date", nullable = false)
-    Object plannedFinishDate;
+    Date plannedFinishDate;
 
     @Column(name = "fact_start_date")
-    Object factStartDate;
+    Date factStartDate;
 
     @Column(name = "fact_finish_date")
-    Object factFinishDate;
+    Date factFinishDate;
 
     @Column(name = "progress_percent", nullable = false)
     short progressRercent = 0;
-
-//    constraint milestone_has_project_fk foreign key(project_id) references pf.project(id) on delete cascade on update cascade
 }

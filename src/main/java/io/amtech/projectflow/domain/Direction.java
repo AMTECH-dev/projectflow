@@ -1,5 +1,6 @@
 package io.amtech.projectflow.domain;
 
+import io.amtech.projectflow.domain.employee.Employee;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,15 +16,10 @@ public class Direction {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "lead_id", nullable = false)
-    long lead_id;
-
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name="lead")
-//    Employee lead;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="lead_id")
+    Employee lead;
 
     @Column(name = "name", nullable = false)
     String name;
-
-//    constraint direction_has_lead_fk foreign key(lead_id) references pf.employee(id) on delete restrict on update cascade
 }
