@@ -1,0 +1,6 @@
+{
+  "message": "Validation error",
+  "errors": {
+    "email": "length must be between 0 and 50"
+  }
+}
