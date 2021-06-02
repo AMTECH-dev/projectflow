@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.sql.Date;
 
 @Data
 @Accessors(chain = true)
@@ -16,18 +17,16 @@ public class ProjectComment {
     @Column(name = "id")
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @Column(name = "project", nullable = false)
-//    Project project;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project", nullable = false)
+    Project project;
 
     @Column(name = "message", nullable = false)
     String message;
 
     @Column(name="create_date", nullable = false)
-    Object createDate; // default now()
+    Date createDate; // default now()
 
     @Column(name="login", nullable = false)
     String login;
-
-//    constraint project_comment_has_project_fk foreign key(project_id) references pf.project(id) on delete cascade on update cascade
 }
