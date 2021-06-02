@@ -1,0 +1,6 @@
+{
+  "message": "Validation error",
+  "errors": {
+    "isFired": "must not be null"
+  }
+}

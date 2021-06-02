@@ -46,5 +46,4 @@ public class Employee {
 
     @Column(name = "is_fired", nullable = false)
     boolean isFired;
-
 }

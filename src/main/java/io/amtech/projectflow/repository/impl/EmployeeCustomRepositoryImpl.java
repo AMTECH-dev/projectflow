@@ -1,5 +1,6 @@
 package io.amtech.projectflow.repository.impl;
 
+import io.amtech.projectflow.app.exception.InvalidOrderException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.employee.Employee;
@@ -38,9 +39,9 @@ public class EmployeeCustomRepositoryImpl implements EmployeeCustomRepository {
                 .ifPresent(v -> predicates.add(builder.like(root.get("phone"), "%" + v.toLowerCase() + "%")));
         criteria.getFilter("position")
                 .ifPresent(v -> predicates.add(builder.equal(root.get("position"),
-                        UserPosition.valueOf(v.toUpperCase()))));
+                        UserPosition.getByName(v.toUpperCase()))));
         criteria.getFilter("fired")
-                .ifPresent(v -> predicates.add(builder.equal(root.get("isFired"), v)));
+                .ifPresent(v -> predicates.add(builder.equal(root.get("isFired"), Boolean.valueOf(v))));
         query.where(predicates.toArray(new Predicate[0]))
                 .orderBy(parseOrder(root, criteria.getOrder()));
 
@@ -53,10 +54,14 @@ public class EmployeeCustomRepositoryImpl implements EmployeeCustomRepository {
     }
 
     private Order parseOrder(Root<?> root, final String order) {
-        if (order.startsWith("-")) {
-            return new OrderImpl(root.get(order.substring(1)), false);
-        }
+        try {
+            if (order.startsWith("-")) {
+                return new OrderImpl(root.get(order.substring(1)), false);
+            }
 
-        return new OrderImpl(root.get(order));
+            return new OrderImpl(root.get(order));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidOrderException(order);
+        }
     }
 }

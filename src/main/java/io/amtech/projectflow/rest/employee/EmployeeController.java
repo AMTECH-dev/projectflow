@@ -5,6 +5,7 @@ import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.app.general.SearchCriteriaBuilder;
 import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.service.employee.EmployeeCreateDto;
+import io.amtech.projectflow.service.employee.EmployeeUpdateDto;
 import io.amtech.projectflow.service.employee.EmployeeDto;
 import io.amtech.projectflow.service.employee.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Optional;
@@ -28,6 +30,21 @@ public class EmployeeController {
     @PostMapping
     public EmployeeDto create(@RequestBody @Valid EmployeeCreateDto dto) {
         return employeeService.create(dto);
+    }
+
+    @PutMapping("/{id}")
+    void update(@PathVariable("id") long id, @RequestBody @Valid EmployeeUpdateDto dto) {
+        employeeService.update(id, dto);
+    }
+
+    @GetMapping("{id}")
+    public EmployeeDto get(@PathVariable("id") long id) {
+        return employeeService.get(id);
+    }
+
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable long id) {
+        employeeService.delete(id);
     }
 
     @GetMapping

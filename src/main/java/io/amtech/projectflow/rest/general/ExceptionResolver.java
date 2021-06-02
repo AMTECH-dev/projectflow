@@ -1,8 +1,11 @@
 package io.amtech.projectflow.rest.general;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.amtech.projectflow.app.exception.DomainException;
+import io.amtech.projectflow.app.exception.InvalidOrderException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,5 +43,24 @@ public class ExceptionResolver {
         ErrorMessage errMsg = new ErrorMessage().setMessage(e.getMessage());
         return new ResponseEntity<>(errMsg, Optional.ofNullable(HttpStatus.resolve(e.getCode()))
                 .orElse(HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorMessage onHttpMessageNotReadableException(final HttpMessageNotReadableException e) {
+        if (e.getCause() instanceof InvalidFormatException) {
+            InvalidFormatException formatException = (InvalidFormatException) e.getCause();
+            return new ErrorMessage().setMessage(String.format("%s is invalid value for %s data type",
+                    formatException.getValue(), formatException.getTargetType().getSimpleName()));
+        }
+        return new ErrorMessage().setMessage("Not readable data");
+    }
+
+    @ExceptionHandler(InvalidOrderException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorMessage onInvalidOrderException(final InvalidOrderException e) {
+        ErrorMessage errMsg = new ErrorMessage().setMessage(e.getMessage());
+        errMsg.getErrors().put("order", e.getOrder());
+        return errMsg;
     }
 }
