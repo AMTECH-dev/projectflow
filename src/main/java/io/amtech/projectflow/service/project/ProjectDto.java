@@ -6,17 +6,17 @@ import io.amtech.projectflow.domain.project.Project;
 import io.amtech.projectflow.domain.project.ProjectStatus;
 import lombok.Value;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Value
 public class ProjectDto {
-    private long id;
-    private String name;
-    private Employee projectLead;
-    private Direction direction;
-    private String description;
-    private Timestamp createDate;
-    private ProjectStatus projectStatus;
+    long id;
+    String name;
+    Employee projectLead;
+    Direction direction;
+    String description;
+    Instant createDate;
+    ProjectStatus projectStatus;
 
     public ProjectDto(final Project project) {
         this.id = project.getId();
