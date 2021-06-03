@@ -17,14 +17,14 @@ public class AuthUser {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="employee_id", referencedColumnName = "id")
-    Employee employee;
+    private Employee employee;
 
     @Column(name="login", nullable = false)
-    String login;
+    private String login;
 
     @Column(name="password", nullable = false)
-    String password;
+    private String password;
 
     @Column(name="is_locked", nullable = false)
-    Boolean isLocked = false;
+    private boolean isLocked = false;
 }
