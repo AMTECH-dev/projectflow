@@ -6,12 +6,12 @@ import lombok.Value;
 
 @Value
 public class EmployeeDto {
-    long id;
-    String name;
-    String email;
-    String phone;
-    UserPosition position;
-    boolean isFired;
+    private long id;
+    private String name;
+    private String email;
+    private String phone;
+    private UserPosition position;
+    private boolean isFired;
 
     public EmployeeDto(final Employee employee) {
         this.id = employee.getId();

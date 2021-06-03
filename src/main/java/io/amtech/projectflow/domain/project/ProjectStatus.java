@@ -1,4 +1,4 @@
-package io.amtech.projectflow.domain.project;Date
+package io.amtech.projectflow.domain.project;
 
 public enum ProjectStatus {
     UNAPPROVED,
