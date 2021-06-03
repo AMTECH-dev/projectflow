@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 @Accessors(chain = true)
@@ -24,7 +24,7 @@ public class ProjectJournal {
     String login;
 
     @Column(name = "update_date", nullable = false)
-    Date updateDate;
+    Timestamp updateDate;
 
     @Column(name = "current_state", nullable = false)
     String currentState;

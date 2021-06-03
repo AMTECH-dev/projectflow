@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 @Accessors(chain = true)
@@ -25,7 +25,7 @@ public class ProjectComment {
     String message;
 
     @Column(name="create_date", nullable = false)
-    Date createDate; // default now()
+    Timestamp createDate; // default now()
 
     @Column(name="login", nullable = false)
     String login;

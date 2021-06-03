@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 @Accessors(chain = true)
@@ -29,5 +29,5 @@ public class Notification {
     String body;
 
     @Column(name = "create_date", nullable = false)
-    Date createDate;
+    Timestamp createDate;
 }

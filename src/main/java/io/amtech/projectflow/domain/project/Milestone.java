@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 @Accessors(chain = true)
@@ -27,16 +27,16 @@ public class Milestone {
     String description;
 
     @Column(name = "planned_start_date", nullable = false)
-    Date plannedStartDate;
+    Timestamp plannedStartDate;
 
     @Column(name = "planned_finish_date", nullable = false)
-    Date plannedFinishDate;
+    Timestamp plannedFinishDate;
 
     @Column(name = "fact_start_date")
-    Date factStartDate;
+    Timestamp factStartDate;
 
     @Column(name = "fact_finish_date")
-    Date factFinishDate;
+    Timestamp factFinishDate;
 
     @Column(name = "progress_percent", nullable = false)
     short progressRercent = 0;
