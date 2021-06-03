@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Data
 @Accessors(chain = true)
@@ -17,17 +17,17 @@ public class Notification {
     private Long id;
 
     @Column(name = "recepient", nullable = false)
-    String recepient;   //    recepient varchar(50) not null check (recepient ~ $$^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$$),
+    private String recepient;
 
     @Column(name = "sender", nullable = false)
-    String sender;  //    sender varchar(50) not null check (sender ~ $$^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$$),
+    private String sender;
 
     @Column(name = "subject")
-    String subject;
+    private String subject;
 
     @Column(name = "body")
-    String body;
+    private String body;
 
     @Column(name = "create_date", nullable = false)
-    Timestamp createDate;
+    private Instant createDate;
 }

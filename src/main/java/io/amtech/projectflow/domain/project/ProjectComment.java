@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Data
 @Accessors(chain = true)
@@ -19,14 +19,14 @@ public class ProjectComment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
-    Project project;
+    private Project project;
 
     @Column(name = "message", nullable = false)
-    String message;
+    private String message;
 
     @Column(name="create_date", nullable = false)
-    Timestamp createDate; // default now()
+    private Instant createDate;
 
     @Column(name="login", nullable = false)
-    String login;
+    private String login;
 }

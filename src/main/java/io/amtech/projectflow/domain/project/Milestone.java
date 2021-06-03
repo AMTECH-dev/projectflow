@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Data
 @Accessors(chain = true)
@@ -16,28 +16,28 @@ public class Milestone {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne() // fetch = FetchType.EAGER
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
-    Project project;
+    private Project project;
 
     @Column(name="name", nullable = false)
-    String name;
+    private String name;
 
     @Column(name = "description")
-    String description;
+    private String description;
 
     @Column(name = "planned_start_date", nullable = false)
-    Timestamp plannedStartDate;
+    private Instant plannedStartDate;
 
     @Column(name = "planned_finish_date", nullable = false)
-    Timestamp plannedFinishDate;
+    private Instant plannedFinishDate;
 
     @Column(name = "fact_start_date")
-    Timestamp factStartDate;
+    private Instant factStartDate;
 
     @Column(name = "fact_finish_date")
-    Timestamp factFinishDate;
+    private Instant factFinishDate;
 
     @Column(name = "progress_percent", nullable = false)
-    short progressRercent = 0;
+    short progressPercent = 0;
 }
