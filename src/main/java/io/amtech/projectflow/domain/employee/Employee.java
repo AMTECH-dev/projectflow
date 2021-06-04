@@ -17,20 +17,19 @@ import javax.persistence.*;
         typeClass = PostgreSQLEnumType.class
 )
 public class Employee {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false)
-    String name;
+    private String name;
 
     @Column(name = "email", nullable = false)
-    String email;
+    private String email;
 
     @Column(name = "phone")
-    String phone;
+    private String phone;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "position", nullable = false)
@@ -38,5 +37,5 @@ public class Employee {
     private UserPosition position;
 
     @Column(name = "is_fired", nullable = false)
-    boolean isFired;
+    private boolean isFired = false;
 }

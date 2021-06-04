@@ -174,12 +174,10 @@ class EmployeeControllerTest extends IntegrationTest {
     void deleteSuccessTest(long id) {
         List<Employee> employeesBeforeDelete = repository.findAll();
 
-        // setup
         mvc.perform(TestUtils
                 .createDelete(String.format(BASE_ID_URL, id)))
                 .andExpect(status().isOk());
 
-        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
                 .isFalse();
 
@@ -206,12 +204,10 @@ class EmployeeControllerTest extends IntegrationTest {
     void deleteFailTest(long id, int httpStatus) {
         List<Employee> employeesBeforeDelete = repository.findAll();
 
-        // setup
         mvc.perform(TestUtils
                 .createDelete(String.format(BASE_ID_URL, id)))
                 .andExpect(status().is(httpStatus));
 
-        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
                 .isFalse();
 
@@ -245,8 +241,9 @@ class EmployeeControllerTest extends IntegrationTest {
 
     @SuppressWarnings("unused")
     static Stream<Arguments> getFailTestArgs() {
-        return Stream.of(Arguments.arguments(99, buildJson("getFailTest/wrong_response.json"),
-                HttpStatus.NOT_FOUND.value()),
+        return Stream.of(
+                Arguments.arguments(99, buildJson("getFailTest/wrong_response.json"),
+                        HttpStatus.NOT_FOUND.value()),
                 Arguments.arguments(0, buildJson("getFailTest/wrong_response.json"),
                         HttpStatus.NOT_FOUND.value()),
                 Arguments.arguments(-1, buildJson("getFailTest/wrong_response.json"),
@@ -260,13 +257,11 @@ class EmployeeControllerTest extends IntegrationTest {
             "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
     })
     void getFailTest(final long id, final String response, int httpStatus) {
-        // setup
         mvc.perform(TestUtils
                 .createGet(String.format(BASE_ID_URL,id)))
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, false));
 
-        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
                 .isFalse();
     }
@@ -342,10 +337,10 @@ class EmployeeControllerTest extends IntegrationTest {
                         buildJson("updateFailTest/update_request_fired_is_null.json"),
                         buildJson("updateFailTest/update_fired_is_null_response.json"),
                         HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(2L,
-                        buildJson("updateFailTest/update_request_empty_failed.json"),
-                        buildJson("updateFailTest/update_empty_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
+//                Arguments.arguments(2L,
+//                        buildJson("updateFailTest/update_request_empty_failed.json"),
+//                        buildJson("updateFailTest/update_empty_response.json"),
+//                        HttpStatus.BAD_REQUEST.value()), // because EmployeeCreateDto: @NotNull -> String email
                 Arguments.arguments(102L,
                         buildJson("updateFailTest/unexisting_id_call_failed.json"),
                         buildJson("updateFailTest/unexisting_id_call_failed_response.json"),
