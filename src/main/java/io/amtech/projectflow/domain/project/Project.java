@@ -9,7 +9,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @Data
 @Accessors(chain = true)
@@ -26,21 +27,21 @@ public class Project {
     private Long id;
 
     @Column(name = "name", nullable = false)
-    String name;
+    private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "project_lead")
-    Employee projectLead;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_lead_id")
+    private Employee projectLead;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "direction", referencedColumnName = "id")
-    Direction direction;
+    @JoinColumn(name = "direction_id")
+    private Direction direction;
 
     @Column(name = "description")
-    String description;
+    private String description;
 
     @Column(name = "create_date", nullable = false)
-    Date createDate;
+    private Instant createDate;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "status", nullable = false)
