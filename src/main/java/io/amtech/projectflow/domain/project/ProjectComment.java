@@ -11,7 +11,6 @@ import java.time.Instant;
 @Entity
 @Table(name = "project_comment", schema = "pf")
 public class ProjectComment {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

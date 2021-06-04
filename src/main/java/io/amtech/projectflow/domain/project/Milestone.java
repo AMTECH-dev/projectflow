@@ -39,5 +39,5 @@ public class Milestone {
     private Instant factFinishDate;
 
     @Column(name = "progress_percent", nullable = false)
-    short progressPercent = 0;
+    private short progressPercent = 0;
 }

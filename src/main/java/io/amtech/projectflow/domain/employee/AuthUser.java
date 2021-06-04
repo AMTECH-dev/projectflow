@@ -12,12 +12,8 @@ import javax.persistence.*;
 public class AuthUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "employee_id")
     private Long id;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="employee_id", referencedColumnName = "id")
-    private Employee employee;
 
     @Column(name="login", nullable = false)
     private String login;

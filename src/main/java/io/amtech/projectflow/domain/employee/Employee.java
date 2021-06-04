@@ -17,7 +17,6 @@ import javax.persistence.*;
         typeClass = PostgreSQLEnumType.class
 )
 public class Employee {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -38,5 +37,5 @@ public class Employee {
     private UserPosition position;
 
     @Column(name = "is_fired", nullable = false)
-    private boolean isFired;
+    private boolean isFired = false;
 }
