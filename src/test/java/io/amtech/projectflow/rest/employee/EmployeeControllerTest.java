@@ -17,7 +17,9 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static io.amtech.projectflow.domain.employee.UserPosition.*;
+import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTION_LEAD;
+import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
+import static io.amtech.projectflow.domain.employee.UserPosition.PROJECT_LEAD;
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,6 +34,7 @@ class EmployeeControllerTest extends IntegrationTest {
     private final static String MAX_EMAIL_VALUE = strMultiple("b", 38) + "@example.com";
     private final static String MAX_PHONE_VALUE = strMultiple("1", 50);
 
+    @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
         final String fakeName = strMultiple("a", 255);
         final String fakeEmail = strMultiple("b", 38) + "@example.com";
@@ -77,7 +80,6 @@ class EmployeeControllerTest extends IntegrationTest {
     @MethodSource("createSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/clean.sql",
             "classpath:db/EmployeeControllerTest/createSuccessTest/exists_employees.sql"
     })
     void createSuccessTest(final String request, final String response, final Employee e) {
@@ -95,6 +97,7 @@ class EmployeeControllerTest extends IntegrationTest {
                 .contains(e);
     }
 
+    @SuppressWarnings("unused")
     static Stream<Arguments> createFailTestArgs() {
         final String longName = "extra" + MAX_NAME_VALUE;
         final String longEmail = "extra" + MAX_EMAIL_VALUE;
@@ -157,6 +160,7 @@ class EmployeeControllerTest extends IntegrationTest {
                 .isEmpty();
     }
 
+    @SuppressWarnings("unused")
     static Stream<Arguments> deleteSuccessTestArgs() {
         return Stream.of(Arguments.arguments(1, 1000), Arguments.arguments(2000));
     }
@@ -187,6 +191,7 @@ class EmployeeControllerTest extends IntegrationTest {
         }
     }
 
+    @SuppressWarnings("unused")
     static Stream<Arguments> deleteFailTestArgs() {
         return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()),
                 Arguments.arguments(99, HttpStatus.NOT_FOUND.value()));
@@ -217,6 +222,7 @@ class EmployeeControllerTest extends IntegrationTest {
         }
     }
 
+    @SuppressWarnings("unused")
     static Stream<Arguments> getSuccessTestArgs() {
         return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/first_employee_response.json"),
                 HttpStatus.OK.value()),
@@ -237,6 +243,7 @@ class EmployeeControllerTest extends IntegrationTest {
                 .andExpect(content().json(response, true));
     }
 
+    @SuppressWarnings("unused")
     static Stream<Arguments> getFailTestArgs() {
         return Stream.of(Arguments.arguments(99, buildJson("getFailTest/wrong_response.json"),
                 HttpStatus.NOT_FOUND.value()),
@@ -264,7 +271,7 @@ class EmployeeControllerTest extends IntegrationTest {
                 .isFalse();
     }
 
-    // success update:
+    @SuppressWarnings("unused")
     static Stream<Arguments> updateSuccessArgs() {
         return Stream.of(
                 Arguments.arguments(1L,
@@ -328,7 +335,7 @@ class EmployeeControllerTest extends IntegrationTest {
         }
     }
 
-    // failed update:
+    @SuppressWarnings("unused")
     static Stream<Arguments> updateFailedArgs() {
         return Stream.of(
                 Arguments.arguments(1L,
@@ -351,8 +358,6 @@ class EmployeeControllerTest extends IntegrationTest {
     @SneakyThrows
     @Sql(scripts = {"classpath:db/EmployeeControllerTest/updateSuccessTest/createEmployees.sql"})
     void updateFailTest(final Long id, final String request, final String response, int expectedStatus) {
-        List<Employee> existEmpBefore = repository.findAll();
-
         mvc.perform(TestUtils
                 .createPut(BASE_URL + "/" + id)
                 .content(request))

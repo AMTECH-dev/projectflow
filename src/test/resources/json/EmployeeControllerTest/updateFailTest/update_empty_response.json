@@ -3,6 +3,7 @@
   "errors": {
     "isFired": "must not be null",
     "name": "must not be blank",
-    "position": "must not be null"
+    "position": "must not be null",
+    "email": "must not be null"
   }
 }
