@@ -2,6 +2,7 @@ package io.amtech.projectflow.rest.general;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import io.amtech.projectflow.app.exception.DomainException;
+import io.amtech.projectflow.app.exception.InvalidOrderException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -53,5 +54,13 @@ public class ExceptionResolver {
                     formatException.getValue(), formatException.getTargetType().getSimpleName()));
         }
         return new ErrorMessage().setMessage("Not readable data");
+    }
+
+    @ExceptionHandler(InvalidOrderException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorMessage onInvalidOrderException(final InvalidOrderException e) {
+        ErrorMessage errMsg = new ErrorMessage().setMessage(e.getMessage());
+        errMsg.getErrors().put("order", e.getOrder());
+        return errMsg;
     }
 }

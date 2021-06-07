@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": 4,
+      "name": "Безопасный Степан Сергеевич",
+      "email": "safe@example.com",
+      "phone": "82312122121",
+      "position": "DIRECTION_LEAD",
+      "fired": false
+    }
+  ],
+  "meta": {
+    "limit": 100,
+    "offset": 0
+  }
+}

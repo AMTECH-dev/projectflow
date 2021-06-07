@@ -21,6 +21,7 @@ import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTION_LEAD;
 import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
 import static io.amtech.projectflow.domain.employee.UserPosition.PROJECT_LEAD;
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -156,6 +157,63 @@ class EmployeeControllerTest extends IntegrationTest {
         // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .isEmpty();
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> searchSuccessTestArgs() {
+        return Stream.of(
+                Arguments.arguments("",
+                        buildJson("searchSuccessTest/all.json")),
+                Arguments.arguments("?limit=3&offset=2&orders=-name",
+                        buildJson("searchSuccessTest/reverse_order_with_limit_and_offset.json")),
+                Arguments.arguments("?name=О",
+                        buildJson("searchSuccessTest/filter_by_name.json")),
+                Arguments.arguments("?email=safe",
+                        buildJson("searchSuccessTest/email_contain_safe.json")),
+                Arguments.arguments("?phone=9&limit=50",
+                        buildJson("searchSuccessTest/phone_contain_9.json")),
+                Arguments.arguments("?position=director&limit=1",
+                        buildJson("searchSuccessTest/position_director.json"))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("searchSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/searchSuccessTest/data.sql"
+    })
+    void searchSuccessTest(final String url, final String response) {
+        // setup
+        mvc.perform(TestUtils.createGet(BASE_URL + url))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(response, true));
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> searchFailArgs() {
+        return Stream.of(
+                Arguments.arguments("?orders=-some_field_name",
+                        buildJson("searchFailTest/invalid_order_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments("?position=MEGA",
+                        buildJson("searchFailTest/invalid_position_response.json"),
+                        HttpStatus.BAD_REQUEST.value()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("searchFailArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/searchFailTest/data.sql"
+    })
+    void searchFailTest(final String url, final String response, int status) {
+        // setup
+        mvc.perform(TestUtils.createGet(BASE_URL + url))
+                .andDo(print())
+                .andExpect(status().is(status))
+                .andExpect(content().json(response, true));
     }
 
     @SuppressWarnings("unused")

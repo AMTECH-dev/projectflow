@@ -1,6 +1,8 @@
 package io.amtech.projectflow.service.employee.impl;
 
 import io.amtech.projectflow.app.exception.ObjectNotFoundException;
+import io.amtech.projectflow.app.general.PagedData;
+import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.employee.Employee;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.service.employee.EmployeeCreateDto;
@@ -55,5 +57,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         findByIdOrThrow(id);
 
         employeeRepository.deleteById(id);
+    }
+
+    @Override
+    public PagedData<EmployeeDto> search(SearchCriteria criteria) {
+        return employeeRepository.search(criteria).map(EmployeeDto::new);
     }
 }

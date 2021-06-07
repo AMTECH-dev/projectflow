@@ -1,6 +1,7 @@
 package io.amtech.projectflow.test;
 
 import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -35,8 +38,22 @@ public abstract class IntegrationTest {
             .withEnv("POSTGRES_DB", "projectflow");
 
     protected TransactionalUtils txUtil = new TransactionalUtils();
-    @Autowired
+
     protected MockMvc mvc;
+
+    @Autowired
+    private WebApplicationContext context;
+
+    @BeforeEach
+    public void setUp() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .addFilter((request, response, chain) -> {
+                    response.setCharacterEncoding("UTF-8");
+                    chain.doFilter(request, response);
+                }, "/*")
+                .build();
+    }
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override

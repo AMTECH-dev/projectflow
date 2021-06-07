@@ -1,0 +1,64 @@
+{
+  "data": [
+    {
+      "id": 4,
+      "name": "Безопасный Степан Сергеевич",
+      "email": "safe@example.com",
+      "phone": "82312122121",
+      "position": "DIRECTION_LEAD",
+      "fired": false
+    },
+    {
+      "id": 2,
+      "name": "Босс Геннадий Семенович",
+      "email": "boss@example.com",
+      "phone": null,
+      "position": "DIRECTOR",
+      "fired": false
+    },
+    {
+      "id": 5,
+      "name": "Копающий Василий Андреевич",
+      "email": "vasya1@example.com",
+      "phone": null,
+      "position": "PROJECT_LEAD",
+      "fired": false
+    },
+    {
+      "id": 8,
+      "name": "Мышь Петр Петрович",
+      "email": "mouse@example.com",
+      "phone": null,
+      "position": "DIRECTION_LEAD",
+      "fired": true
+    },
+    {
+      "id": 7,
+      "name": "Саппортер Зинаида Михайловна",
+      "email": "vasya3@example.com",
+      "phone": null,
+      "position": "PROJECT_LEAD",
+      "fired": false
+    },
+    {
+      "id": 1,
+      "name": "Увольняшкин Ираклий Иванович",
+      "email": "uvolnyashkin@example.com",
+      "phone": null,
+      "position": "DIRECTOR",
+      "fired": true
+    },
+    {
+      "id": 3,
+      "name": "Человейкина Марина Антоновна",
+      "email": "chel@example.com",
+      "phone": "+7 (928) 213-12-12",
+      "position": "DIRECTION_LEAD",
+      "fired": false
+    }
+  ],
+  "meta": {
+    "limit": 100,
+    "offset": 0
+  }
+}
