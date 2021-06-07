@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "id": 7,
+      "name": "Саппортер Зинаида Михайловна",
+      "email": "vasya3@example.com",
+      "phone": null,
+      "position": "PROJECT_LEAD",
+      "fired": false
+    },
+    {
+      "id": 8,
+      "name": "Мышь Петр Петрович",
+      "email": "mouse@example.com",
+      "phone": null,
+      "position": "DIRECTION_LEAD",
+      "fired": true
+    },
+    {
+      "id": 5,
+      "name": "Копающий Василий Андреевич",
+      "email": "vasya1@example.com",
+      "phone": null,
+      "position": "PROJECT_LEAD",
+      "fired": false
+    }
+  ],
+  "meta": {
+    "limit": 3,
+    "offset": 2
+  }
+}

@@ -1,7 +1,7 @@
 package io.amtech.projectflow.app.general;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class SearchCriteria {
     public static final int MAX_LIMIT = 100;
@@ -9,13 +9,16 @@ public class SearchCriteria {
     private final int limit;
     private final int offset;
     private final Map<String, String> filters;
-    private final List<String> orders;
+    private final String order;
 
-    public SearchCriteria(int limit, int offset, Map<String, String> filters, List<String> orders) {
+    public SearchCriteria(final int limit,
+                          final int offset,
+                          final Map<String, String> filters,
+                          final String order) {
         this.limit = limit;
         this.offset = offset;
         this.filters = filters;
-        this.orders = orders;
+        this.order = order;
     }
 
     public int getLimit() {
@@ -34,7 +37,11 @@ public class SearchCriteria {
         return filters;
     }
 
-    public List<String> getOrders() {
-        return orders;
+    public String getOrder() {
+        return order;
+    }
+
+    public Optional<String> getFilter(final String filterName) {
+        return Optional.ofNullable(filters.get(filterName));
     }
 }

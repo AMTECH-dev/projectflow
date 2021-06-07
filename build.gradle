@@ -27,7 +27,6 @@ dependencies {
     implementation "io.springfox:springfox-boot-starter:$springFoxVersion"
     implementation 'com.vladmihalcea:hibernate-types-52:2.11.1'
     implementation "org.apache.commons:commons-lang3"
-    implementation 'org.jetbrains:annotations:20.1.0'
 
 
     runtimeOnly 'org.postgresql:postgresql'

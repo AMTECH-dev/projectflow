@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": 3,
+      "name": "Человейкина Марина Антоновна",
+      "email": "chel@example.com",
+      "phone": "+7 (928) 213-12-12",
+      "position": "DIRECTION_LEAD",
+      "fired": false
+    }
+  ],
+  "meta": {
+    "limit": 50,
+    "offset": 0
+  }
+}
