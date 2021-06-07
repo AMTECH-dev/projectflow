@@ -1,12 +1,14 @@
 package io.amtech.projectflow.domain.employee;
 
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
+import io.amtech.projectflow.domain.project.Project;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -37,5 +39,8 @@ public class Employee {
     private UserPosition position;
 
     @Column(name = "is_fired", nullable = false)
-    private boolean isFired = false;
+    private boolean isFired;
+
+    @OneToMany(mappedBy = "projectLead")
+    private List<Project> projects;
 }

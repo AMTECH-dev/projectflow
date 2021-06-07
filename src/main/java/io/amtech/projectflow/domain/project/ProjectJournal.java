@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Map;
 
 @Data
 @Accessors(chain = true)
@@ -16,16 +17,11 @@ public class ProjectJournal {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
-
     @Column(name = "login", nullable = false)
     private String login;
 
     @Column(name = "update_date", nullable = false)
     private Instant updateDate;
 
-    @Column(name = "current_state", nullable = false)
-    private String currentState;
+    private Map<String, Object> currentState;
 }

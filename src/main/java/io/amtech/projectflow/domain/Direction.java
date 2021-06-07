@@ -16,7 +16,7 @@ public class Direction {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="lead_id")
     private Employee lead;
 

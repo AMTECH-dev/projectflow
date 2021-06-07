@@ -16,10 +16,6 @@ public class ProjectComment {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
-
     @Column(name = "message", nullable = false)
     private String message;
 

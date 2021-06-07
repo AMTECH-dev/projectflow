@@ -9,8 +9,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -33,7 +33,7 @@ public class Project {
     @JoinColumn(name = "project_lead_id")
     private Employee projectLead;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "direction_id")
     private Direction direction;
 
@@ -47,4 +47,12 @@ public class Project {
     @Column(columnDefinition = "status", nullable = false)
     @Type( type = "project_status")
     private ProjectStatus projectStatus;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private List<Milestone> milestones;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private List<ProjectComment> projectComments;
 }

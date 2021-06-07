@@ -16,10 +16,6 @@ public class Milestone {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    private Project project;
-
     @Column(name="name", nullable = false)
     private String name;
 
@@ -39,5 +35,5 @@ public class Milestone {
     private Instant factFinishDate;
 
     @Column(name = "progress_percent", nullable = false)
-    private short progressPercent = 0;
+    private short progressPercent;
 }

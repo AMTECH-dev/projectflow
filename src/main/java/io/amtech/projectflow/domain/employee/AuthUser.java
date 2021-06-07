@@ -3,7 +3,10 @@ package io.amtech.projectflow.domain.employee;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Data
 @Accessors(chain = true)
@@ -11,7 +14,6 @@ import javax.persistence.*;
 @Table(name = "auth_user", schema = "pf")
 public class AuthUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employee_id")
     private Long id;
 
@@ -22,5 +24,5 @@ public class AuthUser {
     private String password;
 
     @Column(name="is_locked", nullable = false)
-    private boolean isLocked = false;
+    private boolean isLocked;
 }
