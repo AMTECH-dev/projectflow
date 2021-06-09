@@ -4,6 +4,7 @@ import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import io.amtech.projectflow.domain.Direction;
 import io.amtech.projectflow.domain.employee.Employee;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 @Data
 @Accessors(chain = true)
+@EqualsAndHashCode(exclude = {"milestones", "projectComments"})
 @Entity
 @Table(name = "project", schema = "pf")
 @TypeDef(

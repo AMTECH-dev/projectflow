@@ -104,8 +104,6 @@ class EmployeeControllerTest extends IntegrationTest {
         final String longEmail = "extra" + MAX_EMAIL_VALUE;
         final String longPhone = "extra" + MAX_PHONE_VALUE;
 
-        final String fakeName = strMultiple("a", 256);
-
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
                         buildJson("createFailTest/name_is_missing_response.json"),
