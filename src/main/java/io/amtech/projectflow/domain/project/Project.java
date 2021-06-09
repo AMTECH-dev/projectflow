@@ -49,7 +49,7 @@ public class Project {
     private ProjectStatus projectStatus;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id") // wrong column name
     private List<Milestone> milestones;
 
     @OneToMany(fetch = FetchType.LAZY)
