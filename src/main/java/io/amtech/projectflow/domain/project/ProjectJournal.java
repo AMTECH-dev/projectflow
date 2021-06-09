@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-@EqualsAndHashCode(exclude = "project")
+@EqualsAndHashCode(exclude = "currentState")
 @Accessors(chain = true)
 @Entity
 @Table(name = "project_journal", schema = "pf")
@@ -33,8 +33,4 @@ public class ProjectJournal {
     @Type(type = "jsonb")
     @Column(name = "current_state", columnDefinition = "jsonb")
     private Map<String, Object> currentState = new HashMap<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    private Project project;
 }

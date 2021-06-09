@@ -20,7 +20,8 @@ import java.util.Set;
         "milestones",
         "projectComments",
         "direction",
-        "projectLead"
+        "projectLead",
+        "history"
 })
 @Entity
 @Table(name = "project", schema = "pf")
@@ -57,10 +58,14 @@ public class Project {
     private ProjectStatus projectStatus = ProjectStatus.UNAPPROVED;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false)
     private Set<Milestone> milestones = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false)
     private Set<ProjectComment> projectComments = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    private Set<ProjectJournal> history = new HashSet<>();
 }
