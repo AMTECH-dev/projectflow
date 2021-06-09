@@ -375,12 +375,12 @@ class EmployeeControllerTest extends IntegrationTest {
 
         for (Employee before : existEmpBefore) {
             if (before.getId() == id) {
-                Assertions.assertThat(repository.findById(id))
+                Assertions.assertThat(txUtil.txRun(() -> repository.findById(id)))
                         .isPresent()
                         .get()
                         .isEqualTo(expect);
             } else {
-                Assertions.assertThat(repository.findById(before.getId()))
+                Assertions.assertThat(txUtil.txRun(() -> repository.findById(before.getId())))
                         .isPresent()
                         .get()
                         .isEqualTo(before);

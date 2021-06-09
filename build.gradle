@@ -27,7 +27,8 @@ dependencies {
     implementation "io.springfox:springfox-boot-starter:$springFoxVersion"
     implementation 'com.vladmihalcea:hibernate-types-52:2.11.1'
     implementation "org.apache.commons:commons-lang3"
-
+    implementation "org.hibernate:hibernate-jpamodelgen:$hibernateJpaModelGenVersion"
+    annotationProcessor "org.hibernate:hibernate-jpamodelgen:$hibernateJpaModelGenVersion"
 
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'

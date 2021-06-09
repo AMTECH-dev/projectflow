@@ -10,7 +10,8 @@ import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Accessors(chain = true)
@@ -44,15 +45,15 @@ public class Project {
     private Instant createDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "status", nullable = false)
+    @Column(name = "status", columnDefinition = "status", nullable = false)
     @Type( type = "project_status")
-    private ProjectStatus projectStatus;
+    private ProjectStatus projectStatus = ProjectStatus.UNAPPROVED;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
-    private List<Milestone> milestones;
+    private Set<Milestone> milestones = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
-    private List<ProjectComment> projectComments;
+    private Set<ProjectComment> projectComments = new HashSet<>();
 }

@@ -11,7 +11,7 @@ create type project_status as enum(
     'ON_PL_PLANNING',
     'ON_DL_APPROVING',
     'ON_DIRECTOR_APPROVING',
-    'DIRECTOR APPROVED',
+    'DIRECTOR_APPROVED',
     'DONE'
 );
 

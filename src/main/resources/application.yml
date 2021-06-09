@@ -10,6 +10,8 @@ swagger:
 
 spring:
   jpa:
+    database: postgresql
+    database-platform: io.amtech.projectflow.app.CustomPostgreSQLDialect
     properties:
       hibernate:
         show_sql: true

@@ -8,7 +8,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Accessors(chain = true)
@@ -42,5 +43,5 @@ public class Employee {
     private boolean isFired;
 
     @OneToMany(mappedBy = "projectLead")
-    private List<Project> projects;
+    private Set<Project> projects = new HashSet<>();
 }
