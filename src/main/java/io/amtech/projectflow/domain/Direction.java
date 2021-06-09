@@ -2,11 +2,13 @@ package io.amtech.projectflow.domain;
 
 import io.amtech.projectflow.domain.employee.Employee;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
 @Data
+@EqualsAndHashCode(exclude = "lead")
 @Accessors(chain = true)
 @Entity
 @Table(name = "direction", schema = "pf")

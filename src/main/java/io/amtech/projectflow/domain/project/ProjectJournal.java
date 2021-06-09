@@ -2,6 +2,7 @@ package io.amtech.projectflow.domain.project;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
+@EqualsAndHashCode(exclude = "project")
 @Accessors(chain = true)
 @Entity
 @Table(name = "project_journal", schema = "pf")
@@ -31,4 +33,8 @@ public class ProjectJournal {
     @Type(type = "jsonb")
     @Column(name = "current_state", columnDefinition = "jsonb")
     private Map<String, Object> currentState = new HashMap<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
 }

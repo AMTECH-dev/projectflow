@@ -16,7 +16,12 @@ import java.util.Set;
 
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(exclude = {"milestones", "projectComments"})
+@EqualsAndHashCode(exclude = {
+        "milestones",
+        "projectComments",
+        "direction",
+        "projectLead"
+})
 @Entity
 @Table(name = "project", schema = "pf")
 @TypeDef(
