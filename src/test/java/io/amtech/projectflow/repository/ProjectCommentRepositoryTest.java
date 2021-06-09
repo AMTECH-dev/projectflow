@@ -53,6 +53,10 @@ class ProjectCommentRepositoryTest extends IntegrationTest {
         Assertions.assertThat(optionalProject)
                 .isPresent();
         Project project = optionalProject.get();
+        Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(projectId)))
+                .isPresent();
+        Project project = txUtil.txRun(() -> projectRepository.findById(projectId)
+                .get());
 
         ProjectComment pc = new ProjectComment()
                 .setMessage(message)
@@ -103,6 +107,8 @@ class ProjectCommentRepositoryTest extends IntegrationTest {
         Assertions.assertThatThrownBy(() -> txUtil.txRun(() -> projectCommentRepository.save(comment)))
                 .isInstanceOf(exceptionClass);
 
+        Assertions.assertThat(txUtil.txRun(() -> projectCommentRepository.findAll().size()))
+                .isEqualTo(5);
         Assertions.assertThat(txUtil.txRun(() -> projectCommentRepository.findAll()))
                 .hasSize(5);
     }
