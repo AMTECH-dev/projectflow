@@ -41,7 +41,7 @@ class AuthUserRepositoryTest extends IntegrationTest {
     @MethodSource("createSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/AuthUserRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/AuthUserRepositoryTest/data.sql"
     })
     void createSuccessTest(long employeeId, final String login, final String password, boolean isLocked,
                            final AuthUser u) {
@@ -77,7 +77,7 @@ class AuthUserRepositoryTest extends IntegrationTest {
     @MethodSource("createFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/AuthUserRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/AuthUserRepositoryTest/data.sql"
     })
     void createFailTest(long employeeId, final String login, final String password) {
         AuthUser authUser = new AuthUser()
@@ -111,7 +111,7 @@ class AuthUserRepositoryTest extends IntegrationTest {
     @MethodSource("getSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/AuthUserRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/AuthUserRepositoryTest/data.sql"
     })
     void getSuccessTest(long id, final AuthUser u) {
         Assertions.assertThat(txUtil.txRun(() -> authUserRepository.findById(id)))
@@ -131,7 +131,7 @@ class AuthUserRepositoryTest extends IntegrationTest {
     @MethodSource("getFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/AuthUserRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/AuthUserRepositoryTest/data.sql"
     })
     void getFailTest(long id) {
         Assertions.assertThat(txUtil.txRun(() -> authUserRepository.findById(id)))

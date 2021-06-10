@@ -38,7 +38,7 @@ class DirectionRepositoryTest extends IntegrationTest {
     @MethodSource("createSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/DirectionRepositoryTest/data.sql"
     })
     void createSuccessTest(final String name, long leadId, final Direction d) {
         Optional<Employee> optionalEmployee = txUtil.txRun(() -> employeeRepository.findById(leadId));
@@ -68,7 +68,7 @@ class DirectionRepositoryTest extends IntegrationTest {
     @MethodSource("createFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/DirectionRepositoryTest/data.sql"
     })
     void createFailTest(final String name, long leadId, final Class<?> expectedExceptionClass) {
         Direction direction = new Direction()
@@ -101,7 +101,7 @@ class DirectionRepositoryTest extends IntegrationTest {
     @MethodSource("getSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/DirectionRepositoryTest/data.sql"
     })
     void getSuccessTest(long id, final Direction d) {
         Assertions.assertThat(txUtil.txRun(() -> directionRepository.findById(id)))
@@ -121,7 +121,7 @@ class DirectionRepositoryTest extends IntegrationTest {
     @MethodSource("getFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/DirectionRepositoryTest/data.sql"
     })
     void getFailTest(long id) {
         Assertions.assertThat(txUtil.txRun(() -> directionRepository.findById(id)))

@@ -44,7 +44,7 @@ class ProjectCommentRepositoryTest extends IntegrationTest {
     @MethodSource("createProjectCommentSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectCommentTest/exists_projects.sql"
+            "classpath:db/repositoryTests/ProjectCommentRepositoryTest/exists_projects.sql"
     })
     @Transactional
     void createProjectCommentSuccessTest(long projectId, final String message, final Instant instant, final String login,
@@ -97,7 +97,7 @@ class ProjectCommentRepositoryTest extends IntegrationTest {
     @MethodSource("createProjectCommentFiledTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectCommentTest/exists_projects.sql"
+            "classpath:db/repositoryTests/ProjectCommentRepositoryTest/exists_projects.sql"
     })
     void createProjectCommentFailedTest(final ProjectComment comment, final Class<?> exceptionClass) {
         Assertions.assertThatThrownBy(() -> txUtil.txRun(() -> projectCommentRepository.save(comment)))
@@ -136,7 +136,7 @@ class ProjectCommentRepositoryTest extends IntegrationTest {
     @MethodSource("getProjectCommentSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectCommentTest/exists_projects.sql"
+            "classpath:db/repositoryTests/ProjectCommentRepositoryTest/exists_projects.sql"
     })
     void getProjectCommentSuccessTest(long id, final ProjectComment comment) {
         Assertions.assertThat(txUtil.txRun(() -> projectCommentRepository.findById(id)))
@@ -156,7 +156,7 @@ class ProjectCommentRepositoryTest extends IntegrationTest {
     @MethodSource("getProjectCommentFailedArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectCommentTest/exists_projects.sql"
+            "classpath:db/repositoryTests/ProjectCommentRepositoryTest/exists_projects.sql"
     })
     void getProjectCommentFailedTest(long id) {
         Assertions.assertThat(txUtil.txRun(() -> projectCommentRepository.findById(id)))

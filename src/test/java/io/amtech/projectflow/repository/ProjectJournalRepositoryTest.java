@@ -63,7 +63,7 @@ class ProjectJournalRepositoryTest extends IntegrationTest {
     @MethodSource("createProjectJournalSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectJournalRepositoryTest/createProjectJournalSuccessTest/data.sql"
+            "classpath:db/repositoryTests/ProjectJournalRepositoryTest/createProjectJournalSuccessTest/data.sql"
     })
     @Transactional
     void createProjectJournalSuccessTest(long projectId, final String login, final Instant updateDate,
@@ -100,7 +100,7 @@ class ProjectJournalRepositoryTest extends IntegrationTest {
     @MethodSource("createProjectJournalFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectJournalRepositoryTest/createProjectJournalSuccessTest/data.sql"
+            "classpath:db/repositoryTests/ProjectJournalRepositoryTest/createProjectJournalSuccessTest/data.sql"
     })
     void createProjectJournalFailTest(long projectId, final String login, final Instant updateDate,
                                       final Class<?> expectedExceptionClass) {
@@ -131,7 +131,7 @@ class ProjectJournalRepositoryTest extends IntegrationTest {
     @MethodSource("getProjectJournalSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectJournalRepositoryTest/getProjectJournalSuccessTest/data.sql"
+            "classpath:db/repositoryTests/ProjectJournalRepositoryTest/getProjectJournalSuccessTest/data.sql"
     })
     void getProjectJournalSuccessTest(long id) {
         Assertions.assertThat(txUtil.txRun(() -> projectJournalRepository.findById(id)))
@@ -150,7 +150,7 @@ class ProjectJournalRepositoryTest extends IntegrationTest {
     @MethodSource("getProjectJournalFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectJournalRepositoryTest/getProjectJournalSuccessTest/data.sql"
+            "classpath:db/repositoryTests/ProjectJournalRepositoryTest/getProjectJournalSuccessTest/data.sql"
     })
     void getProjectJournalFailTest(long id) {
         Assertions.assertThat(txUtil.txRun(() -> projectJournalRepository.findById(id)))

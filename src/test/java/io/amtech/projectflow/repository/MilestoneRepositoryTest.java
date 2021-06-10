@@ -57,7 +57,7 @@ class MilestoneRepositoryTest extends IntegrationTest {
     @MethodSource("createSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/MilestoneRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/MilestoneRepositoryTest/data.sql"
     })
     @Transactional
     void createSuccessTest(final String name, final String description,
@@ -108,7 +108,7 @@ class MilestoneRepositoryTest extends IntegrationTest {
     @MethodSource("createFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/MilestoneRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/MilestoneRepositoryTest/data.sql"
     })
     @Transactional
     void createFailTest(final String name, final Instant plannedStartDate, final Instant plannedFinishDate,
@@ -151,7 +151,7 @@ class MilestoneRepositoryTest extends IntegrationTest {
     @MethodSource("getSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/MilestoneRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/MilestoneRepositoryTest/data.sql"
     })
     void getSuccessTest(long id, final Milestone m) {
         Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(id)))
@@ -171,7 +171,7 @@ class MilestoneRepositoryTest extends IntegrationTest {
     @MethodSource("getFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/MilestoneRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/MilestoneRepositoryTest/data.sql"
     })
     void getFailTest(long id) {
         Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(id)))

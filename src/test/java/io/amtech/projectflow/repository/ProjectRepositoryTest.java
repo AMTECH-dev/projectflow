@@ -54,7 +54,7 @@ class ProjectRepositoryTest extends IntegrationTest {
     @MethodSource("createSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/ProjectRepositoryTest/data.sql"
     })
     void createSuccessTest(final String name, final String desc, final Instant createDate, long leadId, long directionId,
                            final Project newProject) {
@@ -96,7 +96,7 @@ class ProjectRepositoryTest extends IntegrationTest {
     @MethodSource("createFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/ProjectRepositoryTest/data.sql"
     })
     void createFailTest(final String name, final Instant createDate, long leadId, long directionId,
                         final Class<?> expectedExceptionClass) {
@@ -141,7 +141,7 @@ class ProjectRepositoryTest extends IntegrationTest {
     @MethodSource("getSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/ProjectRepositoryTest/data.sql"
     })
     void getSuccessTest(long id, final Project p) {
         Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(id)))
@@ -161,7 +161,7 @@ class ProjectRepositoryTest extends IntegrationTest {
     @MethodSource("getFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/ProjectRepositoryTest/data.sql"
     })
     void getFailTest(long projectId) {
         Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(projectId)))

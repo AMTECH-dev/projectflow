@@ -63,7 +63,7 @@ class NotificationRepositoryTest extends IntegrationTest {
     @MethodSource("createSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/NotificationRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/NotificationRepositoryTest/data.sql"
     })
     void createSuccessTest(final String recepient, final String sender, final String subject, final String body,
                            final Instant createDate, final Notification n) {
@@ -95,7 +95,7 @@ class NotificationRepositoryTest extends IntegrationTest {
     @MethodSource("createFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/NotificationRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/NotificationRepositoryTest/data.sql"
     })
     void createFailTest(final String recepient, final String sender) {
         Assertions.assertThatThrownBy(() -> {
@@ -133,7 +133,7 @@ class NotificationRepositoryTest extends IntegrationTest {
     @MethodSource("getSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/NotificationRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/NotificationRepositoryTest/data.sql"
     })
     void getSuccessTest(long id, final Notification n) {
         Assertions.assertThat(txUtil.txRun(() -> notificationRepository.findById(id)))
@@ -153,7 +153,7 @@ class NotificationRepositoryTest extends IntegrationTest {
     @MethodSource("getFailArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/NotificationRepositoryTest/data.sql"
+            "classpath:db/repositoryTests/NotificationRepositoryTest/data.sql"
     })
     void getFailTest(long id) {
         Assertions.assertThat(txUtil.txRun(() -> notificationRepository.findById(id)))
