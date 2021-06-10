@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class ProjectJournalCustomRepositoryImpl implements ProjectJournalCustomR
         CriteriaQuery<ProjectJournal> query = builder.createQuery(ProjectJournal.class);
         Root<Project> root = query.from(Project.class);
         Join<Project, ProjectJournal> joinProjectJournal = root.join(Project_.HISTORY);
-        List<Predicate> predicates = new ArrayList<>(){{
+        List<Predicate> predicates = new ArrayList<>() {{
             add(builder.equal(root.get(Project_.ID), projectId));
         }};
         criteria.getFilter(ProjectJournal_.LOGIN)
@@ -38,10 +37,10 @@ public class ProjectJournalCustomRepositoryImpl implements ProjectJournalCustomR
                         "%" + v.toLowerCase() + "%")));
         criteria.getFilter(ProjectJournal_.UPDATE_DATE + "From")
                 .ifPresent(v -> predicates.add(builder.greaterThanOrEqualTo(joinProjectJournal.get(ProjectJournal_.UPDATE_DATE),
-                        toInstant(Long.parseLong(v)))));
+                        Instant.ofEpochSecond(Long.parseLong(v)))));
         criteria.getFilter(ProjectJournal_.UPDATE_DATE + "To")
                 .ifPresent(v -> predicates.add(builder.lessThanOrEqualTo(joinProjectJournal.get(ProjectJournal_.UPDATE_DATE),
-                        toInstant(Long.parseLong(v)))));
+                        Instant.ofEpochSecond(Long.parseLong(v)))));
         query.select(joinProjectJournal)
                 .where(predicates.toArray(new Predicate[0]))
                 .orderBy(parseOrder(joinProjectJournal, criteria.getOrder()));
@@ -52,15 +51,6 @@ public class ProjectJournalCustomRepositoryImpl implements ProjectJournalCustomR
                 .getResultList();
 
         return new PagedData<>(result, criteria);
-    }
-
-
-    private Instant toInstant(long second) {
-        return new Timestamp(fromSecondToMillisecond(second)).toInstant();
-    }
-
-    private long fromSecondToMillisecond(long second) {
-        return second * 1000L;
     }
 
     private Order parseOrder(Join<?, ?> root, final String order) {
