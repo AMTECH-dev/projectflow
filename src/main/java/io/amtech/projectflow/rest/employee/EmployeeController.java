@@ -32,13 +32,13 @@ public class EmployeeController {
         return employeeService.create(dto);
     }
 
-    @PutMapping("/{id}")
-    void update(@PathVariable("id") long id, @RequestBody @Valid EmployeeUpdateDto dto) {
+    @PutMapping("{id}")
+    public void update(@PathVariable long id, @RequestBody @Valid EmployeeUpdateDto dto) {
         employeeService.update(id, dto);
     }
 
     @GetMapping("{id}")
-    public EmployeeDto get(@PathVariable("id") long id) {
+    public EmployeeDto get(@PathVariable long id) {
         return employeeService.get(id);
     }
 

@@ -1,22 +1,20 @@
 package io.amtech.projectflow.domain.employee;
 
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
+import io.amtech.projectflow.domain.project.Project;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Accessors(chain = true)
+@EqualsAndHashCode(exclude = "projects")
 @Entity
 @Table(name = "employee", schema = "pf")
 @TypeDef(
@@ -24,20 +22,19 @@ import javax.persistence.Table;
         typeClass = PostgreSQLEnumType.class
 )
 public class Employee {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false)
-    String name;
+    private String name;
 
     @Column(name = "email", nullable = false)
-    String email;
+    private String email;
 
     @Column(name = "phone")
-    String phone;
+    private String phone;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "position", nullable = false)
@@ -45,5 +42,8 @@ public class Employee {
     private UserPosition position;
 
     @Column(name = "is_fired", nullable = false)
-    boolean isFired;
+    private boolean isFired;
+
+    @OneToMany(mappedBy = "projectLead")
+    private Set<Project> projects = new HashSet<>();
 }
