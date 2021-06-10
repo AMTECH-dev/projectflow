@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProjectJournalRepository extends JpaRepository<ProjectJournal, Long> {
+public interface ProjectJournalRepository extends JpaRepository<ProjectJournal, Long>, ProjectJournalCustomRepository {
 }
