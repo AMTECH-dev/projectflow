@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class MilestoneControllerTest extends IntegrationTest {
     private static final String BASE_URL = "/projects/{projectId}/milestones";
-    private static final String BASE_ID_URL = BASE_URL + "/%d";
+//    private static final String BASE_ID_URL = BASE_URL + "/%d";
 
 
     @Autowired
@@ -104,6 +104,31 @@ public class MilestoneControllerTest extends IntegrationTest {
                 Arguments.arguments("description_is_too_long", 11L,
                         buildJson("createFailTest/description_is_too_long_request.json"),
                         buildJson("createFailTest/description_is_too_long_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                Arguments.arguments("without_start_date", 11L,
+                        buildJson("createFailTest/without_start_date_request.json"),
+                        buildJson("createFailTest/without_start_date_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                Arguments.arguments("without_finish_date", 11L,
+                        buildJson("createFailTest/without_finish_date_request.json"),
+                        buildJson("createFailTest/without_finish_date_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                Arguments.arguments("without_progress_percent", 11L,
+                        buildJson("createFailTest/without_progress_percent_request.json"),
+                        buildJson("createFailTest/without_progress_percent_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                Arguments.arguments("empty_request", 11L,
+                        buildJson("createFailTest/empty_request.json"),
+                        buildJson("createFailTest/empty_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                Arguments.arguments("int_instead_short", 11L,
+                        buildJson("createFailTest/int_instead_short_request.json"),
+                        buildJson("createFailTest/int_instead_short_response.json"),
                         HttpStatus.BAD_REQUEST.value()
                 )
         );

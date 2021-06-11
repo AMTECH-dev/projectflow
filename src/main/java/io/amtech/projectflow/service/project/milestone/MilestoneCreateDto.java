@@ -1,9 +1,12 @@
 package io.amtech.projectflow.service.project.milestone;
 
 import lombok.Data;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 public class MilestoneCreateDto {
@@ -12,9 +15,12 @@ public class MilestoneCreateDto {
     String name;
     @Length(max = 2048)
     String description;
-    long plannedStartDate;
-    long plannedFinishDate;
+    @NotNull
+    Long plannedStartDate;
+    @NotNull
+    Long plannedFinishDate;
     Long factStartDate;
     Long factFinishDate;
-    short progressPercent;
+    @NotNull
+    Short progressPercent;
 }
