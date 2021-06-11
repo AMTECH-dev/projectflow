@@ -1,0 +1,7 @@
+{
+  "message": "Validation error",
+  "errors": {
+    "projectId": "must not be null",
+    "createDate": "must not be null"
+  }
+}
