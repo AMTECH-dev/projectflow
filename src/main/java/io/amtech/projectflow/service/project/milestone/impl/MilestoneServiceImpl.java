@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -25,15 +27,16 @@ public class MilestoneServiceImpl implements MilestoneService {
     @Override
     public MilestoneDto create(final long projectId, final MilestoneCreateDto createDto) {
         Project p = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), projectId));
 
         Milestone m = new Milestone()
                 .setName(createDto.getName())
                 .setDescription(createDto.getDescription())
-                .setPlannedStartDate(createDto.getPlannedStartDate())
-                .setPlannedFinishDate(createDto.getPlannedFinishDate())
-                .setFactStartDate(createDto.getFactStartDate())
-                .setFactFinishDate(createDto.getFactFinishDate());
+                .setPlannedStartDate(Instant.ofEpochMilli(createDto.getPlannedStartDate()))
+                .setPlannedFinishDate(Instant.ofEpochMilli(createDto.getPlannedFinishDate()))
+                .setFactStartDate(Instant.ofEpochMilli(createDto.getFactStartDate()))
+                .setFactFinishDate(Instant.ofEpochMilli(createDto.getFactFinishDate()))
+                .setProgressPercent(createDto.getProgressPercent());
 
         p.getMilestones().add(m);
         milestoneRepository.save(m);
@@ -48,7 +51,7 @@ public class MilestoneServiceImpl implements MilestoneService {
 
     private Milestone findByIdOrThrow(long id) {
         return milestoneRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Milestone", id));
+                .orElseThrow(() -> new ObjectNotFoundException(Milestone.class.getSimpleName(), id));
     }
 
     @Override
@@ -57,10 +60,11 @@ public class MilestoneServiceImpl implements MilestoneService {
 
         m.setName(newData.getName());
         m.setDescription(newData.getDescription());
-        m.setPlannedStartDate(newData.getPlannedStartDate());
-        m.setPlannedFinishDate(newData.getPlannedFinishDate());
-        m.setFactStartDate(newData.getFactStartDate());
-        m.setFactFinishDate(newData.getFactFinishDate());
+        m.setPlannedStartDate(Instant.ofEpochMilli(newData.getPlannedStartDate()));
+        m.setPlannedFinishDate(Instant.ofEpochMilli(newData.getPlannedFinishDate()));
+        m.setFactStartDate(Instant.ofEpochMilli(newData.getFactStartDate()));
+        m.setFactFinishDate(Instant.ofEpochMilli(newData.getFactFinishDate()));
+        m.setProgressPercent(newData.getProgressPercent());
     }
 
     @Override
@@ -71,6 +75,6 @@ public class MilestoneServiceImpl implements MilestoneService {
 
     @Override
     public PagedData<MilestoneDto> search(SearchCriteria criteria) {
-        return null;
+        return milestoneRepository.search(criteria).map(MilestoneDto::new);
     }
 }

@@ -1,0 +1,10 @@
+{
+    "id" : 1,
+    "name": "Разработка проектной документации",
+    "description": "Разработана документация проекта",
+    "plannedStartDate" : 1623330100111,
+    "plannedFinishDate" : 1623330101111,
+    "factStartDate" : 1623330100211,
+    "factFinishDate" : 1623330101211,
+    "progressPercent" : 23
+}
