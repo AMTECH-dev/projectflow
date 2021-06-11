@@ -22,7 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class MilestoneControllerTest extends IntegrationTest {
     private static final String BASE_URL = "/projects/{projectId}/milestones";
-//    private static final String BASE_ID_URL = BASE_URL + "/%d";
+    private static final String BASE_ID_URL = BASE_URL + "/%d";
+    private static final String INSERT_MILESTONES_TO_DB_QUERY = "classpath:db/MilestoneControllerTest/insert_milestones.sql";
 
 
     @Autowired
@@ -75,12 +76,12 @@ public class MilestoneControllerTest extends IntegrationTest {
     @MethodSource("createSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/MilestoneControllerTest/createSuccessTest/milestones_are_exist.sql"
+            INSERT_MILESTONES_TO_DB_QUERY
     })
-    void createSuccessTest(@SuppressWarnings("unused") String testName,
-                           final long projectId, final String request, final String response, final Milestone m) {
+    void createSuccessTest(@SuppressWarnings("unused") final String testName, final long projectId,
+                           final String request, final String response, final Milestone m) {
         mvc.perform(TestUtils
-                .createPost(changeProjectIdInUrl(projectId))
+                .createPost(changeProjectIdInUrl(BASE_URL, projectId))
                 .content(request))
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
@@ -137,10 +138,10 @@ public class MilestoneControllerTest extends IntegrationTest {
     @ParameterizedTest(name = "{index} {0}")
     @MethodSource("createFailTestArgs")
     @SneakyThrows
-    void createFailTest(@SuppressWarnings("unused") String testName, final long projectId,
+    void createFailTest(@SuppressWarnings("unused") final String testName, final long projectId,
                         final String request, final String response, final int httpStatus) {
         mvc.perform(TestUtils
-                .createPost(changeProjectIdInUrl(projectId))
+                .createPost(changeProjectIdInUrl(BASE_URL, projectId))
                 .content(request))
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
@@ -149,10 +150,73 @@ public class MilestoneControllerTest extends IntegrationTest {
                 .isEmpty();
     }
 
+    @SuppressWarnings("unused")
+    static Stream<Arguments> getSuccessTestArgs() {
+        return Stream.of(
+                Arguments.arguments("get_first_object", 11L, 11L,
+                        buildJson("getSuccessTest/get_first_object_response.json"),
+                        HttpStatus.OK.value()
+                ),
+                Arguments.arguments("get_last_object", 55L, 55L,
+                        buildJson("getSuccessTest/get_last_object_response.json"),
+                        HttpStatus.OK.value()
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{index} {0}")
+    @MethodSource("getSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            INSERT_MILESTONES_TO_DB_QUERY
+    })
+    void getSuccessTest(@SuppressWarnings("unused") final String testName, final long projectId,
+                        final long milestoneId, final String response, final int httpStatus) {
+        mvc.perform(TestUtils
+                .createGet(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId)))
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, true));
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> getFailTestArgs() {
+        return Stream.of(
+                Arguments.arguments("unknown_id", 11L, 999,
+                        buildJson("getFailTest/wrong_get_response.json"),
+                        HttpStatus.NOT_FOUND.value()
+                ),
+                Arguments.arguments("id = 0", 11L, 0,
+                        buildJson("getFailTest/wrong_get_response.json"),
+                        HttpStatus.NOT_FOUND.value()
+                ),
+                Arguments.arguments("negative_id", 11L, -1,
+                        buildJson("getFailTest/wrong_get_response.json"),
+                        HttpStatus.NOT_FOUND.value()
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{index} {0}")
+    @MethodSource("getFailTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            INSERT_MILESTONES_TO_DB_QUERY
+    })
+    void getFailTest(@SuppressWarnings("unused") final String testName, final long projectId,
+                     final long milestoneId, final String response, int httpStatus) {
+        mvc.perform(TestUtils
+                .createGet(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId)))
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, false));
+
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(milestoneId)))
+                .isFalse();
+    }
+
     //==================================
 
-    private String changeProjectIdInUrl(final long projectId) {
-        return MilestoneControllerTest.BASE_URL.replace("{projectId}", String.valueOf(projectId));
+    private String changeProjectIdInUrl(final String url, final long projectId) {
+        return url.replace("{projectId}", String.valueOf(projectId));
     }
 
     private static String buildJson(final String resource, Object... args) {
