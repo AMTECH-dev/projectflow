@@ -4,14 +4,15 @@ import io.amtech.projectflow.domain.project.Milestone;
 import lombok.Value;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Value
 public class MilestoneDto {
     long id;
     String name;
     String description;
-    Long plannedStartDate;
-    Long plannedFinishDate;
+    long plannedStartDate;
+    long plannedFinishDate;
     Long factStartDate;
     Long factFinishDate;
     short progressPercent;
@@ -22,8 +23,12 @@ public class MilestoneDto {
         this.description = milestone.getDescription();
         this.plannedStartDate = milestone.getPlannedStartDate().toEpochMilli();
         this.plannedFinishDate = milestone.getPlannedFinishDate().toEpochMilli();
-        this.factStartDate = milestone.getFactStartDate().toEpochMilli();
-        this.factFinishDate = milestone.getFactFinishDate().toEpochMilli();
+        this.factStartDate = Optional.ofNullable(milestone.getFactStartDate())
+                .map(Instant::toEpochMilli)
+                .orElse(null);
+        this.factFinishDate = Optional.ofNullable(milestone.getFactFinishDate())
+                .map(Instant::toEpochMilli)
+                .orElse(null);
         this.progressPercent = milestone.getProgressPercent();
     }
 }

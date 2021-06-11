@@ -1,8 +1,0 @@
-{
-  "id": %d,
-  "name": "%s",
-  "email": "%s",
-  "phone": "%s",
-  "position": "%s",
-  "fired": false
-}

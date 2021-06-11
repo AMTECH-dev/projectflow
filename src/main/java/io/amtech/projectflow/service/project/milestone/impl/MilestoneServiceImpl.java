@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,14 +35,20 @@ public class MilestoneServiceImpl implements MilestoneService {
                 .setDescription(createDto.getDescription())
                 .setPlannedStartDate(Instant.ofEpochMilli(createDto.getPlannedStartDate()))
                 .setPlannedFinishDate(Instant.ofEpochMilli(createDto.getPlannedFinishDate()))
-                .setFactStartDate(Instant.ofEpochMilli(createDto.getFactStartDate()))
-                .setFactFinishDate(Instant.ofEpochMilli(createDto.getFactFinishDate()))
+                .setFactStartDate(timestampToInstant(createDto.getFactStartDate()))
+                .setFactFinishDate(timestampToInstant(createDto.getFactFinishDate()))
                 .setProgressPercent(createDto.getProgressPercent());
 
         p.getMilestones().add(m);
         milestoneRepository.save(m);
 
         return new MilestoneDto(m);
+    }
+
+    private static Instant timestampToInstant(Long l) {
+        return Optional.ofNullable(l)
+                .map(Instant::ofEpochMilli)
+                .orElse(null);
     }
 
     @Override
