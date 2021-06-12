@@ -104,7 +104,7 @@ class ProjectJournalControllerTest extends IntegrationTest {
         Assertions.assertThat(projectJournalRepository.findById(projectJournalId))
                 .isPresent();
 
-        String finishUrlAddress = String.format(replaceProjectIdInURLOn(BASE_ID_URL, projectId), projectJournalId);
+        String finishUrlAddress = createUrlWithProjectIdAndJournalId(projectId, projectJournalId);
         mvc.perform(TestUtils
                 .createGet(finishUrlAddress))
                 .andDo(print())
@@ -132,12 +132,17 @@ class ProjectJournalControllerTest extends IntegrationTest {
         Assertions.assertThat(projectJournalRepository.findById(projectJournalId))
                 .isNotPresent();
 
-        String finishUrlAddress = String.format(replaceProjectIdInURLOn(BASE_ID_URL, projectId), projectJournalId);
+        String finishUrlAddress = createUrlWithProjectIdAndJournalId(projectId, projectJournalId);
         mvc.perform(TestUtils
                 .createGet(finishUrlAddress))
                 .andDo(print())
                 .andExpect(content().json(response, true))
                 .andExpect(status().is(status));
+    }
+
+    private String createUrlWithProjectIdAndJournalId(long projectId, long journalId) {
+        String url = replaceProjectIdInURLOn(BASE_ID_URL, projectId);
+        return String.format(url, journalId);
     }
 
     private String replaceProjectIdInURLOn(final String url, long projectId) {

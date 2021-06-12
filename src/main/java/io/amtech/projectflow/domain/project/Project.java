@@ -1,6 +1,5 @@
 package io.amtech.projectflow.domain.project;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import io.amtech.projectflow.domain.Direction;
 import io.amtech.projectflow.domain.employee.Employee;
