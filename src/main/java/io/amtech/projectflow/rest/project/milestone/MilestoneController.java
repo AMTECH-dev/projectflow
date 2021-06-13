@@ -27,32 +27,39 @@ public class MilestoneController {
         return milestoneService.create(projectId, dto);
     }
 
-    @GetMapping("{id}")
-    public MilestoneDto get(@PathVariable long id) {
-        return milestoneService.get(id);
+    @GetMapping("{milestoneId}")
+    public MilestoneDto get(@PathVariable long projectId,
+                            @PathVariable long milestoneId) {
+        return milestoneService.get(projectId, milestoneId);
     }
 
-    @PutMapping("{id}")
-    void update(@PathVariable("id") long id,
+    @PutMapping("{milestoneId}")
+    void update(@PathVariable long projectId,
+                @PathVariable long milestoneId,
                 @RequestBody @Valid MilestoneUpdateDto dto) {
-        milestoneService.update(id, dto);
+        milestoneService.update(projectId, milestoneId, dto);
     }
 
-    @DeleteMapping("{id}")
-    public void delete(@PathVariable long id) {
-        milestoneService.delete(id);
+    @DeleteMapping("{milestoneId}")
+    public void delete(@PathVariable long projectId,
+                       @PathVariable long milestoneId) {
+        milestoneService.delete(projectId, milestoneId);
     }
 
     @GetMapping
-    public PagedData<MilestoneDto> search(@RequestParam(required = false, defaultValue = "100") Integer limit,
+    public PagedData<MilestoneDto> search(@PathVariable long projectId,
+                                          @RequestParam(required = false, defaultValue = "100") Integer limit,
                                           @RequestParam(required = false, defaultValue = "0") Integer offset,
                                           @RequestParam(required = false, defaultValue = "name") String orders,
                                           @RequestParam(required = false) String name,
                                           @RequestParam(required = false) Long plannedStartDateFrom,
                                           @RequestParam(required = false) Long plannedStartDateTo,
-                                          @RequestParam(required = false) Long plannedFinishDate,
-                                          @RequestParam(required = false) Long factStartDate,
-                                          @RequestParam(required = false) Long factFinishDate,
+                                          @RequestParam(required = false) Long plannedFinishDateFrom,
+                                          @RequestParam(required = false) Long plannedFinishDateTo,
+                                          @RequestParam(required = false) Long factStartDateFrom,
+                                          @RequestParam(required = false) Long factStartDateTo,
+                                          @RequestParam(required = false) Long factFinishDateFrom,
+                                          @RequestParam(required = false) Long factFinishDateTo,
                                           @RequestParam(required = false) Short progressPercent) {
         final String fromRangeKey = "From";
         final String toRangeKey = "To";
@@ -63,16 +70,16 @@ public class MilestoneController {
                 .filter(Milestone_.NAME, name)
                 .filter(Milestone_.PLANNED_START_DATE + fromRangeKey, objToString(plannedStartDateFrom))
                 .filter(Milestone_.PLANNED_START_DATE + toRangeKey, objToString(plannedStartDateTo))
-                .filter(Milestone_.PLANNED_FINISH_DATE + fromRangeKey, objToString(plannedFinishDate))
-                .filter(Milestone_.PLANNED_FINISH_DATE + toRangeKey, objToString(plannedFinishDate))
-                .filter(Milestone_.FACT_START_DATE + fromRangeKey, objToString(factStartDate))
-                .filter(Milestone_.FACT_START_DATE + toRangeKey, objToString(factStartDate))
-                .filter(Milestone_.FACT_FINISH_DATE + fromRangeKey, objToString(factFinishDate))
-                .filter(Milestone_.FACT_FINISH_DATE + toRangeKey, objToString(factFinishDate))
+                .filter(Milestone_.PLANNED_FINISH_DATE + fromRangeKey, objToString(plannedFinishDateFrom))
+                .filter(Milestone_.PLANNED_FINISH_DATE + toRangeKey, objToString(plannedFinishDateTo))
+                .filter(Milestone_.FACT_START_DATE + fromRangeKey, objToString(factStartDateFrom))
+                .filter(Milestone_.FACT_START_DATE + toRangeKey, objToString(factStartDateTo))
+                .filter(Milestone_.FACT_FINISH_DATE + fromRangeKey, objToString(factFinishDateFrom))
+                .filter(Milestone_.FACT_FINISH_DATE + toRangeKey, objToString(factFinishDateTo))
                 .filter(Milestone_.PROGRESS_PERCENT, objToString(progressPercent))
                 .order(orders)
                 .build();
-        return milestoneService.search(criteria);
+        return milestoneService.search(projectId, criteria);
     }
 
     private static String objToString(Object o) {

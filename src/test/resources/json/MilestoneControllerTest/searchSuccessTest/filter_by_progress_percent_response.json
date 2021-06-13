@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "id": 55,
+      "name": "Пятая",
+      "description": "",
+      "plannedStartDate" : 1623330100111,
+      "plannedFinishDate" : 1623400101111,
+      "factStartDate" : null,
+      "factFinishDate" : null,
+      "progressPercent" : 50
+    }
+  ],
+  "meta": {
+    "limit": 100,
+    "offset": 0
+  }
+}

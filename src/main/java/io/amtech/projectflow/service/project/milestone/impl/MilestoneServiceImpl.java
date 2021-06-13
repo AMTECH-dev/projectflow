@@ -11,12 +11,12 @@ import io.amtech.projectflow.service.project.milestone.MilestoneCreateDto;
 import io.amtech.projectflow.service.project.milestone.MilestoneDto;
 import io.amtech.projectflow.service.project.milestone.MilestoneService;
 import io.amtech.projectflow.service.project.milestone.MilestoneUpdateDto;
+import io.amtech.projectflow.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +35,8 @@ public class MilestoneServiceImpl implements MilestoneService {
                 .setDescription(createDto.getDescription())
                 .setPlannedStartDate(Instant.ofEpochMilli(createDto.getPlannedStartDate()))
                 .setPlannedFinishDate(Instant.ofEpochMilli(createDto.getPlannedFinishDate()))
-                .setFactStartDate(timestampToInstant(createDto.getFactStartDate()))
-                .setFactFinishDate(timestampToInstant(createDto.getFactFinishDate()))
+                .setFactStartDate(DateUtil.millisToInstant(createDto.getFactStartDate()))
+                .setFactFinishDate(DateUtil.millisToInstant(createDto.getFactFinishDate()))
                 .setProgressPercent(createDto.getProgressPercent());
 
         p.getMilestones().add(m);
@@ -45,43 +45,46 @@ public class MilestoneServiceImpl implements MilestoneService {
         return new MilestoneDto(m);
     }
 
-    private static Instant timestampToInstant(Long l) {
-        return Optional.ofNullable(l)
-                .map(Instant::ofEpochMilli)
-                .orElse(null);
+    @Override
+    public MilestoneDto get(final long projectId, final long milestoneId) {
+        findProjectByIdOrThrow(projectId);
+        return new MilestoneDto(findMilestoneByIdOrThrow(milestoneId));
     }
 
     @Override
-    public MilestoneDto get(long id) {
-        return new MilestoneDto(findByIdOrThrow(id));
-    }
+    public void update(final long projectId, final long milestoneId, final MilestoneUpdateDto newData) {
+        findProjectByIdOrThrow(projectId);
 
-    private Milestone findByIdOrThrow(long id) {
-        return milestoneRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(Milestone.class.getSimpleName(), id));
-    }
-
-    @Override
-    public void update(long id, MilestoneUpdateDto newData) {
-        Milestone m = findByIdOrThrow(id);
+        Milestone m = findMilestoneByIdOrThrow(milestoneId);
 
         m.setName(newData.getName());
         m.setDescription(newData.getDescription());
         m.setPlannedStartDate(Instant.ofEpochMilli(newData.getPlannedStartDate()));
         m.setPlannedFinishDate(Instant.ofEpochMilli(newData.getPlannedFinishDate()));
-        m.setFactStartDate(Instant.ofEpochMilli(newData.getFactStartDate()));
-        m.setFactFinishDate(Instant.ofEpochMilli(newData.getFactFinishDate()));
+        m.setFactStartDate(DateUtil.millisToInstant(newData.getFactStartDate()));
+        m.setFactFinishDate(DateUtil.millisToInstant(newData.getFactFinishDate()));
         m.setProgressPercent(newData.getProgressPercent());
     }
 
     @Override
-    public void delete(long id) {
-        findByIdOrThrow(id);
-        milestoneRepository.deleteById(id);
+    public void delete(final long projectId, final long milestoneId) {
+        findProjectByIdOrThrow(projectId);
+        findMilestoneByIdOrThrow(milestoneId);
+        milestoneRepository.deleteById(milestoneId);
     }
 
     @Override
-    public PagedData<MilestoneDto> search(SearchCriteria criteria) {
-        return milestoneRepository.search(criteria).map(MilestoneDto::new);
+    public PagedData<MilestoneDto> search(final long projectId, SearchCriteria criteria) {
+        return milestoneRepository.search(projectId, criteria).map(MilestoneDto::new);
+    }
+
+    private Milestone findMilestoneByIdOrThrow(long id) {
+        return milestoneRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException(Milestone.class.getSimpleName(), id));
+    }
+
+    private void findProjectByIdOrThrow(long projectId) {
+        projectRepository.findById(projectId)
+                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), projectId));
     }
 }

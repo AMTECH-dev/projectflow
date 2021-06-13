@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "id": 22,
+      "name": "Вторая",
+      "description": "",
+      "plannedStartDate" : 1623330100111,
+      "plannedFinishDate" : 1623330101111,
+      "factStartDate" : null,
+      "factFinishDate" : null,
+      "progressPercent" : 80
+    },
+    {
+      "id": 11,
+      "name": "Первая",
+      "description": "",
+      "plannedStartDate" : 1623330100111,
+      "plannedFinishDate" : 1623330101111,
+      "factStartDate" : null,
+      "factFinishDate" : null,
+      "progressPercent" : 90
+    }
+  ],
+  "meta": {
+    "limit": 2,
+    "offset": 0
+  }
+}

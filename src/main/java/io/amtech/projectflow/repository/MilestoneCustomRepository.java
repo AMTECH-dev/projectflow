@@ -5,5 +5,5 @@ import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.project.Milestone;
 
 public interface MilestoneCustomRepository {
-    PagedData<Milestone> search(SearchCriteria criteria);
+    PagedData<Milestone> search(long projectId, SearchCriteria criteria);
 }
