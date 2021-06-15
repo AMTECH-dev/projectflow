@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
+import static io.amtech.projectflow.util.DateUtil.millisToInstant;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,7 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MilestoneControllerTest extends IntegrationTest {
     private static final String BASE_URL = "/projects/{projectId}/milestones";
     private static final String BASE_ID_URL = BASE_URL + "/%d";
-    private static final String INSERT_MILESTONES_TO_DB_QUERY = "classpath:db/MilestoneControllerTest/insert_milestones.sql";
+    private static final String INSERT_MILESTONES_TO_DB_QUERY = "classpath:db/" +
+            "MilestoneControllerTest/insert_milestones.sql";
 
     @Autowired
     private MilestoneRepository repository;
@@ -43,10 +44,10 @@ public class MilestoneControllerTest extends IntegrationTest {
                                 .setId(1L)
                                 .setName("Разработка проектной документации")
                                 .setDescription("Разработана документация проекта")
-                                .setPlannedStartDate(Instant.ofEpochMilli(1623330100111L))
-                                .setPlannedFinishDate(Instant.ofEpochMilli(1623330101111L))
-                                .setFactStartDate(Instant.ofEpochMilli(1623330100211L))
-                                .setFactFinishDate(Instant.ofEpochMilli(1623330101211L))
+                                .setPlannedStartDate(millisToInstant(1623330100111L))
+                                .setPlannedFinishDate(millisToInstant(1623330101111L))
+                                .setFactStartDate(millisToInstant(1623330100211L))
+                                .setFactFinishDate(millisToInstant(1623330101211L))
                                 .setProgressPercent((short) 23)
                 ),
                 Arguments.arguments("create_success_empty_nullable_params", 11L,
@@ -55,8 +56,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                         new Milestone()
                                 .setId(1L)
                                 .setName("Печать комплекта документов")
-                                .setPlannedStartDate(Instant.ofEpochMilli(1623320100111L))
-                                .setPlannedFinishDate(Instant.ofEpochMilli(1623320101111L))
+                                .setPlannedStartDate(millisToInstant(1623320100111L))
+                                .setPlannedFinishDate(millisToInstant(1623320101111L))
                                 .setProgressPercent((short) 13)
                 ),
                 Arguments.arguments("create_success_max_length", 11L,
@@ -66,8 +67,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                                 .setId(1L)
                                 .setName(MAX_NAME_VALUE)
                                 .setDescription(MAX_DESCRIPTION_VALUE)
-                                .setPlannedStartDate(Instant.ofEpochMilli(1623320100111L))
-                                .setPlannedFinishDate(Instant.ofEpochMilli(1623320101111L))
+                                .setPlannedStartDate(millisToInstant(1623320100111L))
+                                .setPlannedFinishDate(millisToInstant(1623320101111L))
                                 .setProgressPercent((short) 13)
                 )
         );
@@ -217,10 +218,10 @@ public class MilestoneControllerTest extends IntegrationTest {
                                 .setId(22L)
                                 .setName("Разработка проектной документации")
                                 .setDescription("Разработана документация проекта")
-                                .setPlannedStartDate(Instant.ofEpochMilli(1623330100111L))
-                                .setPlannedFinishDate(Instant.ofEpochMilli(1623330101111L))
-                                .setFactStartDate(Instant.ofEpochMilli(1623330100111L))
-                                .setFactFinishDate(Instant.ofEpochMilli(1623330101111L))
+                                .setPlannedStartDate(millisToInstant(1623330100111L))
+                                .setPlannedFinishDate(millisToInstant(1623330101111L))
+                                .setFactStartDate(millisToInstant(1623330100111L))
+                                .setFactFinishDate(millisToInstant(1623330101111L))
                                 .setProgressPercent((short) 50)
                 ),
                 Arguments.arguments("update_success_with_null_request", 22L, 22L,
@@ -228,8 +229,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                         new Milestone()
                                 .setId(22L)
                                 .setName("Разработка проектной документации")
-                                .setPlannedStartDate(Instant.ofEpochMilli(1623330100111L))
-                                .setPlannedFinishDate(Instant.ofEpochMilli(1623330101111L))
+                                .setPlannedStartDate(millisToInstant(1623330100111L))
+                                .setPlannedFinishDate(millisToInstant(1623330101111L))
                                 .setProgressPercent((short) 40)
                 )
         );
@@ -293,6 +294,82 @@ public class MilestoneControllerTest extends IntegrationTest {
                         final String response, final int httpStatus) {
         mvc.perform(TestUtils
                 .createPut(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId))
+                .content(request))
+                .andDo(print())
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, true));
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> updateProgressSuccessTestArgs() {
+        return Stream.of(
+                Arguments.arguments("update_progress_success", 11L, 11L,
+                        buildJson("updateProgressSuccessTest/update_progress_success_request.json"),
+                        new Milestone()
+                                .setId(11L)
+                                .setName("do sth really important 1")
+                                .setDescription("")
+                                .setPlannedStartDate(millisToInstant(1623330100111L))
+                                .setPlannedFinishDate(millisToInstant(1623330101111L))
+                                .setProgressPercent((short) 45)
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{index} {0}")
+    @MethodSource("updateProgressSuccessTestArgs")
+    @SneakyThrows
+    @Sql(INSERT_MILESTONES_TO_DB_QUERY)
+    void updateProgressSuccessTest(@SuppressWarnings("unused") final String testName,
+                                   final long projectId, final long milestoneId,
+                                   final String request, final Milestone milestoneAfterUpdate) {
+        List<Milestone> milestonesBeforeUpdate = repository.findAll();
+
+        mvc.perform(TestUtils
+                .createPatch(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId))
+                .content(request))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        for (Milestone milestoneBeforeUpdate : milestonesBeforeUpdate) {
+            if (milestoneBeforeUpdate.getId() == milestoneId)
+                Assertions.assertThat(txUtil.txRun(() -> repository.findById(milestoneId)))
+                        .isPresent()
+                        .get()
+                        .isEqualTo(milestoneAfterUpdate);
+            else
+                Assertions.assertThat(txUtil.txRun(() -> repository.findById(milestoneBeforeUpdate.getId())))
+                        .isPresent()
+                        .get()
+                        .isEqualTo(milestoneBeforeUpdate);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> updateProgressFailTestArgs() {
+        return Stream.of(
+                Arguments.arguments("update_progress_fail_null_param", 11L, 11L,
+                        buildJson("updateProgressFailTest/empty_progress_update_request.json"),
+                        buildJson("updateProgressFailTest/empty_progress_update_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                Arguments.arguments("update_progress_fail_wrong_id", 11L, 1111L,
+                        buildJson("updateProgressFailTest/wrong_id_request.json"),
+                        buildJson("updateProgressFailTest/wrong_id_response.json"),
+                        HttpStatus.NOT_FOUND.value()
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{index} {0}")
+    @MethodSource("updateProgressFailTestArgs")
+    @SneakyThrows
+    @Sql(INSERT_MILESTONES_TO_DB_QUERY)
+    void updateProgressFailTest(@SuppressWarnings("unused") final String testName,
+                                final long projectId, final long milestoneId,
+                                final String request, final String response, final int httpStatus) {
+        mvc.perform(TestUtils
+                .createPatch(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId))
                 .content(request))
                 .andDo(print())
                 .andExpect(status().is(httpStatus))

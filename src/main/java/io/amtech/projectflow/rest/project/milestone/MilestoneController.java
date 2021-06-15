@@ -4,10 +4,7 @@ import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.app.general.SearchCriteriaBuilder;
 import io.amtech.projectflow.domain.project.Milestone_;
-import io.amtech.projectflow.service.project.milestone.MilestoneCreateDto;
-import io.amtech.projectflow.service.project.milestone.MilestoneDto;
-import io.amtech.projectflow.service.project.milestone.MilestoneService;
-import io.amtech.projectflow.service.project.milestone.MilestoneUpdateDto;
+import io.amtech.projectflow.service.project.milestone.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,13 +19,13 @@ public class MilestoneController {
     private final MilestoneService milestoneService;
 
     @PostMapping
-    public MilestoneDto create(@PathVariable long projectId,
+    MilestoneDto create(@PathVariable long projectId,
                                @RequestBody @Valid MilestoneCreateDto dto) {
         return milestoneService.create(projectId, dto);
     }
 
     @GetMapping("{milestoneId}")
-    public MilestoneDto get(@PathVariable long projectId,
+    MilestoneDto get(@PathVariable long projectId,
                             @PathVariable long milestoneId) {
         return milestoneService.get(projectId, milestoneId);
     }
@@ -40,14 +37,21 @@ public class MilestoneController {
         milestoneService.update(projectId, milestoneId, dto);
     }
 
-    @DeleteMapping("{milestoneId}")
-    public void delete(@PathVariable long projectId,
+    @PatchMapping("{milestoneId}")
+    void updateProgressPercent(@PathVariable long projectId,
+                               @PathVariable long milestoneId,
+                               @RequestBody @Valid MilestoneUpdateProgressDto updateProgressDto) {
+        milestoneService.updateProgressPercent(projectId, milestoneId, updateProgressDto);
+    }
+
+        @DeleteMapping("{milestoneId}")
+    void delete(@PathVariable long projectId,
                        @PathVariable long milestoneId) {
         milestoneService.delete(projectId, milestoneId);
     }
 
     @GetMapping
-    public PagedData<MilestoneDto> search(@PathVariable long projectId,
+    PagedData<MilestoneDto> search(@PathVariable long projectId,
                                           @RequestParam(required = false, defaultValue = "100") Integer limit,
                                           @RequestParam(required = false, defaultValue = "0") Integer offset,
                                           @RequestParam(required = false, defaultValue = "name") String orders,

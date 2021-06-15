@@ -7,10 +7,7 @@ import io.amtech.projectflow.domain.project.Milestone;
 import io.amtech.projectflow.domain.project.Project;
 import io.amtech.projectflow.repository.MilestoneRepository;
 import io.amtech.projectflow.repository.ProjectRepository;
-import io.amtech.projectflow.service.project.milestone.MilestoneCreateDto;
-import io.amtech.projectflow.service.project.milestone.MilestoneDto;
-import io.amtech.projectflow.service.project.milestone.MilestoneService;
-import io.amtech.projectflow.service.project.milestone.MilestoneUpdateDto;
+import io.amtech.projectflow.service.project.milestone.*;
 import io.amtech.projectflow.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,7 +53,6 @@ public class MilestoneServiceImpl implements MilestoneService {
         findProjectByIdOrThrow(projectId);
 
         Milestone m = findMilestoneByIdOrThrow(milestoneId);
-
         m.setName(newData.getName());
         m.setDescription(newData.getDescription());
         m.setPlannedStartDate(Instant.ofEpochMilli(newData.getPlannedStartDate()));
@@ -64,6 +60,16 @@ public class MilestoneServiceImpl implements MilestoneService {
         m.setFactStartDate(DateUtil.millisToInstant(newData.getFactStartDate()));
         m.setFactFinishDate(DateUtil.millisToInstant(newData.getFactFinishDate()));
         m.setProgressPercent(newData.getProgressPercent());
+    }
+
+    @Override
+    public void updateProgressPercent(final long projectId,
+                                      final long milestoneId,
+                                      final MilestoneUpdateProgressDto updateProgressDto) {
+        findProjectByIdOrThrow(projectId);
+
+        Milestone m = findMilestoneByIdOrThrow(milestoneId);
+        m.setProgressPercent(updateProgressDto.getProgressPercent());
     }
 
     @Override
