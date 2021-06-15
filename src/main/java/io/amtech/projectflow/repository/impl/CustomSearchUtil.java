@@ -23,7 +23,7 @@ class CustomSearchUtil {
         }
     }
 
-    static Order parseOrderWithJoinQuery(final Join<?, ?> root, final String order) {
+    static Order parseOrderWithJoin(final Join<?, ?> root, final String order) {
         try {
             if (order.startsWith("-"))
                 return new OrderImpl(root.get(order.substring(1)), false);

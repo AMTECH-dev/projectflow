@@ -1,8 +1,9 @@
 package io.amtech.projectflow.service.project.milestone;
 
 import io.amtech.projectflow.domain.project.Milestone;
-import io.amtech.projectflow.util.DateUtil;
 import lombok.Value;
+
+import static io.amtech.projectflow.util.DateUtil.instantToMillis;
 
 @Value
 public class MilestoneDto {
@@ -19,10 +20,10 @@ public class MilestoneDto {
         this.id = milestone.getId();
         this.name = milestone.getName();
         this.description = milestone.getDescription();
-        this.plannedStartDate = milestone.getPlannedStartDate().toEpochMilli();
-        this.plannedFinishDate = milestone.getPlannedFinishDate().toEpochMilli();
-        this.factStartDate = DateUtil.instantToMillis(milestone.getFactStartDate());
-        this.factFinishDate = DateUtil.instantToMillis(milestone.getFactFinishDate());
+        this.plannedStartDate = instantToMillis(milestone.getPlannedStartDate());
+        this.plannedFinishDate = instantToMillis(milestone.getPlannedFinishDate());
+        this.factStartDate = instantToMillis(milestone.getFactStartDate());
+        this.factFinishDate = instantToMillis(milestone.getFactFinishDate());
         this.progressPercent = milestone.getProgressPercent();
     }
 }

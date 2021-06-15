@@ -1,12 +1,10 @@
 package io.amtech.projectflow.service.project.milestone;
 
 import lombok.Data;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Data
 public class MilestoneCreateDto {

@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.Optional;
 
 public class DateUtil {
-
     private DateUtil() {
     }
 

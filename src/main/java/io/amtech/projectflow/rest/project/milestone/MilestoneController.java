@@ -20,13 +20,13 @@ public class MilestoneController {
 
     @PostMapping
     MilestoneDto create(@PathVariable long projectId,
-                               @RequestBody @Valid MilestoneCreateDto dto) {
+                        @RequestBody @Valid MilestoneCreateDto dto) {
         return milestoneService.create(projectId, dto);
     }
 
     @GetMapping("{milestoneId}")
     MilestoneDto get(@PathVariable long projectId,
-                            @PathVariable long milestoneId) {
+                     @PathVariable long milestoneId) {
         return milestoneService.get(projectId, milestoneId);
     }
 
@@ -46,25 +46,25 @@ public class MilestoneController {
 
         @DeleteMapping("{milestoneId}")
     void delete(@PathVariable long projectId,
-                       @PathVariable long milestoneId) {
+                @PathVariable long milestoneId) {
         milestoneService.delete(projectId, milestoneId);
     }
 
     @GetMapping
     PagedData<MilestoneDto> search(@PathVariable long projectId,
-                                          @RequestParam(required = false, defaultValue = "100") Integer limit,
-                                          @RequestParam(required = false, defaultValue = "0") Integer offset,
-                                          @RequestParam(required = false, defaultValue = "name") String orders,
-                                          @RequestParam(required = false) String name,
-                                          @RequestParam(required = false) Long plannedStartDateFrom,
-                                          @RequestParam(required = false) Long plannedStartDateTo,
-                                          @RequestParam(required = false) Long plannedFinishDateFrom,
-                                          @RequestParam(required = false) Long plannedFinishDateTo,
-                                          @RequestParam(required = false) Long factStartDateFrom,
-                                          @RequestParam(required = false) Long factStartDateTo,
-                                          @RequestParam(required = false) Long factFinishDateFrom,
-                                          @RequestParam(required = false) Long factFinishDateTo,
-                                          @RequestParam(required = false) Short progressPercent) {
+                                   @RequestParam(required = false, defaultValue = "100") Integer limit,
+                                   @RequestParam(required = false, defaultValue = "0") Integer offset,
+                                   @RequestParam(required = false, defaultValue = "name") String orders,
+                                   @RequestParam(required = false) String name,
+                                   @RequestParam(required = false) Long plannedStartDateFrom,
+                                   @RequestParam(required = false) Long plannedStartDateTo,
+                                   @RequestParam(required = false) Long plannedFinishDateFrom,
+                                   @RequestParam(required = false) Long plannedFinishDateTo,
+                                   @RequestParam(required = false) Long factStartDateFrom,
+                                   @RequestParam(required = false) Long factStartDateTo,
+                                   @RequestParam(required = false) Long factFinishDateFrom,
+                                   @RequestParam(required = false) Long factFinishDateTo,
+                                   @RequestParam(required = false) Short progressPercent) {
         final String fromRangeKey = "From";
         final String toRangeKey = "To";
 
