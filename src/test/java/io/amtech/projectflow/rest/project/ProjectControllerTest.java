@@ -1,11 +1,9 @@
 package io.amtech.projectflow.rest.project;
 
 import io.amtech.projectflow.domain.employee.Employee;
-import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.domain.project.Project;
 import io.amtech.projectflow.repository.DirectionRepository;
 import io.amtech.projectflow.repository.EmployeeRepository;
-import io.amtech.projectflow.repository.ProjectCustomRepository;
 import io.amtech.projectflow.repository.ProjectRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -18,21 +16,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.stream.Stream;
 
+import static io.amtech.projectflow.test.TestUtils.strMultiple;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class ProjectControllerTest extends IntegrationTest {
     private static final String BASE_URL = "/projects";
-//    private static final String BASE_ID_URL = BASE_URL + "/%d";
-//    @Autowired
-//    private ProjectRepository repository;
-//    @Autowired
-//  static private EmployeeRepository employeeRepository;
-//    @Autowired
-//  static private DirectionRepository directionRepository;
+    private final static String MAX_NAME_VALUE = strMultiple("a", 255);
 
+    private static final String BASE_ID_URL = BASE_URL + "/%d";
+    @Autowired
+    static private EmployeeRepository employeeRepository;
+    @Autowired
+    static private DirectionRepository directionRepository;
+    @Autowired
+    private ProjectRepository repository;
 
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
@@ -40,9 +42,9 @@ class ProjectControllerTest extends IntegrationTest {
 
         return Stream.of(
                 Arguments.arguments(
-                        buildJson("createSuccessTest/full_request.json"),
-                        buildJson("createSuccessTest/full_response.json")
-             /*           new Project()
+                        buildJson("createSuccessTest/update_full_request.json"),
+                        buildJson("createSuccessTest/full_response.json"),
+                        new Project()
                                 .setId(1L)
                                 .setName("Mail")
                                 .setProjectLead(employeeRepository.findById(1l).get())
@@ -53,7 +55,7 @@ class ProjectControllerTest extends IntegrationTest {
                         new Project()
                                 .setName("Mail")
                                 .setProjectLead(employeeRepository.findById(1l).get())
-                                .setDirection(directionRepository.findById(1l).get()))*/));
+                                .setDirection(directionRepository.findById(1l).get())));
 
     }
 
@@ -63,67 +65,38 @@ class ProjectControllerTest extends IntegrationTest {
     @Sql(scripts = {
             "classpath:db/ProjectControllerTest/createSuccessTest/exists_project.sql"
     })
-    void createSuccessTest(final String request, final String response/*, final Project project*/) {
+    void createSuccessTest(final String request, final String response, final Project project) {
 
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
-                .andExpect(status().isOk());
-//                .andExpect(content().json(response, true));
+                .andExpect(status().isOk())
+                .andExpect(content().json(response, true));
 
-//        Assertions.assertThat(txUtil.txRun (() -> repository.findAll()))
-//                .hasSize(3);
-//
-//        Assertions.assertThat(txUtil.txRun(() -> repository.findById(1L)))
-//                .isPresent()
-                /*.contains(project)*/;
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
+                .hasSize(3);
+
+        Assertions.assertThat(txUtil.txRun(() -> repository.findById(1L)))
+                .isPresent()
+                .contains(project);
     }
-/*
+
+
     @SuppressWarnings("unused")
     static Stream<Arguments> createFailTestArgs() {
-        final String longName = "extra" + MAX_NAME_VALUE;
-        final String longEmail = "extra" + MAX_EMAIL_VALUE;
-        final String longPhone = "extra" + MAX_PHONE_VALUE;
+
 
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
                         buildJson("createFailTest/name_is_missing_response.json"),
                         HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(buildJson("default_request.json.template",
-                        longName, MAX_EMAIL_VALUE, MAX_PHONE_VALUE, PROJECT_LEAD),
-                        buildJson("createFailTest/name_is_too_long_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
 
-                Arguments.arguments(buildJson("createFailTest/invalid_email_format_request.json"),
-                        buildJson("createFailTest/invalid_email_format_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(buildJson("default_request.json.template",
-                        MAX_NAME_VALUE, longEmail, MAX_PHONE_VALUE, DIRECTION_LEAD),
-                        buildJson("createFailTest/email_is_too_long_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(buildJson("createFailTest/email_is_missing_request.json"),
-                        buildJson("createFailTest/email_is_missing_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-
-                Arguments.arguments(buildJson("default_request.json.template",
-                        MAX_NAME_VALUE, MAX_EMAIL_VALUE, longPhone, DIRECTION_LEAD),
-                        buildJson("createFailTest/phone_is_too_long_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-
-                Arguments.arguments(buildJson("createFailTest/without_position_request.json"),
-                        buildJson("createFailTest/without_position_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(buildJson("createFailTest/wrong_position_request.json"),
-                        buildJson("createFailTest/wrong_position_response.json.template",
-                                "I love my job", UserPosition.class.getSimpleName()),
-                        HttpStatus.BAD_REQUEST.value()),
-
-                Arguments.arguments(buildJson("createFailTest/empty_with_email_request.json"),
-                        buildJson("createFailTest/empty_response.json"),
+                Arguments.arguments(buildJson("createFailTest/direction_is_missing_request.json"),
+                        buildJson("createFailTest/direction_is_missing_response.json"),
                         HttpStatus.BAD_REQUEST.value())
+
         );
     }
-
     @ParameterizedTest
     @MethodSource("createFailTestArgs")
     @SneakyThrows
@@ -140,211 +113,27 @@ class ProjectControllerTest extends IntegrationTest {
                 .isEmpty();
     }
 
-    @SuppressWarnings("unused")
-    static Stream<Arguments> searchSuccessTestArgs() {
-        return Stream.of(
-                Arguments.arguments("",
-                        buildJson("searchSuccessTest/all.json")),
-                Arguments.arguments("?limit=3&offset=2&orders=-name",
-                        buildJson("searchSuccessTest/reverse_order_with_limit_and_offset.json")),
-                Arguments.arguments("?name=О",
-                        buildJson("searchSuccessTest/filter_by_name.json")),
-                Arguments.arguments("?email=safe",
-                        buildJson("searchSuccessTest/email_contain_safe.json")),
-                Arguments.arguments("?phone=9&limit=50",
-                        buildJson("searchSuccessTest/phone_contain_9.json")),
-                Arguments.arguments("?position=director&limit=1",
-                        buildJson("searchSuccessTest/position_director.json"))
-        );
-    }
 
-    @ParameterizedTest
-    @MethodSource("searchSuccessTestArgs")
-    @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/searchSuccessTest/data.sql"
-    })
-    void searchSuccessTest(final String url, final String response) {
-        // setup
-        mvc.perform(TestUtils.createGet(BASE_URL + url))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().json(response, true));
-    }
-
-    @SuppressWarnings("unused")
-    static Stream<Arguments> searchFailArgs() {
-        return Stream.of(
-                Arguments.arguments("?orders=-some_field_name",
-                        buildJson("searchFailTest/invalid_order_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments("?position=MEGA",
-                        buildJson("searchFailTest/invalid_position_response.json"),
-                        HttpStatus.BAD_REQUEST.value()));
-    }
-
-    @ParameterizedTest
-    @MethodSource("searchFailArgs")
-    @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/searchFailTest/data.sql"
-    })
-    void searchFailTest(final String url, final String response, int status) {
-        // setup
-        mvc.perform(TestUtils.createGet(BASE_URL + url))
-                .andDo(print())
-                .andExpect(status().is(status))
-                .andExpect(content().json(response, true));
-    }
-
-    @SuppressWarnings("unused")
-    static Stream<Arguments> deleteSuccessTestArgs() {
-        return Stream.of(Arguments.arguments(1, 1000), Arguments.arguments(2000));
-    }
-
-    @ParameterizedTest
-    @MethodSource("deleteSuccessTestArgs")
-    @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/deleteTest/create_employee.sql"
-    })
-    void deleteSuccessTest(long id) {
-        List<Employee> employeesBeforeDelete = repository.findAll();
-
-        mvc.perform(TestUtils
-                .createDelete(String.format(BASE_ID_URL, id)))
-                .andExpect(status().isOk());
-
-        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
-                .isFalse();
-
-        Assertions.assertThat(employeesBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
-        List<Employee> employeesAfterDelete = txUtil.txRun(() -> repository.findAll());
-        for (Employee employee : employeesBeforeDelete) {
-            Assertions.assertThat(employeesAfterDelete.stream().filter(employee::equals).findFirst())
-                    .isNotEmpty();
-        }
-    }
-
-    @SuppressWarnings("unused")
-    static Stream<Arguments> deleteFailTestArgs() {
-        return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments(99, HttpStatus.NOT_FOUND.value()));
-    }
-
-    @ParameterizedTest
-    @MethodSource("deleteFailTestArgs")
-    @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/deleteTest/create_employee.sql"
-    })
-    void deleteFailTest(long id, int httpStatus) {
-        List<Employee> employeesBeforeDelete = repository.findAll();
-
-        mvc.perform(TestUtils
-                .createDelete(String.format(BASE_ID_URL, id)))
-                .andExpect(status().is(httpStatus));
-
-        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
-                .isFalse();
-
-        List<Employee> employeesAfterDelete = txUtil.txRun(() -> repository.findAll());
-        for (Employee employee : employeesAfterDelete) {
-            Assertions.assertThat(employeesBeforeDelete.stream().filter(employee::equals).findFirst())
-                    .isNotEmpty();
-        }
-    }
-
-    @SuppressWarnings("unused")
-    static Stream<Arguments> getSuccessTestArgs() {
-        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/first_employee_response.json"),
-                HttpStatus.OK.value()),
-                Arguments.arguments(7, buildJson("getSuccessTest/7th_employee_response.json"),
-                        HttpStatus.OK.value()));
-    }
-
-    @ParameterizedTest
-    @MethodSource("getSuccessTestArgs")
-    @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
-    })
-    void getSuccessTest(final long id, final String response, int httpStatus) {
-        mvc.perform(TestUtils
-                .createGet(String.format(BASE_ID_URL,id)))
-                .andExpect(status().is(httpStatus))
-                .andExpect(content().json(response, true));
-    }
-
-    @SuppressWarnings("unused")
-    static Stream<Arguments> getFailTestArgs() {
-        return Stream.of(
-                Arguments.arguments(99, buildJson("getFailTest/wrong_response.json"),
-                        HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments(0, buildJson("getFailTest/wrong_response.json"),
-                        HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments(-1, buildJson("getFailTest/wrong_response.json"),
-                        HttpStatus.NOT_FOUND.value()));
-    }
-
-    @ParameterizedTest
-    @MethodSource("getFailTestArgs")
-    @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
-    })
-    void getFailTest(final long id, final String response, int httpStatus) {
-        mvc.perform(TestUtils
-                .createGet(String.format(BASE_ID_URL,id)))
-                .andExpect(status().is(httpStatus))
-                .andExpect(content().json(response, false));
-
-        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
-                .isFalse();
-    }
-
-    @SuppressWarnings("unused")
     static Stream<Arguments> updateSuccessArgs() {
         return Stream.of(
                 Arguments.arguments(1L,
-                        buildJson("updateSuccessTest/full_update_request.json"),
-                        new Employee()
-                                .setId(1L)
-                                .setName("mr.Propper")
-                                .setEmail("poshta@mail.ru")
-                                .setPhone("+70002410182")
-                                .setPosition(PROJECT_LEAD)
-                                .setFired(true)
-                ),
-                Arguments.arguments(2L,
-                        buildJson("updateSuccessTest/mail_fired_update_request.json"),
-                        new Employee()
-                                .setId(2L)
-                                .setName("Кирилл")
-                                .setEmail("some-email@example.com")
-                                .setPhone("89992410182")
-                                .setPosition(DIRECTOR)
-                                .setFired(true)
-                ),
-                Arguments.arguments(3L,
-                        buildJson("updateSuccessTest/phone_position_update_request.json"),
-                        new Employee()
-                                .setId(3L)
-                                .setName("Кирилл")
-                                .setEmail("kira@example.com")
-                                .setPhone("89991112233")
-                                .setPosition(PROJECT_LEAD)
-                                .setFired(false)
+                        buildJson("updateSuccessTest/full_update.json"),
+                        new Project()
+                                .setName("Do")
+                                .setProjectLead(employeeRepository.findById(1l).get())
+                                .setDirection(directionRepository.findById(1l).get())
+                                .setDescription("bad project")
                 )
+
         );
     }
 
     @ParameterizedTest
     @MethodSource("updateSuccessArgs")
     @SneakyThrows
-    @Sql(scripts = {"classpath:db/EmployeeControllerTest/updateSuccessTest/createEmployees.sql"})
+    @Sql(scripts = {"classpath:db/ProjectControllerTest/updateSuccessTest/update_project.sql"})
     void updateSuccessTest(final long id, final String request, final Employee expect) {
-        List<Employee> existEmpBefore = repository.findAll();
+        List<Project> existEmpBefore = repository.findAll();
 
         mvc.perform(TestUtils
                 .createPut(BASE_URL + "/" + id)
@@ -352,7 +141,7 @@ class ProjectControllerTest extends IntegrationTest {
                 .andExpect(status().isOk());
 
 
-        for (Employee before : existEmpBefore) {
+        for (Project before : existEmpBefore) {
             if (before.getId() == id) {
                 Assertions.assertThat(txUtil.txRun(() -> repository.findById(id)))
                         .isPresent()
@@ -367,28 +156,20 @@ class ProjectControllerTest extends IntegrationTest {
         }
     }
 
-    @SuppressWarnings("unused")
     static Stream<Arguments> updateFailedArgs() {
         return Stream.of(
                 Arguments.arguments(1L,
-                        buildJson("updateFailTest/update_request_fired_is_null.json"),
-                        buildJson("updateFailTest/update_fired_is_null_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(2L,
-                        buildJson("updateFailTest/update_request_empty_failed.json"),
-                        buildJson("updateFailTest/update_empty_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(102L,
-                        buildJson("updateFailTest/unexisting_id_call_failed.json"),
-                        buildJson("updateFailTest/unexisting_id_call_failed_response.json"),
-                        HttpStatus.NOT_FOUND.value())
+                        buildJson("updateFailTest/name_is_null_update_request.json"),
+                        buildJson("updateFailTest/name_is_null_update_response.json"),
+                        HttpStatus.BAD_REQUEST.value())
+
         );
     }
 
     @ParameterizedTest
     @MethodSource("updateFailedArgs")
     @SneakyThrows
-    @Sql(scripts = {"classpath:db/EmployeeControllerTest/updateSuccessTest/createEmployees.sql"})
+    @Sql(scripts = {"classpath:db/ProjectControllerTest/updateSuccessTest/update_project.sql"})
     void updateFailTest(final Long id, final String request, final String response, int expectedStatus) {
         mvc.perform(TestUtils
                 .createPut(BASE_URL + "/" + id)
@@ -397,11 +178,49 @@ class ProjectControllerTest extends IntegrationTest {
                 .andExpect(content().json(response, true));
     }
 
-*/
+
+
+
+
+
+
+
+    static Stream<Arguments> deleteSuccessTestArgs() {
+        return Stream.of(Arguments.arguments(1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("deleteSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/ProjectControllerTest/deleteSuccessTest/project.sql"
+    })
+    void deleteSuccessTest(long id) {
+        List<Project> employeesBeforeDelete = repository.findAll();
+
+        mvc.perform(TestUtils
+                .createDelete(String.format(BASE_ID_URL, id)))
+                .andExpect(status().isOk());
+
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
+                .isFalse();
+
+        Assertions.assertThat(employeesBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
+        List<Project> projectAfterDelete = txUtil.txRun(() -> repository.findAll());
+        for (Project project : employeesBeforeDelete) {
+            Assertions.assertThat(projectAfterDelete.stream().filter(project::equals).findFirst())
+                    .isNotEmpty();
+        }
+    }
     private static String buildJson(final String resource, Object... args) {
         String template = TestUtils.readClassPathResourceAsString(
                 "json/ProjectControllerTest/" + resource);
 
         return String.format(template, args);
     }
+
+
+
+
+
 }
