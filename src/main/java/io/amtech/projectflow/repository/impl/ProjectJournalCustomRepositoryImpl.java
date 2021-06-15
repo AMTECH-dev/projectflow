@@ -1,6 +1,5 @@
 package io.amtech.projectflow.repository.impl;
 
-import io.amtech.projectflow.app.exception.InvalidOrderException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.project.Project;
@@ -8,7 +7,6 @@ import io.amtech.projectflow.domain.project.ProjectJournal;
 import io.amtech.projectflow.domain.project.ProjectJournal_;
 import io.amtech.projectflow.domain.project.Project_;
 import io.amtech.projectflow.repository.ProjectJournalCustomRepository;
-import org.hibernate.query.criteria.internal.OrderImpl;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -17,6 +15,8 @@ import javax.persistence.criteria.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.amtech.projectflow.util.OrderUtil.parseOrder;
 
 @Repository
 public class ProjectJournalCustomRepositoryImpl implements ProjectJournalCustomRepository {
@@ -51,17 +51,5 @@ public class ProjectJournalCustomRepositoryImpl implements ProjectJournalCustomR
                 .getResultList();
 
         return new PagedData<>(result, criteria);
-    }
-
-    private Order parseOrder(Join<?, ?> root, final String order) {
-        try {
-            if (order.startsWith("-")) {
-                return new OrderImpl(root.get(order.substring(1)), false);
-            }
-
-            return new OrderImpl(root.get(order));
-        } catch (IllegalArgumentException e) {
-            throw new InvalidOrderException(order);
-        }
     }
 }

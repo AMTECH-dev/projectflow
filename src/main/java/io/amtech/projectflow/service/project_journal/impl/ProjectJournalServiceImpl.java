@@ -3,6 +3,7 @@ package io.amtech.projectflow.service.project_journal.impl;
 import io.amtech.projectflow.app.exception.ObjectNotFoundException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
+import io.amtech.projectflow.domain.project.Project;
 import io.amtech.projectflow.domain.project.ProjectJournal;
 import io.amtech.projectflow.repository.ProjectJournalRepository;
 import io.amtech.projectflow.repository.ProjectRepository;
@@ -16,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class ProjectJournalServiceImpl implements ProjectJournalService {
-    private static final String OBJ_DESC = "ProjectJournal";
-
     private final ProjectRepository projectRepository;
     private final ProjectJournalRepository projectJournalRepository;
 
@@ -36,11 +35,11 @@ public class ProjectJournalServiceImpl implements ProjectJournalService {
 
     private void checkProjectByIdOnExists(long id) {
         projectRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", id));
+                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), id));
     }
 
     private ProjectJournal findProjectJournalByIdOrThrow(long id) {
         return projectJournalRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(OBJ_DESC, id));
+                .orElseThrow(() -> new ObjectNotFoundException(ProjectJournal.class.getSimpleName(), id));
     }
 }

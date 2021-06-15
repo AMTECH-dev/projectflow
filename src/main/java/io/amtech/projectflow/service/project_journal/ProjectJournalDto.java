@@ -12,6 +12,6 @@ public class ProjectJournalDto {
     public ProjectJournalDto(final ProjectJournal projectJournal) {
         this.id = projectJournal.getId();
         this.login = projectJournal.getLogin();
-        this.updateDate = projectJournal.getUpdateDate().toEpochMilli();
+        this.updateDate = projectJournal.getUpdateDate().getEpochSecond();
     }
 }

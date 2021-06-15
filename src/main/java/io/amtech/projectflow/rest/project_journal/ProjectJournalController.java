@@ -9,7 +9,8 @@ import io.amtech.projectflow.service.project_journal.ProjectJournalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+
+import static io.amtech.projectflow.util.ConvertingUtil.objToString;
 
 @RestController
 @RequestMapping("/projects/{projectId}/projectJournals")
@@ -29,14 +30,9 @@ public class ProjectJournalController {
                 .limit(limit)
                 .offset(offset)
                 .order(orders)
-                .filter(ProjectJournal_.LOGIN, Optional.ofNullable(login)
-                        .orElse(null))
-                .filter(ProjectJournal_.UPDATE_DATE + "From", Optional.ofNullable(updateDateFromInSecond)
-                        .map(String::valueOf)
-                        .orElse(null))
-                .filter(ProjectJournal_.UPDATE_DATE + "To", Optional.ofNullable(updateDateToInSecond)
-                        .map(String::valueOf)
-                        .orElse(null))
+                .filter(ProjectJournal_.LOGIN, objToString(login))
+                .filter(ProjectJournal_.UPDATE_DATE + "From", objToString(updateDateFromInSecond))
+                .filter(ProjectJournal_.UPDATE_DATE + "To", objToString(updateDateToInSecond))
                 .build();
 
         return projectJournalService.search(projectId, searchCriteria);
