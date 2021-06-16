@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.amtech.projectflow.util.DateUtil.millisToInstant;
+import static io.amtech.projectflow.util.DateUtil.secondsToInstant;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +29,10 @@ public class MilestoneServiceImpl implements MilestoneService {
         Milestone m = new Milestone()
                 .setName(createDto.getName())
                 .setDescription(createDto.getDescription())
-                .setPlannedStartDate(millisToInstant(createDto.getPlannedStartDate()))
-                .setPlannedFinishDate(millisToInstant(createDto.getPlannedFinishDate()))
-                .setFactStartDate(millisToInstant(createDto.getFactStartDate()))
-                .setFactFinishDate(millisToInstant(createDto.getFactFinishDate()))
+                .setPlannedStartDate(secondsToInstant(createDto.getPlannedStartDate()))
+                .setPlannedFinishDate(secondsToInstant(createDto.getPlannedFinishDate()))
+                .setFactStartDate(secondsToInstant(createDto.getFactStartDate()))
+                .setFactFinishDate(secondsToInstant(createDto.getFactFinishDate()))
                 .setProgressPercent(createDto.getProgressPercent());
 
         p.getMilestones().add(m);
@@ -54,10 +54,10 @@ public class MilestoneServiceImpl implements MilestoneService {
         Milestone m = findMilestoneByIdOrThrow(milestoneId);
         m.setName(newData.getName());
         m.setDescription(newData.getDescription());
-        m.setPlannedStartDate(millisToInstant(newData.getPlannedStartDate()));
-        m.setPlannedFinishDate(millisToInstant(newData.getPlannedFinishDate()));
-        m.setFactStartDate(millisToInstant(newData.getFactStartDate()));
-        m.setFactFinishDate(millisToInstant(newData.getFactFinishDate()));
+        m.setPlannedStartDate(secondsToInstant(newData.getPlannedStartDate()));
+        m.setPlannedFinishDate(secondsToInstant(newData.getPlannedFinishDate()));
+        m.setFactStartDate(secondsToInstant(newData.getFactStartDate()));
+        m.setFactFinishDate(secondsToInstant(newData.getFactFinishDate()));
         m.setProgressPercent(newData.getProgressPercent());
     }
 

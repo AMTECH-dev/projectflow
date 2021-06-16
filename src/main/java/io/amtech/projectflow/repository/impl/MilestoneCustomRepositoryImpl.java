@@ -15,7 +15,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.amtech.projectflow.util.DateUtil.millisToInstant;
+import static io.amtech.projectflow.util.DateUtil.secondsToInstant;
 import static io.amtech.projectflow.util.OrderUtil.parseOrder;
 
 @Repository
@@ -46,49 +46,49 @@ public class MilestoneCustomRepositoryImpl implements MilestoneCustomRepository 
                 .ifPresent(
                         p -> predicates.add(builder
                                 .greaterThanOrEqualTo(joinMilestone.get(Milestone_.PLANNED_START_DATE),
-                                        millisToInstant(Long.parseLong(p))))
+                                        secondsToInstant(Long.parseLong(p))))
                 );
         criteria.getFilter(Milestone_.PLANNED_START_DATE + toRangeKey)
                 .ifPresent(
                         p -> predicates.add(builder
                                 .lessThanOrEqualTo(joinMilestone.get(Milestone_.PLANNED_START_DATE),
-                                        millisToInstant(Long.parseLong(p))))
+                                        secondsToInstant(Long.parseLong(p))))
                 );
         criteria.getFilter(Milestone_.PLANNED_FINISH_DATE + fromRangeKey)
                 .ifPresent(
                         p -> predicates.add(builder
                                 .greaterThanOrEqualTo(joinMilestone.get(Milestone_.PLANNED_FINISH_DATE),
-                                        millisToInstant(Long.parseLong(p))))
+                                        secondsToInstant(Long.parseLong(p))))
                 );
         criteria.getFilter(Milestone_.PLANNED_FINISH_DATE + toRangeKey)
                 .ifPresent(
                         p -> predicates.add(builder
                                 .lessThanOrEqualTo(joinMilestone.get(Milestone_.PLANNED_FINISH_DATE),
-                                        millisToInstant(Long.parseLong(p))))
+                                        secondsToInstant(Long.parseLong(p))))
                 );
         criteria.getFilter(Milestone_.FACT_START_DATE + fromRangeKey)
                 .ifPresent(
                         p -> predicates.add(builder
                                 .greaterThanOrEqualTo(joinMilestone.get(Milestone_.FACT_START_DATE),
-                                        millisToInstant(Long.parseLong(p))))
+                                        secondsToInstant(Long.parseLong(p))))
                 );
         criteria.getFilter(Milestone_.FACT_START_DATE + toRangeKey)
                 .ifPresent(
                         p -> predicates.add(builder
                                 .lessThanOrEqualTo(joinMilestone.get(Milestone_.FACT_START_DATE),
-                                        millisToInstant(Long.parseLong(p))))
+                                        secondsToInstant(Long.parseLong(p))))
                 );
         criteria.getFilter(Milestone_.FACT_FINISH_DATE + fromRangeKey)
                 .ifPresent(
                         p -> predicates.add(builder
                                 .greaterThanOrEqualTo(joinMilestone.get(Milestone_.FACT_FINISH_DATE),
-                                        millisToInstant(Long.parseLong(p))))
+                                        secondsToInstant(Long.parseLong(p))))
                 );
         criteria.getFilter(Milestone_.FACT_FINISH_DATE + toRangeKey)
                 .ifPresent(
                         p -> predicates.add(builder
                                 .lessThanOrEqualTo(joinMilestone.get(Milestone_.FACT_FINISH_DATE),
-                                        millisToInstant(Long.parseLong(p))))
+                                        secondsToInstant(Long.parseLong(p))))
                 );
         criteria.getFilter(Milestone_.PROGRESS_PERCENT)
                 .ifPresent(

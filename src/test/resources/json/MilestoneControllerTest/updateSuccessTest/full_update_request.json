@@ -1,9 +1,9 @@
 {
   "name": "Разработка проектной документации",
   "description": "Разработана документация проекта",
-  "plannedStartDate" : 1623330100111,
-  "plannedFinishDate" : 1623330101111,
-  "factStartDate" : 1623330100111,
-  "factFinishDate" : 1623330101111,
+  "plannedStartDate" : 1623320100,
+  "plannedFinishDate" : 1623420101,
+  "factStartDate" : 1623320100,
+  "factFinishDate" : 1623420101,
   "progressPercent" : 50
 }

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
-import static io.amtech.projectflow.util.DateUtil.millisToInstant;
+import static io.amtech.projectflow.util.DateUtil.secondsToInstant;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,10 +49,10 @@ public class MilestoneControllerTest extends IntegrationTest {
                                 .setId(1L)
                                 .setName("Разработка проектной документации")
                                 .setDescription("Разработана документация проекта")
-                                .setPlannedStartDate(millisToInstant(1623330100111L))
-                                .setPlannedFinishDate(millisToInstant(1623330101111L))
-                                .setFactStartDate(millisToInstant(1623330100211L))
-                                .setFactFinishDate(millisToInstant(1623330101211L))
+                                .setPlannedStartDate(secondsToInstant(1623320100L))
+                                .setPlannedFinishDate(secondsToInstant(1623420101L))
+                                .setFactStartDate(secondsToInstant(1623320100L))
+                                .setFactFinishDate(secondsToInstant(1623420101L))
                                 .setProgressPercent((short) 23)
                 ),
                 Arguments.arguments(
@@ -62,8 +62,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                         new Milestone()
                                 .setId(1L)
                                 .setName("Печать комплекта документов")
-                                .setPlannedStartDate(millisToInstant(1623320100111L))
-                                .setPlannedFinishDate(millisToInstant(1623320101111L))
+                                .setPlannedStartDate(secondsToInstant(1623320100L))
+                                .setPlannedFinishDate(secondsToInstant(1623420101L))
                                 .setProgressPercent((short) 13)
                 ),
                 Arguments.arguments(
@@ -74,8 +74,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                                 .setId(1L)
                                 .setName(maxNameValue)
                                 .setDescription(maxDescriptionValue)
-                                .setPlannedStartDate(millisToInstant(1623320100111L))
-                                .setPlannedFinishDate(millisToInstant(1623320101111L))
+                                .setPlannedStartDate(secondsToInstant(1623320100L))
+                                .setPlannedFinishDate(secondsToInstant(1623420101L))
                                 .setProgressPercent((short) 13)
                 )
         );
@@ -237,10 +237,10 @@ public class MilestoneControllerTest extends IntegrationTest {
                                 .setId(22L)
                                 .setName("Разработка проектной документации")
                                 .setDescription("Разработана документация проекта")
-                                .setPlannedStartDate(millisToInstant(1623330100111L))
-                                .setPlannedFinishDate(millisToInstant(1623330101111L))
-                                .setFactStartDate(millisToInstant(1623330100111L))
-                                .setFactFinishDate(millisToInstant(1623330101111L))
+                                .setPlannedStartDate(secondsToInstant(1623320100L))
+                                .setPlannedFinishDate(secondsToInstant(1623420101L))
+                                .setFactStartDate(secondsToInstant(1623320100L))
+                                .setFactFinishDate(secondsToInstant(1623420101L))
                                 .setProgressPercent((short) 50)
                 ),
                 Arguments.arguments(
@@ -249,8 +249,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                         new Milestone()
                                 .setId(22L)
                                 .setName("Разработка проектной документации")
-                                .setPlannedStartDate(millisToInstant(1623330100111L))
-                                .setPlannedFinishDate(millisToInstant(1623330101111L))
+                                .setPlannedStartDate(secondsToInstant(1623320100L))
+                                .setPlannedFinishDate(secondsToInstant(1623420101L))
                                 .setProgressPercent((short) 40)
                 )
         );
@@ -334,8 +334,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                 .setId(11L)
                 .setName("do sth really important 1")
                 .setDescription("")
-                .setPlannedStartDate(millisToInstant(1623330100111L))
-                .setPlannedFinishDate(millisToInstant(1623330101111L))
+                .setPlannedStartDate(secondsToInstant(1623320100L))
+                .setPlannedFinishDate(secondsToInstant(1623420101L))
                 .setProgressPercent((short) 45);
 
         List<Milestone> milestonesBeforeUpdate = repository.findAll();
@@ -476,15 +476,15 @@ public class MilestoneControllerTest extends IntegrationTest {
                 ),
                 Arguments.arguments(
                         "search_success_by_start_date", 11L,
-                        "?plannedStartDateFrom=1623330100111" +
-                                "&plannedStartDateTo=1623600529118" +
+                        "?plannedStartDateFrom=1623320100" +
+                                "&plannedStartDateTo=1623420101" +
                                 "&limit=2",
                         buildJson("searchSuccessTest/filter_by_start_date_response.json")
                 ),
                 Arguments.arguments(
                         "search_success_by_finish_date", 11L,
-                        "?plannedFinishDateFrom=1623390101111" +
-                                "&plannedFinishDateTo=1623430101111",
+                        "?plannedFinishDateFrom=1623520100" +
+                                "&plannedFinishDateTo=1623920101",
                         buildJson("searchSuccessTest/filter_by_finish_date_response.json")
                 )
         );

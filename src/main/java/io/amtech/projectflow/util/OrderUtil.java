@@ -10,14 +10,14 @@ public class OrderUtil {
     private OrderUtil() {
     }
 
-    public static Order parseOrder(final Path<?> root, final String order) {
+    public static Order parseOrder(final Path<?> path, final String orderField) {
         try {
-            if (order.startsWith("-"))
-                return new OrderImpl(root.get(order.substring(1)), false);
+            if (orderField.startsWith("-"))
+                return new OrderImpl(path.get(orderField.substring(1)), false);
 
-            return new OrderImpl(root.get(order));
+            return new OrderImpl(path.get(orderField));
         } catch (IllegalArgumentException e) {
-            throw new InvalidOrderException(order);
+            throw new InvalidOrderException(orderField);
         }
     }
 }

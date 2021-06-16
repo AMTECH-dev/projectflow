@@ -19,8 +19,8 @@ values (11, 'First', 33, 11, '', current_timestamp, 'UNAPPROVED'),
 
 insert into pf.milestone(id, project_id, name, description, planned_start_date, planned_finish_date,
                          fact_start_date, fact_finish_date, progress_percent)
-values (11, 11, 'do sth really important 1', '', '2021-06-10T13:01:40.111Z', '2021-06-10T13:01:41.111Z', null, null, 50),
-       (22, 11, 'do sth really important 2', '', '2021-06-10T13:01:40.111Z', '2021-06-10T13:01:41.111Z', null, null, 40),
-       (33, 33, 'do sth really important 3', '', '2021-06-10T13:01:40.111Z', '2021-06-10T13:01:41.111Z', null, null, 30),
-       (44, 44, 'do sth really important 4', '', '2021-06-10T13:01:40.111Z', '2021-06-10T13:01:41.111Z', null, null, 20),
-       (55, 55, 'do sth really important 5', '', '2021-06-10T13:01:40.111Z', '2021-06-10T13:01:41.111Z', null, null, 10);
+values (11, 11, 'do sth really important 1', '', '2021-06-10T10:15:00Z', '2021-06-11T14:01:41Z', null, null, 50),
+       (22, 11, 'do sth really important 2', '', '2021-06-10T10:15:00Z', '2021-06-11T14:01:41Z', null, null, 40),
+       (33, 33, 'do sth really important 3', '', '2021-06-10T10:15:00Z', '2021-06-11T14:01:41Z', null, null, 30),
+       (44, 44, 'do sth really important 4', '', '2021-06-10T10:15:00Z', '2021-06-11T14:01:41Z', null, null, 20),
+       (55, 55, 'do sth really important 5', '', '2021-06-10T10:15:00Z', '2021-06-11T14:01:41Z', null, null, 10);

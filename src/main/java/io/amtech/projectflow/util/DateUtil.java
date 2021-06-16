@@ -7,15 +7,15 @@ public class DateUtil {
     private DateUtil() {
     }
 
-    public static Instant millisToInstant(Long millis) {
-        return Optional.ofNullable(millis)
-                .map(Instant::ofEpochMilli)
+    public static Instant secondsToInstant(Long seconds) {
+        return Optional.ofNullable(seconds)
+                .map(Instant::ofEpochSecond)
                 .orElse(null);
     }
 
-    public static Long instantToMillis(Instant instant) {
+    public static Long instantToSeconds(Instant instant) {
         return Optional.ofNullable(instant)
-                .map(Instant::toEpochMilli)
+                .map(Instant::getEpochSecond)
                 .orElse(null);
     }
 }

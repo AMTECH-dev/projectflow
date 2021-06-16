@@ -2,8 +2,8 @@
   "id" : 11,
   "name": "do sth really important 1",
   "description": "",
-  "plannedStartDate" : 1623330100111,
-  "plannedFinishDate" : 1623330101111,
+  "plannedStartDate" : 1623320100,
+  "plannedFinishDate" : 1623420101,
   "factStartDate" : null,
   "factFinishDate" : null,
   "progressPercent" : 50
