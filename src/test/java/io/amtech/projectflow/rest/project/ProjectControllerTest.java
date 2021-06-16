@@ -41,18 +41,14 @@ class ProjectControllerTest extends IntegrationTest {
                                 .setId(1L)
                                 .setName("Mail")
                                 .setDescription("Better project")
-                                .setCreateDate(Instant.ofEpochSecond(1615620420))
-        ));
-
-
+                                .setCreateDate(Instant.ofEpochSecond(1615620420))));
     }
 
     @ParameterizedTest
     @MethodSource("createSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectControllerTest/createSuccessTest/exists_project.sql"
-    })
+            "classpath:db/ProjectControllerTest/createSuccessTest/exists_project.sql"})
     void createSuccessTest(final String request, final String response, final Project project) {
 
         mvc.perform(TestUtils
@@ -72,8 +68,6 @@ class ProjectControllerTest extends IntegrationTest {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @SuppressWarnings("unused")
     static Stream<Arguments> createFailTestArgs() {
-
-
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
                         buildJson("createFailTest/name_is_missing_response.json"),
@@ -81,16 +75,14 @@ class ProjectControllerTest extends IntegrationTest {
 
                 Arguments.arguments(buildJson("createFailTest/direction_is_missing_request.json"),
                         buildJson("createFailTest/direction_is_missing_response.json"),
-                        HttpStatus.INTERNAL_SERVER_ERROR.value())
-
-        );
+                        HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }
 
     @ParameterizedTest
     @MethodSource("createFailTestArgs")
     @SneakyThrows
     void createFailTest(final String request, final String response, int httpStatus) {
-        // setup
+
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
@@ -98,7 +90,7 @@ class ProjectControllerTest extends IntegrationTest {
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
 
-        // then
+
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .isEmpty();
     }
@@ -111,11 +103,7 @@ class ProjectControllerTest extends IntegrationTest {
                                 .setId(1L)
                                 .setName("Do")
                                 .setDescription("bad project")
-                                .setCreateDate(Instant.ofEpochSecond(1623239343))
-
-                )
-
-        );
+                                .setCreateDate(Instant.ofEpochSecond(1623239343))));
     }
 
     @ParameterizedTest
@@ -153,9 +141,7 @@ class ProjectControllerTest extends IntegrationTest {
                 Arguments.arguments(1L,
                         buildJson("updateFailTest/name_is_null_update_request.json"),
                         buildJson("updateFailTest/name_is_null_update_response.json"),
-                        HttpStatus.BAD_REQUEST.value())
-
-        );
+                        HttpStatus.BAD_REQUEST.value()));
     }
 
     @ParameterizedTest
@@ -175,18 +161,13 @@ class ProjectControllerTest extends IntegrationTest {
         return Stream.of(Arguments.arguments(1));
     }
 
-    private static String buildJson(final String resource, Object... args) {
-        String template = TestUtils.readClassPathResourceAsString(
-                "json/ProjectControllerTest/" + resource);
 
-        return String.format(template, args);
-    }
+
     @ParameterizedTest
     @MethodSource("deleteSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectControllerTest/deleteSuccessTest/project.sql"
-    })
+            "classpath:db/ProjectControllerTest/deleteSuccessTest/project.sql"})
 
     void deleteSuccessTest(long id) {
         List<Project> projectBeforeDelete = repository.findAll();
@@ -195,8 +176,6 @@ class ProjectControllerTest extends IntegrationTest {
                 .createDelete(String.format(BASE_ID_URL, id)))
                 .andDo(print())
                 .andExpect(status().isOk());
-
-
 
         Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
                 .isTrue();
@@ -253,8 +232,7 @@ class ProjectControllerTest extends IntegrationTest {
     @MethodSource("getSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/ProjectControllerTest/getTest/get_project.sql"
-    })
+            "classpath:db/ProjectControllerTest/getTest/get_project.sql" })
     void getSuccessTest(final long id, final String response, int httpStatus) {
         mvc.perform(TestUtils
                 .createGet(String.format(BASE_ID_URL,id)))
@@ -342,7 +320,12 @@ class ProjectControllerTest extends IntegrationTest {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+    private static String buildJson(final String resource, Object... args) {
+        String template = TestUtils.readClassPathResourceAsString(
+                "json/ProjectControllerTest/" + resource);
 
+        return String.format(template, args);
+    }
 
 
 
