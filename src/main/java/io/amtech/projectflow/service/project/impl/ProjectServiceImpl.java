@@ -9,13 +9,12 @@ import io.amtech.projectflow.domain.project.Project;
 import io.amtech.projectflow.repository.DirectionRepository;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.repository.ProjectRepository;
-import io.amtech.projectflow.service.project.ProjectCreateDto;
-import io.amtech.projectflow.service.project.ProjectDto;
-import io.amtech.projectflow.service.project.ProjectService;
-import io.amtech.projectflow.service.project.ProjectUpdateDto;
+import io.amtech.projectflow.service.project.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +34,14 @@ public class ProjectServiceImpl implements ProjectService {
                 .setDescription(projectCreateDto.getDescription())
                 .setDirection(direction)
                 .setProjectLead(employee)
-                .setCreateDate(projectCreateDto.getCreateDate());
+                .setCreateDate(Instant.ofEpochSecond(projectCreateDto.getCreateDate()));;
         projectRepository.save(p);
         return new ProjectDto(p);
     }
 
     @Override
-    public ProjectDto get(long id) {
-        return new ProjectDto(findByIdOrThrow(id));
+    public ProjectGetByIdDto get(long id) {
+        return new ProjectGetByIdDto(findByIdOrThrow(id));
     }
 
     private Project findByIdOrThrow(long id) {
@@ -52,14 +51,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void update(long id, ProjectUpdateDto projectUpdateDto) {
-//        Direction direction = directionRepository.findById(projectUpdateDto.getDirectionId()).get();
-//        Employee employee = employeeRepository.findById(projectUpdateDto.getProjectLeadId()).get();
-//
-//        Project p = findByIdOrThrow(id)
-//                .setName(projectUpdateDto.getName())
-//                .setDescription(projectUpdateDto.getDescription())
-//                .setDirection(direction)
-//                .setProjectLead(employee);
+        Direction direction = directionRepository.findById(projectUpdateDto.getDirectionId()).get();
+        Employee employee = employeeRepository.findById(projectUpdateDto.getProjectLeadId()).get();
+
+        Project p = findByIdOrThrow(id)
+                .setName(projectUpdateDto.getName())
+                .setDescription(projectUpdateDto.getDescription())
+                .setDirection(direction)
+                .setProjectLead(employee);
     }
 
     @Override

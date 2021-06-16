@@ -5,6 +5,7 @@ import io.amtech.projectflow.domain.Direction;
 import io.amtech.projectflow.domain.employee.Employee;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -29,6 +30,15 @@ import java.util.Set;
         name = "project_status",
         typeClass = PostgreSQLEnumType.class
 )
+
+
+@ToString(exclude = {
+        "milestones",
+        "projectComments",
+        "direction",
+        "projectLead",
+        "history"
+})
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

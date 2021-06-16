@@ -1,9 +1,6 @@
 package io.amtech.projectflow.rest.project;
 
-import io.amtech.projectflow.domain.employee.Employee;
 import io.amtech.projectflow.domain.project.Project;
-import io.amtech.projectflow.repository.DirectionRepository;
-import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.repository.ProjectRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -14,26 +11,21 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static io.amtech.projectflow.test.TestUtils.strMultiple;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class ProjectControllerTest extends IntegrationTest {
     private static final String BASE_URL = "/projects";
-    private final static String MAX_NAME_VALUE = strMultiple("a", 255);
-
     private static final String BASE_ID_URL = BASE_URL + "/%d";
-    @Autowired
-    static private EmployeeRepository employeeRepository;
-    @Autowired
-    static private DirectionRepository directionRepository;
+
     @Autowired
     private ProjectRepository repository;
 
@@ -48,7 +40,9 @@ class ProjectControllerTest extends IntegrationTest {
                         new Project()
                                 .setId(1L)
                                 .setName("Mail")
-                                .setDescription("Better project")));
+                                .setDescription("Better project")
+                                .setCreateDate(Instant.ofEpochSecond(1615620420))
+        ));
 
 
     }
@@ -68,14 +62,14 @@ class ProjectControllerTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
 
-        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
-                .hasSize(3);
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll().size()))
+               .isEqualTo(3);
 
         Assertions.assertThat(txUtil.txRun(() -> repository.findById(1L)))
-                .isPresent()
-                .contains(project);
-    }
+                .isPresent().get().isEqualTo(project);
 
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @SuppressWarnings("unused")
     static Stream<Arguments> createFailTestArgs() {
 
@@ -108,14 +102,17 @@ class ProjectControllerTest extends IntegrationTest {
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .isEmpty();
     }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     static Stream<Arguments> updateSuccessArgs() {
         return Stream.of(
                 Arguments.arguments(1L,
                         buildJson("updateSuccessTest/update_full_request.json"),
                         new Project()
+                                .setId(1L)
                                 .setName("Do")
                                 .setDescription("bad project")
+                                .setCreateDate(Instant.ofEpochSecond(1623239343))
+
                 )
 
         );
@@ -129,7 +126,7 @@ class ProjectControllerTest extends IntegrationTest {
         List<Project> existEmpBefore = repository.findAll();
 
         mvc.perform(TestUtils
-                .createPut(BASE_URL + "/" + id)
+                .createPut(String.format(BASE_ID_URL, id))
                 .content(request))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -149,7 +146,7 @@ class ProjectControllerTest extends IntegrationTest {
             }
         }
     }
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static Stream<Arguments> updateFailedArgs() {
         return Stream.of(
@@ -173,7 +170,7 @@ class ProjectControllerTest extends IntegrationTest {
                 .andExpect(status().is(expectedStatus))
                 .andExpect(content().json(response, true));
     }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
     static Stream<Arguments> deleteSuccessTestArgs() {
         return Stream.of(Arguments.arguments(1));
     }
@@ -184,7 +181,35 @@ class ProjectControllerTest extends IntegrationTest {
 
         return String.format(template, args);
     }
+    @ParameterizedTest
+    @MethodSource("deleteSuccessTestArgs")
+    @SneakyThrows
+    @Sql(scripts = {
+            "classpath:db/ProjectControllerTest/deleteSuccessTest/project.sql"
+    })
 
+    void deleteSuccessTest(long id) {
+        List<Project> projectBeforeDelete = repository.findAll();
+
+        mvc.perform(TestUtils
+                .createDelete(String.format(BASE_ID_URL, id)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+
+
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
+                .isTrue();
+
+        Assertions.assertThat(projectBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
+
+        List<Project> projectAfterDelete = txUtil.txRun(() -> repository.findAll());
+        for (Project project : projectBeforeDelete) {
+            Assertions.assertThat(projectAfterDelete.stream().filter(project::equals).findFirst())
+                    .isNotEmpty();
+        }
+    }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static Stream<Arguments> deleteFailTestArgs() {
         return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()),
@@ -215,34 +240,7 @@ class ProjectControllerTest extends IntegrationTest {
 
     }
 
-    @ParameterizedTest
-    @MethodSource("getSuccessTestArgs")
-    @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectControllerTest/deleteSuccessTest/project.sql"
-    })
-    void deleteSuccessTest(long id) {
-        List<Project> projectBeforeDelete = repository.findAll();
-
-        mvc.perform(TestUtils
-                .createDelete(String.format(BASE_ID_URL, id)))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-
-
-        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
-                .isTrue();
-
-        Assertions.assertThat(projectBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
-
-        List<Project> projectAfterDelete = txUtil.txRun(() -> repository.findAll());
-        for (Project project : projectBeforeDelete) {
-            Assertions.assertThat(projectAfterDelete.stream().filter(project::equals).findFirst())
-                    .isNotEmpty();
-        }
-    }
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     static Stream<Arguments> getSuccessTestArgs() {
         return Stream.of(
                 Arguments.arguments(1L,
@@ -261,10 +259,10 @@ class ProjectControllerTest extends IntegrationTest {
         mvc.perform(TestUtils
                 .createGet(String.format(BASE_ID_URL,id)))
                 .andDo(print())
-                .andExpect(status().is(httpStatus));
-//                .andExpect(content().json(response, false));
+                .andExpect(status().is(httpStatus))
+            .andExpect(content().json(response, false));
     }
-
+///////////////////////////////////////////////////////////////////////////////////////////
     static Stream<Arguments> getFailTestArgs() {
         return Stream.of(
                 Arguments.arguments(99, buildJson("getFailTest/wrong_response.json"),
@@ -292,7 +290,7 @@ class ProjectControllerTest extends IntegrationTest {
                 .isFalse();
     }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @SuppressWarnings("unused")
     static Stream<Arguments> searchSuccessTestArgs() {
@@ -318,7 +316,7 @@ class ProjectControllerTest extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
     }
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @SuppressWarnings("unused")
     static Stream<Arguments> searchFailArgs() {
         return Stream.of(
@@ -336,13 +334,12 @@ class ProjectControllerTest extends IntegrationTest {
             "classpath:db/EmployeeControllerTest/searchFailTest/data.sql"
     })
     void searchFailTest(final String url, final String response, int status) {
-        // setup
         mvc.perform(TestUtils.createGet(BASE_URL + url))
                 .andDo(print())
                 .andExpect(status().is(status))
                 .andExpect(content().json(response, true));
     }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

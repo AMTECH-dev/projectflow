@@ -7,7 +7,7 @@ import io.amtech.projectflow.service.employee.EmployeeDto;
 public interface ProjectService {
     ProjectDto create(ProjectCreateDto projectCreateDto);
 
-    ProjectDto get(long id);
+    ProjectGetByIdDto get(long id);
 
     void update(long id, ProjectUpdateDto projectUpdateDto);
 

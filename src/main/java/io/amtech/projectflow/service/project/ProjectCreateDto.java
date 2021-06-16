@@ -21,5 +21,5 @@ public class ProjectCreateDto {
     @Length(max = 2048)
     String description;
 
-    Instant createDate;
+    long createDate;
 }

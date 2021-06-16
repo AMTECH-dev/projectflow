@@ -3,21 +3,23 @@ package io.amtech.projectflow.service.project;
 import io.amtech.projectflow.domain.Direction;
 import io.amtech.projectflow.domain.employee.Employee;
 import io.amtech.projectflow.domain.project.*;
+import lombok.Getter;
 import lombok.Value;
 
 import java.time.Instant;
 import java.util.Set;
 
-@Value
+@Getter
+
 public class ProjectDto {
 
-    Long id;
-    String name;
-    long projectLeadId;
-    long directionId;
-    String description;
-    long createDate;
-    ProjectStatus projectStatus;
+    private final long id;
+    private final String name;
+    private final long projectLeadId;
+    private final long directionId;
+    private final String description;
+    private final long createDate;
+    private final ProjectStatus projectStatus;
 
 
     public ProjectDto(final Project project) {

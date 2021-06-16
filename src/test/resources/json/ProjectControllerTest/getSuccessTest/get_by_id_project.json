@@ -1,3 +1,10 @@
 {
-
+  "id": 1,
+  "name": "One",
+  "projectLeadId": 1,
+  "directionId": 1,
+  "description": "message 1",
+  "createDate": 1623239343839,
+  "projectStatus": "UNAPPROVED",
+  "milestones": []
 }

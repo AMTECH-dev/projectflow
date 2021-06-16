@@ -4,10 +4,7 @@ import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.app.general.SearchCriteriaBuilder;
 import io.amtech.projectflow.domain.project.Project_;
-import io.amtech.projectflow.service.project.ProjectCreateDto;
-import io.amtech.projectflow.service.project.ProjectDto;
-import io.amtech.projectflow.service.project.ProjectService;
-import io.amtech.projectflow.service.project.ProjectUpdateDto;
+import io.amtech.projectflow.service.project.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +30,8 @@ public class ProjectController {
     }
 
     @GetMapping({"{id}"})
-    public void get(@PathVariable long id) {
-        projectService.get(id);
+    public ProjectGetByIdDto get(@PathVariable long id) {
+        return projectService.get(id);
     }
 
     @DeleteMapping("{id}")
