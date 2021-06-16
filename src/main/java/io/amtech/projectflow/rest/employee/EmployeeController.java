@@ -3,7 +3,6 @@ package io.amtech.projectflow.rest.employee;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.app.general.SearchCriteriaBuilder;
-import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.service.employee.EmployeeCreateDto;
 import io.amtech.projectflow.service.employee.EmployeeUpdateDto;
 import io.amtech.projectflow.service.employee.EmployeeDto;

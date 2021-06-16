@@ -2,7 +2,6 @@ package io.amtech.projectflow.rest.project_comment;
 
 import io.amtech.projectflow.domain.project.ProjectComment;
 import io.amtech.projectflow.repository.ProjectCommentRepository;
-import io.amtech.projectflow.repository.ProjectRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
 import lombok.SneakyThrows;
@@ -28,8 +27,6 @@ class ProjectCommentControllerTest extends IntegrationTest {
 
     @Autowired
     private ProjectCommentRepository commentRepository;
-    @Autowired
-    private ProjectRepository projectRepository;
 
     @SuppressWarnings("unused")
     static Stream<Arguments> createProjectCommentSuccessTestArgs() {
