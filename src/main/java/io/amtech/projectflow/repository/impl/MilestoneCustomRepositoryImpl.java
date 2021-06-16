@@ -21,7 +21,7 @@ import static io.amtech.projectflow.util.OrderUtil.parseOrder;
 @Repository
 public class MilestoneCustomRepositoryImpl implements MilestoneCustomRepository {
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
 
     @Override
     public PagedData<Milestone> search(final long projectId, final SearchCriteria criteria) {
