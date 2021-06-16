@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Objects;
-import java.util.Optional;
+
+import static io.amtech.projectflow.util.ConvertingUtil.objToString;
 
 @RestController
 @RequestMapping("/projects/{projectId}/milestones")
@@ -19,52 +19,52 @@ public class MilestoneController {
     private final MilestoneService milestoneService;
 
     @PostMapping
-    MilestoneDto create(@PathVariable long projectId,
-                        @RequestBody @Valid MilestoneCreateDto dto) {
+    public MilestoneDto create(@PathVariable long projectId,
+                               @RequestBody @Valid MilestoneCreateDto dto) {
         return milestoneService.create(projectId, dto);
     }
 
     @GetMapping("{milestoneId}")
-    MilestoneDto get(@PathVariable long projectId,
-                     @PathVariable long milestoneId) {
+    public MilestoneDto get(@PathVariable long projectId,
+                            @PathVariable long milestoneId) {
         return milestoneService.get(projectId, milestoneId);
     }
 
     @PutMapping("{milestoneId}")
-    void update(@PathVariable long projectId,
-                @PathVariable long milestoneId,
-                @RequestBody @Valid MilestoneUpdateDto dto) {
+    public void update(@PathVariable long projectId,
+                       @PathVariable long milestoneId,
+                       @RequestBody @Valid MilestoneUpdateDto dto) {
         milestoneService.update(projectId, milestoneId, dto);
     }
 
     @PatchMapping("{milestoneId}")
-    void updateProgressPercent(@PathVariable long projectId,
-                               @PathVariable long milestoneId,
-                               @RequestBody @Valid MilestoneUpdateProgressDto updateProgressDto) {
+    public void updateProgressPercent(@PathVariable long projectId,
+                                      @PathVariable long milestoneId,
+                                      @RequestBody @Valid MilestoneUpdateProgressDto updateProgressDto) {
         milestoneService.updateProgressPercent(projectId, milestoneId, updateProgressDto);
     }
 
-        @DeleteMapping("{milestoneId}")
-    void delete(@PathVariable long projectId,
-                @PathVariable long milestoneId) {
+    @DeleteMapping("{milestoneId}")
+    public void delete(@PathVariable long projectId,
+                       @PathVariable long milestoneId) {
         milestoneService.delete(projectId, milestoneId);
     }
 
     @GetMapping
-    PagedData<MilestoneDto> search(@PathVariable long projectId,
-                                   @RequestParam(required = false, defaultValue = "100") Integer limit,
-                                   @RequestParam(required = false, defaultValue = "0") Integer offset,
-                                   @RequestParam(required = false, defaultValue = "name") String orders,
-                                   @RequestParam(required = false) String name,
-                                   @RequestParam(required = false) Long plannedStartDateFrom,
-                                   @RequestParam(required = false) Long plannedStartDateTo,
-                                   @RequestParam(required = false) Long plannedFinishDateFrom,
-                                   @RequestParam(required = false) Long plannedFinishDateTo,
-                                   @RequestParam(required = false) Long factStartDateFrom,
-                                   @RequestParam(required = false) Long factStartDateTo,
-                                   @RequestParam(required = false) Long factFinishDateFrom,
-                                   @RequestParam(required = false) Long factFinishDateTo,
-                                   @RequestParam(required = false) Short progressPercent) {
+    public PagedData<MilestoneDto> search(@PathVariable long projectId,
+                                          @RequestParam(required = false, defaultValue = "100") Integer limit,
+                                          @RequestParam(required = false, defaultValue = "0") Integer offset,
+                                          @RequestParam(required = false, defaultValue = "name") String orders,
+                                          @RequestParam(required = false) String name,
+                                          @RequestParam(required = false) Long plannedStartDateFrom,
+                                          @RequestParam(required = false) Long plannedStartDateTo,
+                                          @RequestParam(required = false) Long plannedFinishDateFrom,
+                                          @RequestParam(required = false) Long plannedFinishDateTo,
+                                          @RequestParam(required = false) Long factStartDateFrom,
+                                          @RequestParam(required = false) Long factStartDateTo,
+                                          @RequestParam(required = false) Long factFinishDateFrom,
+                                          @RequestParam(required = false) Long factFinishDateTo,
+                                          @RequestParam(required = false) Short progressPercent) {
         final String fromRangeKey = "From";
         final String toRangeKey = "To";
 
@@ -84,9 +84,5 @@ public class MilestoneController {
                 .order(orders)
                 .build();
         return milestoneService.search(projectId, criteria);
-    }
-
-    private static String objToString(Object o) {
-        return Optional.ofNullable(o).map(Objects::toString).orElse(null);
     }
 }

@@ -10,15 +10,15 @@ import javax.validation.constraints.NotNull;
 public class MilestoneCreateDto {
     @NotBlank
     @Length(max = 255)
-    String name;
+    private String name;
     @Length(max = 2048)
-    String description;
+    private String description;
     @NotNull
-    Long plannedStartDate;
+    private Long plannedStartDate;
     @NotNull
-    Long plannedFinishDate;
-    Long factStartDate;
-    Long factFinishDate;
+    private Long plannedFinishDate;
+    private Long factStartDate;
+    private Long factFinishDate;
     @NotNull
-    Short progressPercent;
+    private Short progressPercent;
 }

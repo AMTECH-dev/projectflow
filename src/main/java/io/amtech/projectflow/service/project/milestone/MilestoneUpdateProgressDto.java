@@ -7,5 +7,5 @@ import javax.validation.constraints.NotNull;
 @Data
 public class MilestoneUpdateProgressDto {
     @NotNull
-    Short progressPercent;
+    private Short progressPercent;
 }
