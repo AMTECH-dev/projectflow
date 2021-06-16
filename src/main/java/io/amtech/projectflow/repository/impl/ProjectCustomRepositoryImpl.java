@@ -5,7 +5,6 @@ import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.Direction;
 import io.amtech.projectflow.domain.employee.Employee;
-import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.domain.project.Project;
 import io.amtech.projectflow.domain.project.Project_;
 import io.amtech.projectflow.repository.ProjectCustomRepository;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
- public class ProjectCustomRepositoryImpl implements ProjectCustomRepository {
+public class ProjectCustomRepositoryImpl implements ProjectCustomRepository {
     @PersistenceContext
     EntityManager entityManager;
 
@@ -44,7 +43,7 @@ import java.util.List;
                 .ifPresent(v -> predicates.add(builder.like(builder.lower
                         (joinWithEmployeeTable.get(Project_.PROJECT_LEAD)), "%" + v.toLowerCase() + "%")));
 
-  criteria.getFilter(Project_.DIRECTION)
+        criteria.getFilter(Project_.DIRECTION)
                 .ifPresent(v -> predicates.add(builder.like(builder.lower
                         (joinDirectionalTable.get(Project_.DIRECTION)), "%" + v.toLowerCase() + "%")));
 
@@ -66,7 +65,6 @@ import java.util.List;
                         "%" + v.toUpperCase() + "%")));
 
 
-
         query.select(root)
                 .where(predicates.toArray(new Predicate[0]))
                 .orderBy(parseOrder(root, criteria.getOrder()));
@@ -79,6 +77,7 @@ import java.util.List;
 
         return new PagedData<>(result, criteria);
     }
+
     private Order parseOrder(Root<?> root, final String order) {
         try {
             if (order.startsWith("-")) {

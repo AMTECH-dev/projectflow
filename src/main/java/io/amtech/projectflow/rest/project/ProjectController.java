@@ -3,7 +3,7 @@ package io.amtech.projectflow.rest.project;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.app.general.SearchCriteriaBuilder;
-import io.amtech.projectflow.repository.DirectionRepository;
+import io.amtech.projectflow.domain.project.Project_;
 import io.amtech.projectflow.service.project.ProjectCreateDto;
 import io.amtech.projectflow.service.project.ProjectDto;
 import io.amtech.projectflow.service.project.ProjectService;
@@ -43,7 +43,6 @@ public class ProjectController {
     }
 
 
-
     @GetMapping
     public PagedData<ProjectDto> search(@RequestParam(required = false, defaultValue = "100") Integer limit,
                                         @RequestParam(required = false, defaultValue = "0") Integer offset,
@@ -53,16 +52,15 @@ public class ProjectController {
                                         @RequestParam(required = false) Long directionId,
                                         @RequestParam(required = false) Long createDataStart,
                                         @RequestParam(required = false) Long createDataEnd,
-                                        @RequestParam(required = false) String status)
-                                        {
+                                        @RequestParam(required = false) String status) {
         SearchCriteria criteria = new SearchCriteriaBuilder()
                 .limit(limit)
                 .offset(offset)
-                .filter("name", name)
-                .filter("projectLead", Optional.ofNullable(projectLead)
+                .filter(Project_.NAME, name)
+                .filter(Project_.PROJECT_LEAD, Optional.ofNullable(projectLead)
                         .map(Object::toString)
                         .orElse(null))
-                .filter("directionId", Optional.ofNullable(directionId)
+                .filter(Project_.DIRECTION, Optional.ofNullable(directionId)
                         .map(Object::toString)
                         .orElse(null))
                 .filter("createDataStart", Optional.ofNullable(createDataStart)
@@ -71,7 +69,7 @@ public class ProjectController {
                 .filter("createDataEnd", Optional.ofNullable(createDataEnd)
                         .map(Object::toString)
                         .orElse(null))
-                .filter("status", status)
+                .filter(Project_.PROJECT_STATUS, status)
                 .order(orders)
                 .build();
 

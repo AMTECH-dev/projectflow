@@ -1,6 +1,4 @@
 {
-  "message": "Validation error",
-  "errors": {
-    "direction": "must not be empty"
-  }
+  "message": "Internal server error",
+  "errors": {}
 }

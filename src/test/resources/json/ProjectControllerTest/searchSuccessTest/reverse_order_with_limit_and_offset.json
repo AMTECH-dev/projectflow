@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "One",
+      "projectLeadId": 1,
+      "directionId": 1,
+      "description": "message 1",
+      "createDate": 1623239343839,
+      "projectStatus": "UNAPPROVED"
+    },
+    {
+      "id": 4,
+      "name": "Four",
+      "projectLeadId": 2,
+      "directionId": 2,
+      "description": "message 4",
+      "createDate": 1625831343839,
+      "projectStatus": "ON_PL_PLANNING"
+    },
+    {
+      "id": 5,
+      "name": "Five",
+      "projectLeadId": 2,
+      "directionId": 2,
+      "description": "message 5",
+      "createDate": 1625831343839,
+      "projectStatus": "ON_PL_PLANNING"
+    }
+  ],
+  "meta": {
+    "limit": 3,
+    "offset": 2
+  }
+}
