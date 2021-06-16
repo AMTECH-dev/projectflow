@@ -42,6 +42,8 @@ class ProjectControllerTest extends IntegrationTest {
                                 .setName("Mail")
                                 .setDescription("Better project")
                                 .setCreateDate(Instant.ofEpochSecond(1615620420))));
+
+
     }
 
     @ParameterizedTest
@@ -75,7 +77,11 @@ class ProjectControllerTest extends IntegrationTest {
 
                 Arguments.arguments(buildJson("createFailTest/direction_is_missing_request.json"),
                         buildJson("createFailTest/direction_is_missing_response.json"),
-                        HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                        HttpStatus.INTERNAL_SERVER_ERROR.value()),
+
+                 Arguments.arguments(buildJson("createFailTest/without_description_request.json"),
+                        buildJson("createFailTest/without_description_response.json"),
+                        HttpStatus.BAD_REQUEST.value()));
     }
 
     @ParameterizedTest
@@ -141,6 +147,10 @@ class ProjectControllerTest extends IntegrationTest {
                 Arguments.arguments(1L,
                         buildJson("updateFailTest/name_is_null_update_request.json"),
                         buildJson("updateFailTest/name_is_null_update_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments(2L,
+                        buildJson("updateFailTest/only_name_update_request.json"),
+                        buildJson("updateFailTest/only_name_update_response.json"),
                         HttpStatus.BAD_REQUEST.value()));
     }
 
@@ -326,9 +336,5 @@ class ProjectControllerTest extends IntegrationTest {
 
         return String.format(template, args);
     }
-
-
-
-
 }
 

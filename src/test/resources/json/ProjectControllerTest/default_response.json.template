@@ -1,9 +1,0 @@
-{
-  "id": %d,
-  "name": "%s",
-  "projectLeadId": "%s",
-  "directionId": "%s",
-  "description": "%s",
-  "createDate": false
-  "status": false
-}
