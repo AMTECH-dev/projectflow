@@ -2,6 +2,7 @@ package io.amtech.projectflow.rest.project.milestone;
 
 import io.amtech.projectflow.domain.project.Milestone;
 import io.amtech.projectflow.repository.MilestoneRepository;
+import io.amtech.projectflow.repository.ProjectRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
 import lombok.SneakyThrows;
@@ -33,7 +34,9 @@ public class MilestoneControllerTest extends IntegrationTest {
             "MilestoneControllerTest/insert_milestones_for_custom_search.sql";
 
     @Autowired
-    private MilestoneRepository repository;
+    private MilestoneRepository milestoneRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
@@ -88,16 +91,17 @@ public class MilestoneControllerTest extends IntegrationTest {
     void createSuccessTest(@SuppressWarnings("unused") final String testName, final long projectId,
                            final String request, final String response, final Milestone m) {
         mvc.perform(TestUtils
-                .createPost(changeProjectIdInUrl(BASE_URL, projectId))
+                .createPost(putIdInUrl(BASE_URL, projectId))
                 .content(request))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
 
-        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
+        Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(projectId)))
+                .isPresent();
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findAll()))
                 .hasSize(6);
-
-        Assertions.assertThat(txUtil.txRun(() -> repository.findById(1L)))
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(1L)))
                 .isPresent()
                 .contains(m);
     }
@@ -146,6 +150,12 @@ public class MilestoneControllerTest extends IntegrationTest {
                         buildJson("createFailTest/int_instead_short_request.json"),
                         buildJson("createFailTest/int_instead_short_response.json"),
                         HttpStatus.BAD_REQUEST.value()
+                ),
+                Arguments.arguments(
+                        "create_fail_wrong_project_id", 1111L,
+                        buildJson("createFailTest/wrong_project_id_request.json"),
+                        buildJson("createFailTest/wrong_project_id_response.json"),
+                        HttpStatus.NOT_FOUND.value()
                 )
         );
     }
@@ -156,13 +166,13 @@ public class MilestoneControllerTest extends IntegrationTest {
     void createFailTest(@SuppressWarnings("unused") final String testName, final long projectId,
                         final String request, final String response, final int httpStatus) {
         mvc.perform(TestUtils
-                .createPost(changeProjectIdInUrl(BASE_URL, projectId))
+                .createPost(putIdInUrl(BASE_URL, projectId))
                 .content(request))
                 .andDo(print())
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
 
-        Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findAll()))
                 .isEmpty();
     }
 
@@ -188,8 +198,11 @@ public class MilestoneControllerTest extends IntegrationTest {
     @Sql(INSERT_MILESTONES_QUERY)
     void getSuccessTest(@SuppressWarnings("unused") final String testName, final long projectId,
                         final long milestoneId, final String response, final int httpStatus) {
+        Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(projectId))).isPresent();
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(milestoneId))).isPresent();
+
         mvc.perform(TestUtils
-                .createGet(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId)))
+                .createGet(String.format(putIdInUrl(BASE_ID_URL, projectId), milestoneId)))
                 .andDo(print())
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
@@ -218,13 +231,14 @@ public class MilestoneControllerTest extends IntegrationTest {
     void getFailTest(@SuppressWarnings("unused") final String testName, final long projectId,
                      final long milestoneId, final String response, final int httpStatus) {
         mvc.perform(TestUtils
-                .createGet(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId)))
+                .createGet(String.format(putIdInUrl(BASE_ID_URL, projectId), milestoneId)))
                 .andDo(print())
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, false));
 
-        Assertions.assertThat(repository.findById(milestoneId))
-                .isNotPresent();
+        if (txUtil.txRun(() -> projectRepository.findById(projectId).isPresent()))
+            Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.existsById(milestoneId)))
+                    .isFalse();
     }
 
     @SuppressWarnings("unused")
@@ -262,25 +276,26 @@ public class MilestoneControllerTest extends IntegrationTest {
     @Sql(INSERT_MILESTONES_QUERY)
     void updateSuccessTest(@SuppressWarnings("unused") final String testName, final long projectId,
                            final long milestoneId, final String request, final Milestone milestoneAfterUpdate) {
-        List<Milestone> milestonesBeforeUpdate = repository.findAll();
+        Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(projectId))).isPresent();
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(milestoneId))).isPresent();
+
+        List<Milestone> milestonesBeforeUpdate = milestoneRepository.findAll();
 
         mvc.perform(TestUtils
-                .createPut(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId))
+                .createPut(String.format(putIdInUrl(BASE_ID_URL, projectId), milestoneId))
                 .content(request))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         for (Milestone milestoneBeforeUpdate : milestonesBeforeUpdate) {
             if (milestoneBeforeUpdate.getId() == milestoneId)
-                Assertions.assertThat(txUtil.txRun(() -> repository.findById(milestoneId)))
-                        .isPresent()
+                Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(milestoneId)))
                         .get()
                         .isEqualTo(milestoneAfterUpdate);
             else
-                Assertions.assertThat(txUtil.txRun(() -> repository.findById(milestoneBeforeUpdate.getId())))
-                        .isPresent()
+                Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(milestoneBeforeUpdate.getId())))
                         .get()
-                        .isEqualTo(milestoneBeforeUpdate);
+                        .isNotEqualTo(milestoneAfterUpdate);
         }
     }
 
@@ -304,6 +319,12 @@ public class MilestoneControllerTest extends IntegrationTest {
                         buildJson("updateFailTest/wrong_id_request.json"),
                         buildJson("updateFailTest/wrong_id_response.json"),
                         HttpStatus.NOT_FOUND.value()
+                ),
+                Arguments.arguments(
+                        "update_fail_percent_out_of_range", 11L, 11L,
+                        buildJson("updateFailTest/percent_out_of_range_request.json"),
+                        buildJson("updateFailTest/percent_out_of_range_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
                 )
         );
     }
@@ -315,7 +336,7 @@ public class MilestoneControllerTest extends IntegrationTest {
     void updateFailTest(@SuppressWarnings("unused") final String testName, final long projectId, final long milestoneId,
                         final String request, final String response, final int httpStatus) {
         mvc.perform(TestUtils
-                .createPut(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId))
+                .createPut(String.format(putIdInUrl(BASE_ID_URL, projectId), milestoneId))
                 .content(request))
                 .andDo(print())
                 .andExpect(status().is(httpStatus))
@@ -338,25 +359,26 @@ public class MilestoneControllerTest extends IntegrationTest {
                 .setPlannedFinishDate(secondsToInstant(1623420101L))
                 .setProgressPercent((short) 45);
 
-        List<Milestone> milestonesBeforeUpdate = repository.findAll();
+        Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(projectId))).isPresent();
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(milestoneId))).isPresent();
+
+        List<Milestone> milestonesBeforeUpdate = milestoneRepository.findAll();
 
         mvc.perform(TestUtils
-                .createPatch(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId))
+                .createPatch(String.format(putIdInUrl(BASE_ID_URL, projectId), milestoneId))
                 .content(request))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         for (Milestone milestoneBeforeUpdate : milestonesBeforeUpdate) {
             if (milestoneBeforeUpdate.getId() == milestoneId)
-                Assertions.assertThat(txUtil.txRun(() -> repository.findById(milestoneId)))
-                        .isPresent()
+                Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(milestoneId)))
                         .get()
                         .isEqualTo(milestoneAfterUpdate);
             else
-                Assertions.assertThat(txUtil.txRun(() -> repository.findById(milestoneBeforeUpdate.getId())))
-                        .isPresent()
+                Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(milestoneBeforeUpdate.getId())))
                         .get()
-                        .isEqualTo(milestoneBeforeUpdate);
+                        .isNotEqualTo(milestoneAfterUpdate);
         }
     }
 
@@ -374,6 +396,12 @@ public class MilestoneControllerTest extends IntegrationTest {
                         buildJson("updateProgressFailTest/wrong_id_request.json"),
                         buildJson("updateProgressFailTest/wrong_id_response.json"),
                         HttpStatus.NOT_FOUND.value()
+                ),
+                Arguments.arguments(
+                        "update_progress_fail_negative_number", 11L, 11L,
+                        buildJson("updateProgressFailTest/negative_number_request.json"),
+                        buildJson("updateProgressFailTest/negative_number_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
                 )
         );
     }
@@ -385,7 +413,7 @@ public class MilestoneControllerTest extends IntegrationTest {
     void updateProgressFailTest(@SuppressWarnings("unused") final String testName, final long projectId, final long milestoneId,
                                 final String request, final String response, final int httpStatus) {
         mvc.perform(TestUtils
-                .createPatch(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId))
+                .createPatch(String.format(putIdInUrl(BASE_ID_URL, projectId), milestoneId))
                 .content(request))
                 .andDo(print())
                 .andExpect(status().is(httpStatus))
@@ -400,30 +428,31 @@ public class MilestoneControllerTest extends IntegrationTest {
         final long projectId = 11L;
         final long milestoneId = 11L;
 
-        List<Milestone> milestonesBeforeDelete = repository.findAll();
+        Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(projectId))).isPresent();
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findById(milestoneId))).isPresent();
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findAll())).hasSize(5);
+
+        List<Milestone> milestonesBeforeDelete = milestoneRepository.findAll();
 
         mvc.perform(TestUtils
-                .createDelete(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId)))
+                .createDelete(String.format(putIdInUrl(BASE_ID_URL, projectId), milestoneId)))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(milestoneId))).isFalse();
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.existsById(milestoneId))).isFalse();
         Assertions.assertThat(milestonesBeforeDelete.removeIf(m -> m.getId() == milestoneId)).isTrue();
 
-        List<Milestone> milestonesAfterDelete = repository.findAll();
-        for (Milestone milestoneAfterDelete : milestonesAfterDelete)
-            Assertions.assertThat(milestonesAfterDelete.stream()
-                    .filter(milestoneAfterDelete::equals)
-                    .findFirst())
-                    .isNotEmpty();
+        List<Milestone> milestonesAfterDelete = txUtil.txRun(() -> milestoneRepository.findAll());
+        Assertions.assertThat(milestonesAfterDelete).hasSize(4);
     }
 
     @SuppressWarnings("unused")
     static Stream<Arguments> deleteFailTestArgs() {
         return Stream.of(
                 Arguments.arguments("delete_fail_zero_id", 11L, 0L, HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments("delete_fail_negative_id", 11L, -1, HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments("delete_fail_unknown_id", 11L, 1111, HttpStatus.NOT_FOUND.value())
+                Arguments.arguments("delete_fail_negative_id", 11L, -1L, HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments("delete_fail_unknown_id", 11L, 1111L, HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments("delete_fail_wrong_project_id", 1111L, 1111L, HttpStatus.NOT_FOUND.value())
         );
     }
 
@@ -433,22 +462,17 @@ public class MilestoneControllerTest extends IntegrationTest {
     @Sql(INSERT_MILESTONES_QUERY)
     void deleteFailTest(@SuppressWarnings("unused") final String testName, final long projectId,
                         final long milestoneId, final int httpStatus) {
-        List<Milestone> milestonesBeforeDelete = repository.findAll();
+        if (txUtil.txRun(() -> projectRepository.findById(projectId).isPresent())) {
+            Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.existsById(milestoneId))).isFalse();
+            Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findAll())).hasSize(5);
+        }
 
         mvc.perform(TestUtils
-                .createDelete(String.format(changeProjectIdInUrl(BASE_ID_URL, projectId), milestoneId)))
+                .createDelete(String.format(putIdInUrl(BASE_ID_URL, projectId), milestoneId)))
                 .andDo(print())
                 .andExpect(status().is(httpStatus));
 
-        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(milestoneId))).isFalse();
-        Assertions.assertThat(milestonesBeforeDelete.removeIf(m -> m.getId() == milestoneId)).isFalse();
-
-        List<Milestone> milestonesAfterDelete = repository.findAll();
-        for (Milestone milestoneAfterDelete : milestonesAfterDelete)
-            Assertions.assertThat(milestonesAfterDelete.stream()
-                    .filter(milestoneAfterDelete::equals)
-                    .findFirst())
-                    .isNotEmpty();
+        Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.findAll())).hasSize(5);
     }
 
     @SuppressWarnings("unused")
@@ -496,30 +520,52 @@ public class MilestoneControllerTest extends IntegrationTest {
     @Sql(INSERT_MILESTONES_FOR_CUSTOM_SEARCH_QUERY)
     void searchSuccessTest(@SuppressWarnings("unused") final String testName, final long projectId,
                            final String url, final String response) {
-        mvc.perform(TestUtils.createGet(changeProjectIdInUrl(BASE_URL, projectId) + url))
+        Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(projectId))).isPresent();
+
+        mvc.perform(TestUtils.createGet(putIdInUrl(BASE_URL, projectId) + url))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
     }
 
-    @Test
-    @DisplayName("search_fail_invalid_order")
-    @SneakyThrows
-    @Sql(INSERT_MILESTONES_FOR_CUSTOM_SEARCH_QUERY)
-    void searchFailTest() {
-        final long projectId = 11L;
-        final String url = "?orders=wrong_field_name";
-        final String response = buildJson("searchFailTest/invalid_order_response.json");
-        final int httpStatus = HttpStatus.BAD_REQUEST.value();
-
-        mvc.perform(TestUtils
-                .createGet(changeProjectIdInUrl(BASE_URL, projectId) + url))
-                .andDo(print())
-                .andExpect(status().is(httpStatus))
-                .andExpect(content().json(response, true));
+    @SuppressWarnings("unused")
+    static Stream<Arguments> searchFailTestArgs() {
+        return Stream.of(
+                Arguments.arguments(
+                        "search_fail_wrong_field_name", 11L,
+                        "?orders=wrong_field_name",
+                        buildJson("searchFailTest/invalid_order_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
+                Arguments.arguments(
+                        "search_fail_wrong_field_name", -1L,
+                        "?orders=-name",
+                        null,
+                        HttpStatus.NOT_FOUND.value()
+                )
+        );
     }
 
-    private static String changeProjectIdInUrl(final String url, final long projectId) {
+    @ParameterizedTest(name = "{index} {0}")
+    @MethodSource("searchFailTestArgs")
+    @SneakyThrows
+    @Sql(INSERT_MILESTONES_FOR_CUSTOM_SEARCH_QUERY)
+    void searchFailTest(@SuppressWarnings("unused") final String testName, final long projectId,
+                        final String url, final String response, final int httpStatus) {
+        if (response != null)
+            mvc.perform(TestUtils
+                    .createGet(putIdInUrl(BASE_URL, projectId) + url))
+                    .andDo(print())
+                    .andExpect(status().is(httpStatus))
+                    .andExpect(content().json(response, true));
+
+        mvc.perform(TestUtils
+                .createGet(putIdInUrl(BASE_URL, projectId) + url))
+                .andDo(print())
+                .andExpect(status().is(httpStatus));
+    }
+
+    private String putIdInUrl(final String url, final long projectId) {
         return url.replace("{projectId}", String.valueOf(projectId));
     }
 

@@ -2,6 +2,7 @@ package io.amtech.projectflow.service.project.milestone;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -20,5 +21,6 @@ public class MilestoneCreateDto {
     private Long factStartDate;
     private Long factFinishDate;
     @NotNull
+    @Range(min = 0, max = 100)
     private Short progressPercent;
 }

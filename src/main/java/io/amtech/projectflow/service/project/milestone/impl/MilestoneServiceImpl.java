@@ -23,8 +23,7 @@ public class MilestoneServiceImpl implements MilestoneService {
 
     @Override
     public MilestoneDto create(final long projectId, final MilestoneCreateDto createDto) {
-        Project p = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), projectId));
+        Project p = findProjectByIdOrThrow(projectId);
 
         Milestone m = new Milestone()
                 .setName(createDto.getName())
@@ -80,6 +79,7 @@ public class MilestoneServiceImpl implements MilestoneService {
 
     @Override
     public PagedData<MilestoneDto> search(final long projectId, final SearchCriteria criteria) {
+        findProjectByIdOrThrow(projectId);
         return milestoneRepository.search(projectId, criteria).map(MilestoneDto::new);
     }
 
@@ -88,8 +88,8 @@ public class MilestoneServiceImpl implements MilestoneService {
                 .orElseThrow(() -> new ObjectNotFoundException(Milestone.class.getSimpleName(), id));
     }
 
-    private void findProjectByIdOrThrow(final long projectId) {
-        projectRepository.findById(projectId)
+    private Project findProjectByIdOrThrow(final long projectId) {
+        return projectRepository.findById(projectId)
                 .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), projectId));
     }
 }
