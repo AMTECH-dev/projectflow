@@ -1,6 +1,0 @@
-{
-  "message": "Validation error",
-  "errors": {
-    "progressPercent": "must not be null"
-  }
-}

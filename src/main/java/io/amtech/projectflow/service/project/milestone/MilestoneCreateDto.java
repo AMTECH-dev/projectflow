@@ -20,7 +20,6 @@ public class MilestoneCreateDto {
     private Long plannedFinishDate;
     private Long factStartDate;
     private Long factFinishDate;
-    @NotNull
     @Range(min = 0, max = 100)
-    private Short progressPercent;
+    private short progressPercent = 0;
 }

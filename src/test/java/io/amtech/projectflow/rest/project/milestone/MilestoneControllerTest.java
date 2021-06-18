@@ -134,12 +134,6 @@ public class MilestoneControllerTest extends IntegrationTest {
                         HttpStatus.BAD_REQUEST.value()
                 ),
                 Arguments.arguments(
-                        "create_fail_without_progress_percent", 11L,
-                        buildJson("createFailTest/without_progress_percent_request.json"),
-                        buildJson("createFailTest/without_progress_percent_response.json"),
-                        HttpStatus.BAD_REQUEST.value()
-                ),
-                Arguments.arguments(
                         "create_fail_empty_request", 11L,
                         buildJson("createFailTest/empty_request.json"),
                         buildJson("createFailTest/empty_response.json"),
@@ -385,12 +379,6 @@ public class MilestoneControllerTest extends IntegrationTest {
     @SuppressWarnings("unused")
     static Stream<Arguments> updateProgressFailTestArgs() {
         return Stream.of(
-                Arguments.arguments(
-                        "update_progress_fail_null_param", 11L, 11L,
-                        buildJson("updateProgressFailTest/empty_progress_update_request.json"),
-                        buildJson("updateProgressFailTest/empty_progress_update_response.json"),
-                        HttpStatus.BAD_REQUEST.value()
-                ),
                 Arguments.arguments(
                         "update_progress_fail_wrong_id", 11L, 1111L,
                         buildJson("updateProgressFailTest/wrong_id_request.json"),
