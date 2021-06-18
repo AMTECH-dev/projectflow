@@ -25,7 +25,7 @@ import static io.amtech.projectflow.util.OrderUtil.parseOrder;
 public class ProjectCommentCustomRepositoryImpl implements ProjectCommentCustomRepository {
 
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
 
     @Override
     public PagedData<ProjectComment> search(long projectId, SearchCriteria criteria) {

@@ -20,8 +20,6 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @Transactional
 public class ProjectCommentServiceImpl implements ProjectCommentService {
-    private static final String OBJ_DESC = "ProjectComment";
-
     private final ProjectCommentRepository projectCommentRepository;
     private final ProjectRepository projectRepository;
 
@@ -74,6 +72,6 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
 
     private ProjectComment findByIdOrThrow(long id) {
         return projectCommentRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(OBJ_DESC, id));
+                .orElseThrow(() -> new ObjectNotFoundException(ProjectComment.class.getSimpleName(), id));
     }
 }
