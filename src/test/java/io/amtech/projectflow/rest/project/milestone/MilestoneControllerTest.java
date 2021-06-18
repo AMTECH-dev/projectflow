@@ -148,7 +148,7 @@ public class MilestoneControllerTest extends IntegrationTest {
                 Arguments.arguments(
                         "create_fail_wrong_project_id", 1111L,
                         buildJson("createFailTest/wrong_project_id_request.json"),
-                        buildJson("createFailTest/wrong_project_id_response.json"),
+                        buildJson("wrong_project_id_response.json"),
                         HttpStatus.NOT_FOUND.value()
                 )
         );
@@ -212,7 +212,7 @@ public class MilestoneControllerTest extends IntegrationTest {
                 ),
                 Arguments.arguments(
                         "get_fail_wrong_project_id", 1111, 0,
-                        buildJson("getFailTest/wrong_project_id_response.json"),
+                        buildJson("wrong_project_id_response.json"),
                         HttpStatus.NOT_FOUND.value()
                 )
         );
@@ -233,6 +233,8 @@ public class MilestoneControllerTest extends IntegrationTest {
         if (txUtil.txRun(() -> projectRepository.findById(projectId).isPresent()))
             Assertions.assertThat(txUtil.txRun(() -> milestoneRepository.existsById(milestoneId)))
                     .isFalse();
+        else Assertions.assertThat(txUtil.txRun(() -> projectRepository.existsById(projectId)))
+                .isFalse();
     }
 
     @SuppressWarnings("unused")
@@ -390,6 +392,12 @@ public class MilestoneControllerTest extends IntegrationTest {
                         buildJson("updateProgressFailTest/negative_number_request.json"),
                         buildJson("updateProgressFailTest/negative_number_response.json"),
                         HttpStatus.BAD_REQUEST.value()
+                ),
+                Arguments.arguments(
+                        "update_progress_fail_wrong_project_id", 1111L, 11L,
+                        buildJson("updateProgressFailTest/wrong_project_id_request.json"),
+                        buildJson("wrong_project_id_response.json"),
+                        HttpStatus.NOT_FOUND.value()
                 )
         );
     }
@@ -526,9 +534,9 @@ public class MilestoneControllerTest extends IntegrationTest {
                         HttpStatus.BAD_REQUEST.value()
                 ),
                 Arguments.arguments(
-                        "search_fail_wrong_field_name", -1L,
+                        "search_fail_wrong_project_id", 1111L,
                         "?orders=-name",
-                        null,
+                        buildJson("wrong_project_id_response.json"),
                         HttpStatus.NOT_FOUND.value()
                 )
         );
@@ -540,17 +548,11 @@ public class MilestoneControllerTest extends IntegrationTest {
     @Sql(INSERT_MILESTONES_FOR_CUSTOM_SEARCH_QUERY)
     void searchFailTest(@SuppressWarnings("unused") final String testName, final long projectId,
                         final String url, final String response, final int httpStatus) {
-        if (response != null)
-            mvc.perform(TestUtils
-                    .createGet(putIdInUrl(BASE_URL, projectId) + url))
-                    .andDo(print())
-                    .andExpect(status().is(httpStatus))
-                    .andExpect(content().json(response, true));
-
         mvc.perform(TestUtils
                 .createGet(putIdInUrl(BASE_URL, projectId) + url))
                 .andDo(print())
-                .andExpect(status().is(httpStatus));
+                .andExpect(status().is(httpStatus))
+                .andExpect(content().json(response, true));
     }
 
     private String putIdInUrl(final String url, final long projectId) {
