@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
+
+import static io.amtech.projectflow.util.ConvertingUtil.objToString;
 
 @RestController
 @RequestMapping("/projects/{projectId}/comments")
@@ -53,12 +54,8 @@ public class ProjectCommentController {
                 .offset(offset)
                 .filter(ProjectComment_.LOGIN, login)
                 .filter(ProjectComment_.MESSAGE, message)
-                .filter(ProjectComment_.CREATE_DATE + "From", Optional.ofNullable(createDateFrom)
-                        .map(String::valueOf)
-                        .orElse(null))
-                .filter(ProjectComment_.CREATE_DATE + "To", Optional.ofNullable(createDateTo)
-                        .map(String::valueOf)
-                        .orElse(null))
+                .filter(ProjectComment_.CREATE_DATE + "From", objToString(createDateFrom))
+                .filter(ProjectComment_.CREATE_DATE + "To", objToString(createDateTo))
                 .order(orders)
                 .build();
 

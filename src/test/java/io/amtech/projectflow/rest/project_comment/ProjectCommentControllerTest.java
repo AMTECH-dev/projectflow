@@ -36,7 +36,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
                         new ProjectComment()
                                 .setId(1L)
                                 .setMessage("Comment 01")
-                                .setCreateDate(Instant.parse("2021-06-09T11:49:03.839234Z"))
+                                .setCreateDate(Instant.ofEpochSecond(1624005449))
                                 .setLogin("KiraLis39")
                 ),
                 Arguments.arguments(3L, 2L,
@@ -44,7 +44,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
                         new ProjectComment()
                                 .setId(2L)
                                 .setMessage("Comment 02")
-                                .setCreateDate(Instant.parse("2021-06-08T09:49:13.839234Z"))
+                                .setCreateDate(Instant.ofEpochSecond(1624005449))
                                 .setLogin("KiraLis47")
                 )
         );
@@ -109,21 +109,21 @@ class ProjectCommentControllerTest extends IntegrationTest {
                         new ProjectComment()
                                 .setId(1L)
                                 .setMessage("Comment 01")
-                                .setCreateDate(Instant.parse("2021-06-09T11:49:03.839234Z"))
+                                .setCreateDate(Instant.parse("2021-06-18T08:37:29Z"))
                                 .setLogin("KiraLis39")),
                 Arguments.arguments(1, 3,
                         buildJson("getSuccessTest/getSuccessTest2.json"),
                         new ProjectComment()
                                 .setId(3L)
                                 .setMessage("Comment 03")
-                                .setCreateDate(Instant.parse("2021-06-07T11:00:03.839234Z"))
+                                .setCreateDate(Instant.parse("2021-06-18T08:37:29Z"))
                                 .setLogin("KiraLis39")),
                 Arguments.arguments(2, 2,
                         buildJson("getSuccessTest/getSuccessTest3.json"),
                         new ProjectComment()
                                 .setId(2L)
                                 .setMessage("Comment 02")
-                                .setCreateDate(Instant.parse("2021-06-08T09:49:13.839234Z"))
+                                .setCreateDate(Instant.parse("2021-06-18T08:37:29Z"))
                                 .setLogin("KiraLis47"))
         );
     }
@@ -255,7 +255,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
                         new ProjectComment()
                                 .setId(1L)
                                 .setLogin("KiraLis39")
-                                .setCreateDate(Instant.parse("2021-06-09T11:49:03.839234Z"))
+                                .setCreateDate(Instant.parse("2021-06-18T08:37:29Z"))
                                 .setMessage("new some message updated")
                 ),
                 Arguments.arguments(1, 3,
@@ -263,7 +263,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
                         new ProjectComment()
                                 .setId(3L)
                                 .setLogin("KiraLis39")
-                                .setCreateDate(Instant.parse("2021-06-07T11:00:03.839234Z"))
+                                .setCreateDate(Instant.parse("2021-06-18T08:37:29Z"))
                                 .setMessage("new some message updated")
                 )
         );
@@ -316,7 +316,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
                         new ProjectComment()
                                 .setId(1L)
                                 .setLogin("KiraLis39")
-                                .setCreateDate(Instant.parse("2021-06-09T11:49:03.839234Z"))
+                                .setCreateDate(Instant.ofEpochMilli(1623063603))
                                 .setMessage(""),
                         HttpStatus.BAD_REQUEST.value()
                 ),
@@ -325,7 +325,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
                         new ProjectComment()
                                 .setId(1L)
                                 .setLogin("KiraLis39")
-                                .setCreateDate(Instant.parse("2021-06-09T11:49:03.839234Z"))
+                                .setCreateDate(Instant.ofEpochMilli(1623063603))
                                 .setMessage(""),
                         HttpStatus.NOT_FOUND.value()
                 )

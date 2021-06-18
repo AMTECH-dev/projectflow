@@ -69,7 +69,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
 
     private Project findProjectByIdOrThrow(long projectId) {
         return projectRepository.findById(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException("Project", projectId));
+                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), projectId));
     }
 
     private ProjectComment findByIdOrThrow(long id) {

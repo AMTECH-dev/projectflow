@@ -1,6 +1,5 @@
 package io.amtech.projectflow.repository.impl;
 
-import io.amtech.projectflow.app.exception.InvalidOrderException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.project.Project;
@@ -8,15 +7,19 @@ import io.amtech.projectflow.domain.project.ProjectComment;
 import io.amtech.projectflow.domain.project.ProjectComment_;
 import io.amtech.projectflow.domain.project.Project_;
 import io.amtech.projectflow.repository.ProjectCommentCustomRepository;
-import org.hibernate.query.criteria.internal.OrderImpl;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.*;
-import java.time.Instant;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.amtech.projectflow.util.DateUtil.secondsToInstant;
+import static io.amtech.projectflow.util.OrderUtil.parseOrder;
 
 @Repository
 public class ProjectCommentCustomRepositoryImpl implements ProjectCommentCustomRepository {
@@ -39,10 +42,10 @@ public class ProjectCommentCustomRepositoryImpl implements ProjectCommentCustomR
                 .ifPresent(v -> predicates.add(builder.like(join.get(ProjectComment_.MESSAGE), "%" + v.toLowerCase() + "%")));
         criteria.getFilter(ProjectComment_.CREATE_DATE + "From")
                 .ifPresent(v -> predicates.add(builder.greaterThanOrEqualTo(join.get(ProjectComment_.CREATE_DATE),
-                        Instant.ofEpochSecond(Long.parseLong(v)))));
+                        secondsToInstant(Long.parseLong(v)))));
         criteria.getFilter(ProjectComment_.CREATE_DATE + "To")
                 .ifPresent(v -> predicates.add(builder.lessThanOrEqualTo(join.get(ProjectComment_.CREATE_DATE),
-                        Instant.ofEpochSecond(Long.parseLong(v)))));
+                        secondsToInstant(Long.parseLong(v)))));
 
         query.select(join)
                 .where(predicates.toArray(new Predicate[0]))
@@ -54,17 +57,5 @@ public class ProjectCommentCustomRepositoryImpl implements ProjectCommentCustomR
                 .getResultList();
 
         return new PagedData<>(result, criteria);
-    }
-
-    private Order parseOrder(Path<?> root, final String order) {
-        try {
-            if (order.startsWith("-")) {
-                return new OrderImpl(root.get(order.substring(1)), false);
-            }
-
-            return new OrderImpl(root.get(order));
-        } catch (IllegalArgumentException e) {
-            throw new InvalidOrderException(order);
-        }
     }
 }
