@@ -1,10 +1,7 @@
 package io.amtech.projectflow.service.project_journal.impl;
 
-import io.amtech.projectflow.app.exception.ObjectNotFoundException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
-import io.amtech.projectflow.domain.project.Project;
-import io.amtech.projectflow.domain.project.ProjectJournal;
 import io.amtech.projectflow.repository.ProjectJournalRepository;
 import io.amtech.projectflow.repository.ProjectRepository;
 import io.amtech.projectflow.service.project_journal.ProjectJournalDto;
@@ -22,24 +19,14 @@ public class ProjectJournalServiceImpl implements ProjectJournalService {
 
     @Override
     public PagedData<ProjectJournalDto> search(long projectId, SearchCriteria criteria) {
-        checkProjectByIdOnExists(projectId);
+        projectRepository.findByIdOrThrow(projectId);
         return projectJournalRepository.search(projectId, criteria)
                 .map(ProjectJournalDto::new);
     }
 
     @Override
     public ProjectJournalDto get(long projectId, long id) {
-        checkProjectByIdOnExists(projectId);
-        return new ProjectJournalDto(findProjectJournalByIdOrThrow(id));
-    }
-
-    private void checkProjectByIdOnExists(long id) {
-        projectRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), id));
-    }
-
-    private ProjectJournal findProjectJournalByIdOrThrow(long id) {
-        return projectJournalRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(ProjectJournal.class.getSimpleName(), id));
+        projectRepository.findByIdOrThrow(projectId);
+        return new ProjectJournalDto(projectJournalRepository.findByIdOrThrow(id));
     }
 }

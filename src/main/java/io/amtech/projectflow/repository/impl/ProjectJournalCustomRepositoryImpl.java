@@ -29,9 +29,8 @@ public class ProjectJournalCustomRepositoryImpl implements ProjectJournalCustomR
         CriteriaQuery<ProjectJournal> query = builder.createQuery(ProjectJournal.class);
         Root<Project> root = query.from(Project.class);
         Join<Project, ProjectJournal> joinProjectJournal = root.join(Project_.HISTORY);
-        List<Predicate> predicates = new ArrayList<>() {{
-            add(builder.equal(root.get(Project_.ID), projectId));
-        }};
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(builder.equal(root.get(Project_.ID), projectId));
         criteria.getFilter(ProjectJournal_.LOGIN)
                 .ifPresent(v -> predicates.add(builder.like(builder.lower(joinProjectJournal.get(ProjectJournal_.LOGIN)),
                         "%" + v.toLowerCase() + "%")));

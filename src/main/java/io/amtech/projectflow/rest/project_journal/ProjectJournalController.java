@@ -6,6 +6,9 @@ import io.amtech.projectflow.app.general.SearchCriteriaBuilder;
 import io.amtech.projectflow.domain.project.ProjectJournal_;
 import io.amtech.projectflow.service.project_journal.ProjectJournalDto;
 import io.amtech.projectflow.service.project_journal.ProjectJournalService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +22,10 @@ public class ProjectJournalController {
     private final ProjectJournalService projectJournalService;
 
     @GetMapping
+    @ApiOperation("Поиск записей в журнале")
+    @ApiResponse(responseCode = "200", description = "Успешно")
+    @ApiResponse(responseCode = "404", description = "Проект не найден")
+    @ApiResponse(responseCode = "400", description = "Некорректный параметер orders")
     public PagedData<ProjectJournalDto> search(@PathVariable long projectId,
                                                @RequestParam(name = "limit", defaultValue = "100") Integer limit,
                                                @RequestParam(name = "offset", defaultValue = "0") Integer offset,
@@ -39,6 +46,10 @@ public class ProjectJournalController {
     }
 
     @GetMapping("{id}")
+    @ApiOperation("Получение записи в журнале по id")
+    @ApiResponse(responseCode = "200", description = "Успешно")
+    @ApiResponse(responseCode = "404", description = "Проект не найден")
+    @ApiResponse(responseCode = "404", description = "Запись в журнале не найдена")
     public ProjectJournalDto get(@PathVariable long projectId, @PathVariable long id) {
         return projectJournalService.get(projectId, id);
     }
