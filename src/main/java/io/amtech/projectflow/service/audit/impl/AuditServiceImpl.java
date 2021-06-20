@@ -22,11 +22,11 @@ public class AuditServiceImpl implements AuditService {
     private final ProjectJournalRepository projectJournalRepository;
 
     @Override
-    public void save(String username, Project project) {
+    public void save(Project project) {
         Map<String, Object> currentState = objectMapper.convertValue(new AuditProject(project), new TypeReference<>() {
         });
         ProjectJournal projectJournal = new ProjectJournal()
-                .setLogin(username)
+                .setLogin("username from security context holder") // TODO: 20.06.2021 ADDED SEC CONTEXT HOLDER
                 .setUpdateDate(Instant.now()) // TODO: 16.06.2021 replace this with zone!!!!
                 .setCurrentState(currentState);
         project.getHistory().add(projectJournal);
