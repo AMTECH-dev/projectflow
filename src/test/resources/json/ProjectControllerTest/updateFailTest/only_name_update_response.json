@@ -1,7 +1,1 @@
-{
-  "message": "Validation error",
-  "errors": {
-    "projectLeadId": "must not be null",
-    "directionId": "must not be null"
-  }
-}
+{"message":"Validation error","errors":{"projectLeadId":"must not be null","directionId":"must not be null"}}

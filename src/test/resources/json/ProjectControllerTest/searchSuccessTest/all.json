@@ -6,7 +6,7 @@
       "projectLeadId": 2,
       "directionId": 2,
       "description": "message 5",
-      "createDate": 1625831343839,
+      "createDate": 1625831343,
       "projectStatus": "ON_PL_PLANNING"
     },
     {
@@ -15,7 +15,7 @@
       "projectLeadId": 2,
       "directionId": 2,
       "description": "message 4",
-      "createDate": 1625831343839,
+      "createDate": 1625831343,
       "projectStatus": "ON_PL_PLANNING"
     },
     {
@@ -24,7 +24,7 @@
       "projectLeadId": 1,
       "directionId": 1,
       "description": "message 1",
-      "createDate": 1623239343839,
+      "createDate": 1623239343,
       "projectStatus": "UNAPPROVED"
     },
     {
@@ -33,7 +33,7 @@
       "projectLeadId": 2,
       "directionId": 2,
       "description": "message 3",
-      "createDate": 1625831343839,
+      "createDate": 1625831343,
       "projectStatus": "ON_PL_PLANNING"
     },
     {
@@ -42,7 +42,7 @@
       "projectLeadId": 2,
       "directionId": 2,
       "description": "message 2",
-      "createDate": 1628509743839,
+      "createDate": 1628509743,
       "projectStatus": "UNAPPROVED"
     }
   ],

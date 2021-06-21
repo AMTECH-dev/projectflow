@@ -85,10 +85,16 @@ class ProjectControllerTest extends IntegrationTest {
     static Stream<Arguments> createFailTestArgs() {
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
-                       buildJson("createFailTest/name_is_missing_response.json"),
+                        buildJson("createFailTest/name_is_missing_response.json"),
                         HttpStatus.BAD_REQUEST.value()),
                 Arguments.arguments(buildJson("createFailTest/without_description_request.json"),
                         buildJson("createFailTest/without_description_response.json"),
+                        HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(buildJson("createFailTest/direction_is_missing_request.json"),
+                        buildJson("createFailTest/direction_is_missing_response.json"),
+                        HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(buildJson("createFailTest/projectLead_is_missing_request.json"),
+                        buildJson("createFailTest/projectLead_is_missing_response.json"),
                         HttpStatus.NOT_FOUND.value()));
     }
 
@@ -115,7 +121,9 @@ class ProjectControllerTest extends IntegrationTest {
                         new Project()
                                 .setId(1L)
                                 .setName("Do")
-                                .setDescription("bad project")
+                                .setDescription("bad project"),
+                        1L,
+                        1L
                 )
         );
     }
@@ -124,7 +132,7 @@ class ProjectControllerTest extends IntegrationTest {
     @MethodSource("updateSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {"classpath:db/ProjectControllerTest/updateSuccessTest/update_project.sql"})
-    void updateSuccessTest(final long id, final String request, final Project expect) {
+    void updateSuccessTest(final long id, final String request, final Project expect, final long projectLeadId, final long directionId) {
         List<Project> existEmpBefore = projectRepository.findAll();
 
         mvc.perform(TestUtils
@@ -136,11 +144,15 @@ class ProjectControllerTest extends IntegrationTest {
 
         for (Project before : existEmpBefore) {
             if (before.getId() == id) {
+                Assertions.assertThat(txUtil.txRun(() -> employeeRepository.findById(projectLeadId))).isPresent();
+                Assertions.assertThat(txUtil.txRun(() -> directionRepository.findById(directionId))).isPresent();
                 Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(id)))
                         .isPresent()
                         .get()
                         .isEqualTo(expect);
             } else {
+                Assertions.assertThat(txUtil.txRun(() -> employeeRepository.findById(projectLeadId))).isPresent();
+                Assertions.assertThat(txUtil.txRun(() -> directionRepository.findById(directionId))).isPresent();
                 Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(before.getId())))
                         .isPresent()
                         .get()
@@ -156,9 +168,13 @@ class ProjectControllerTest extends IntegrationTest {
                         buildJson("updateFailTest/name_is_null_update_request.json"),
                         buildJson("updateFailTest/name_is_null_update_response.json"),
                         HttpStatus.BAD_REQUEST.value()),
-                Arguments.arguments(2L,
+                Arguments.arguments(1L,
                         buildJson("updateFailTest/only_name_update_request.json"),
                         buildJson("updateFailTest/only_name_update_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments(1L,
+                        buildJson("updateFailTest/only_leadId_update_request.json"),
+                        buildJson("updateFailTest/only_leadId_update_response.json"),
                         HttpStatus.BAD_REQUEST.value()));
     }
 
@@ -177,15 +193,14 @@ class ProjectControllerTest extends IntegrationTest {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     static Stream<Arguments> deleteSuccessTestArgs() {
-        return Stream.of(Arguments.arguments(1));
+        return Stream.of(Arguments.arguments(1L));
     }
 
 
     @ParameterizedTest
     @MethodSource("deleteSuccessTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectControllerTest/deleteSuccessTest/project.sql"})
+    @Sql( "classpath:db/ProjectControllerTest/deleteSuccessTest/project.sql")
     void deleteSuccessTest(long id) {
         List<Project> projectBeforeDelete = projectRepository.findAll();
 
@@ -195,7 +210,7 @@ class ProjectControllerTest extends IntegrationTest {
                 .andExpect(status().isOk());
 
         Assertions.assertThat(txUtil.txRun(() -> projectRepository.existsById(id)))
-                .isTrue();
+                .isFalse();
 
         Assertions.assertThat(projectBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
 
@@ -215,9 +230,7 @@ class ProjectControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("deleteFailTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectControllerTest/deleteSuccessTest/project.sql"
-    })
+    @Sql("classpath:db/ProjectControllerTest/deleteSuccessTest/project.sql")
     void deleteFailTest(long id, int httpStatus) {
         List<Project> employeesBeforeDelete = projectRepository.findAll();
 
@@ -306,8 +319,7 @@ class ProjectControllerTest extends IntegrationTest {
             "classpath:db/ProjectControllerTest/searchSuccessTest/search_project.sql"
     })
     void searchSuccessTest(final String url, final String response) {
-        // setup
-        mvc.perform(TestUtils.createGet(BASE_URL + url))
+             mvc.perform(TestUtils.createGet(BASE_URL + url))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
