@@ -22,7 +22,8 @@ import java.util.Set;
         "projectComments",
         "direction",
         "projectLead",
-        "history"
+        "history",
+        "createDate"
 })
 @Entity
 @Table(name = "project", schema = "pf")
@@ -30,8 +31,6 @@ import java.util.Set;
         name = "project_status",
         typeClass = PostgreSQLEnumType.class
 )
-
-
 @ToString(exclude = {
         "milestones",
         "projectComments",

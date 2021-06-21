@@ -13,11 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Stream;
 
 
+import static org.assertj.core.api.Assertions.within;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,17 +34,20 @@ class ProjectControllerTest extends IntegrationTest {
 
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
-
+ Instant instantNow= Instant.now();
+ Instant instantNew= Instant.now().plusSeconds(30);
+        Duration duration= Duration.between(instantNow, instantNew);
 
         return Stream.of(
                 Arguments.arguments(
                         buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
+
                         new Project()
                                 .setId(1L)
                                 .setName("Mail")
                                 .setDescription("Better project")
-                                .setCreateDate(Instant.ofEpochSecond(1615620420))));
+                                .setCreateDate(Instant.now())));
 
 
     }
@@ -51,7 +57,7 @@ class ProjectControllerTest extends IntegrationTest {
     @SneakyThrows
     @Sql(scripts = {
             "classpath:db/ProjectControllerTest/createSuccessTest/exists_project.sql"})
-    void createSuccessTest(final String request, final String response, final Project project) {
+    void createSuccessTest(final String request, final String response, final Project project, Instant instantNow, Instant instantNew) {
 
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
@@ -65,6 +71,8 @@ class ProjectControllerTest extends IntegrationTest {
 
         Assertions.assertThat(txUtil.txRun(() -> repository.findById(1L)))
                 .isPresent().get().isEqualTo(project);
+
+        Assertions.assertThat(instantNow).isCloseTo(instantNew, within(30, ChronoUnit.SECONDS));
 
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
