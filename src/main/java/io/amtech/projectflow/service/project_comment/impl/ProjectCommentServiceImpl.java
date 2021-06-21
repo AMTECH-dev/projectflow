@@ -25,7 +25,7 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
 
     @Override
     public ProjectCommentDto create(long projectId, ProjectCommentCreateDto createDto) {
-        Project p = findProjectByIdOrThrow(projectId);
+        Project p = projectRepository.findProjectByIdOrThrow(projectId);
 
         ProjectComment pc = new ProjectComment()
                 .setCreateDate(Instant.now())
@@ -39,39 +39,29 @@ public class ProjectCommentServiceImpl implements ProjectCommentService {
 
     @Override
     public ProjectCommentDto get(long projectId, long id) {
-        findProjectByIdOrThrow(projectId);
+        projectRepository.findProjectByIdOrThrow(projectId);
 
-        return new ProjectCommentDto(findByIdOrThrow(id));
+        return new ProjectCommentDto(projectCommentRepository.findByIdOrThrow(id));
     }
 
     @Override
     public void update(long projectId, long id, ProjectCommentCreateDto newData) {
-        findProjectByIdOrThrow(projectId);
+        projectRepository.findProjectByIdOrThrow(projectId);
 
-        ProjectComment pc = findByIdOrThrow(id);
+        ProjectComment pc = projectCommentRepository.findByIdOrThrow(id);
         pc.setMessage(newData.getMessage());
     }
 
     @Override
     public void delete(long projectId, long id) {
-        findProjectByIdOrThrow(projectId);
-        findByIdOrThrow(id);
+        projectRepository.findProjectByIdOrThrow(projectId);
+        projectCommentRepository.findByIdOrThrow(id);
         projectCommentRepository.deleteById(id);
     }
 
     @Override
     public PagedData<ProjectCommentDto> search(long projectId, SearchCriteria criteria) {
-        findProjectByIdOrThrow(projectId);
+        projectRepository.findProjectByIdOrThrow(projectId);
         return projectCommentRepository.search(projectId, criteria).map(ProjectCommentDto::new);
-    }
-
-    private Project findProjectByIdOrThrow(long projectId) {
-        return projectRepository.findById(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), projectId));
-    }
-
-    private ProjectComment findByIdOrThrow(long id) {
-        return projectCommentRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(ProjectComment.class.getSimpleName(), id));
     }
 }
