@@ -2,7 +2,6 @@ package io.amtech.projectflow.service.project;
 
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
-import io.amtech.projectflow.service.employee.EmployeeDto;
 
 public interface ProjectService {
     ProjectDto create(ProjectCreateDto projectCreateDto);

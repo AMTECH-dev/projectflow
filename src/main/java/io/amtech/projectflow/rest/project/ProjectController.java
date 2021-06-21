@@ -9,15 +9,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
+
+import static io.amtech.projectflow.util.ConvertingUtil.objToString;
+import static io.amtech.projectflow.util.SearchUtil.FROM_DATE_KEY;
+import static io.amtech.projectflow.util.SearchUtil.TO_DATE_KEY;
 
 @RestController
 @RequestMapping("/projects")
 @RequiredArgsConstructor
 public class ProjectController {
-
     private final ProjectService projectService;
-//    private final DirectionRepository directionRepository;
 
     @PostMapping
     public ProjectDto create(@RequestBody @Valid ProjectCreateDto dto) {
@@ -45,27 +46,19 @@ public class ProjectController {
                                         @RequestParam(required = false, defaultValue = "0") Integer offset,
                                         @RequestParam(required = false, defaultValue = "name") String orders,
                                         @RequestParam(required = false) String name,
-                                        @RequestParam(required = false) Long projectLead,
+                                        @RequestParam(required = false) Long projectLeadId,
                                         @RequestParam(required = false) Long directionId,
-                                        @RequestParam(required = false) Long createDataStart,
-                                        @RequestParam(required = false) Long createDataEnd,
+                                        @RequestParam(required = false) Long createDateFrom,
+                                        @RequestParam(required = false) Long createDateTo,
                                         @RequestParam(required = false) String status) {
         SearchCriteria criteria = new SearchCriteriaBuilder()
                 .limit(limit)
                 .offset(offset)
                 .filter(Project_.NAME, name)
-                .filter(Project_.PROJECT_LEAD, Optional.ofNullable(projectLead)
-                        .map(Object::toString)
-                        .orElse(null))
-                .filter(Project_.DIRECTION, Optional.ofNullable(directionId)
-                        .map(Object::toString)
-                        .orElse(null))
-                .filter("createDataStart", Optional.ofNullable(createDataStart)
-                        .map(Object::toString)
-                        .orElse(null))
-                .filter("createDataEnd", Optional.ofNullable(createDataEnd)
-                        .map(Object::toString)
-                        .orElse(null))
+                .filter(Project_.PROJECT_LEAD, objToString(projectLeadId))
+                .filter(Project_.DIRECTION, objToString(directionId))
+                .filter(Project_.CREATE_DATE + FROM_DATE_KEY, objToString(createDateFrom))
+                .filter(Project_.CREATE_DATE + TO_DATE_KEY, objToString(createDateTo))
                 .filter(Project_.PROJECT_STATUS, status)
                 .order(orders)
                 .build();

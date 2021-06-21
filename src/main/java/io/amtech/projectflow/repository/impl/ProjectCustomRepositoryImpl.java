@@ -1,6 +1,5 @@
 package io.amtech.projectflow.repository.impl;
 
-import io.amtech.projectflow.app.exception.InvalidOrderException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.Direction;
@@ -8,27 +7,30 @@ import io.amtech.projectflow.domain.employee.Employee;
 import io.amtech.projectflow.domain.project.Project;
 import io.amtech.projectflow.domain.project.Project_;
 import io.amtech.projectflow.repository.ProjectCustomRepository;
-import org.hibernate.query.criteria.internal.OrderImpl;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.*;
-import java.time.Instant;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.amtech.projectflow.util.ConvertingUtil.secondToInstant;
+import static io.amtech.projectflow.util.SearchUtil.*;
 
 @Repository
 public class ProjectCustomRepositoryImpl implements ProjectCustomRepository {
     @PersistenceContext
     EntityManager entityManager;
 
-
     @Override
     public PagedData<Project> search(SearchCriteria criteria) {
 
         var builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Project> query = builder.createQuery(Project.class); //Select*from.., Project.class
+        CriteriaQuery<Project> query = builder.createQuery(Project.class);
         Root<Project> root = query.from(Project.class);
         Join<Project, Employee> joinWithEmployeeTable = root.join(Project_.PROJECT_LEAD);
         Join<Project, Direction> joinDirectionalTable = root.join(Project_.DIRECTION);
@@ -48,12 +50,12 @@ public class ProjectCustomRepositoryImpl implements ProjectCustomRepository {
                         (joinDirectionalTable.get(Project_.DIRECTION)), "%" + v.toLowerCase() + "%")));
 
 
-        criteria.getFilter(Project_.CREATE_DATE + "From")
+        criteria.getFilter(Project_.CREATE_DATE + FROM_DATE_KEY)
                 .ifPresent(v -> predicates.add(builder.greaterThanOrEqualTo(root.get(Project_.CREATE_DATE),
-                        Instant.ofEpochSecond(Long.parseLong(v)))));
-        criteria.getFilter(Project_.CREATE_DATE + "To")
+                        secondToInstant(Long.parseLong(v)))));
+        criteria.getFilter(Project_.CREATE_DATE + TO_DATE_KEY)
                 .ifPresent(v -> predicates.add(builder.lessThanOrEqualTo(root.get(Project_.CREATE_DATE),
-                        Instant.ofEpochSecond(Long.parseLong(v)))));
+                        secondToInstant(Long.parseLong(v)))));
 
 
         criteria.getFilter(Project_.DESCRIPTION)
@@ -76,17 +78,5 @@ public class ProjectCustomRepositoryImpl implements ProjectCustomRepository {
                 .getResultList();
 
         return new PagedData<>(result, criteria);
-    }
-
-    private Order parseOrder(Root<?> root, final String order) {
-        try {
-            if (order.startsWith("-")) {
-                return new OrderImpl(root.get(order.substring(1)), false);
-            }
-
-            return new OrderImpl(root.get(order));
-        } catch (IllegalArgumentException e) {
-            throw new InvalidOrderException(order);
-        }
     }
 }

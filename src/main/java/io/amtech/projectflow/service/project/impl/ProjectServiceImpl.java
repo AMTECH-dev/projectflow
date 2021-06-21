@@ -1,6 +1,5 @@
 package io.amtech.projectflow.service.project.impl;
 
-import io.amtech.projectflow.app.exception.ObjectNotFoundException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.Direction;
@@ -20,50 +19,46 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
-    private static final String OBJ_DESC = "Project";
     private final ProjectRepository projectRepository;
     private final DirectionRepository directionRepository;
     private final EmployeeRepository employeeRepository;
 
     @Override
     public ProjectDto create(final ProjectCreateDto projectCreateDto) {
-        Direction direction = directionRepository.findById(projectCreateDto.getDirectionId()).get();
-        Employee employee = employeeRepository.findById(projectCreateDto.getProjectLeadId()).get();
+        Direction direction = directionRepository.findByIdOrThrow(projectCreateDto.getDirectionId());
+        Employee employee = employeeRepository.findByIdOrThrow(projectCreateDto.getProjectLeadId());
         Project p = new Project()
                 .setName(projectCreateDto.getName())
                 .setDescription(projectCreateDto.getDescription())
                 .setDirection(direction)
                 .setProjectLead(employee)
-                .setCreateDate(Instant.ofEpochSecond(projectCreateDto.getCreateDate()));;
-        projectRepository.save(p);
-        return new ProjectDto(p);
+                .setCreateDate(Instant.now());
+
+        Project savedProject = projectRepository.save(p);
+        return new ProjectDto(savedProject);
     }
 
     @Override
     public ProjectGetByIdDto get(long id) {
-        return new ProjectGetByIdDto(findByIdOrThrow(id));
-    }
-
-    private Project findByIdOrThrow(long id) {
-        return projectRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(OBJ_DESC, id));
+        return new ProjectGetByIdDto(projectRepository.findByIdOrThrow(id));
     }
 
     @Override
     public void update(long id, ProjectUpdateDto projectUpdateDto) {
-        Direction direction = directionRepository.findById(projectUpdateDto.getDirectionId()).get();
-        Employee employee = employeeRepository.findById(projectUpdateDto.getProjectLeadId()).get();
+        Direction direction = directionRepository.findByIdOrThrow(projectUpdateDto.getDirectionId());
+        Employee employee = employeeRepository.findByIdOrThrow(projectUpdateDto.getProjectLeadId());
 
-        Project p = findByIdOrThrow(id)
-                .setName(projectUpdateDto.getName())
-                .setDescription(projectUpdateDto.getDescription())
-                .setDirection(direction)
-                .setProjectLead(employee);
+        Project p = projectRepository.findByIdOrThrow(id);
+        p.setName(projectUpdateDto.getName());
+        p.setDescription(projectUpdateDto.getDescription());
+        p.setDirection(direction);
+        p.setProjectLead(employee);
     }
 
     @Override
     public void delete(long id) {
-        findByIdOrThrow(id);
+        projectRepository.findByIdOrThrow(id);
+        projectRepository.deleteById(id);
     }
 
     @Override
