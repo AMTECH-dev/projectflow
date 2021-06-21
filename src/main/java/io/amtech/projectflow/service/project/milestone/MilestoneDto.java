@@ -3,7 +3,7 @@ package io.amtech.projectflow.service.project.milestone;
 import io.amtech.projectflow.domain.project.Milestone;
 import lombok.Value;
 
-import static io.amtech.projectflow.util.DateUtil.instantToSeconds;
+import static io.amtech.projectflow.util.ConvertingUtil.instantToSecond;
 
 @Value
 public class MilestoneDto {
@@ -20,10 +20,10 @@ public class MilestoneDto {
         this.id = milestone.getId();
         this.name = milestone.getName();
         this.description = milestone.getDescription();
-        this.plannedStartDate = instantToSeconds(milestone.getPlannedStartDate());
-        this.plannedFinishDate = instantToSeconds(milestone.getPlannedFinishDate());
-        this.factStartDate = instantToSeconds(milestone.getFactStartDate());
-        this.factFinishDate = instantToSeconds(milestone.getFactFinishDate());
+        this.plannedStartDate = instantToSecond(milestone.getPlannedStartDate());
+        this.plannedFinishDate = instantToSecond(milestone.getPlannedFinishDate());
+        this.factStartDate = instantToSecond(milestone.getFactStartDate());
+        this.factFinishDate = instantToSecond(milestone.getFactFinishDate());
         this.progressPercent = milestone.getProgressPercent();
     }
 }

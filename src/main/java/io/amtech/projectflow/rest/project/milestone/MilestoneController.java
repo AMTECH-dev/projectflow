@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import static io.amtech.projectflow.util.ConvertingUtil.objToString;
+import static io.amtech.projectflow.util.SearchUtil.FROM_DATE_KEY;
+import static io.amtech.projectflow.util.SearchUtil.TO_DATE_KEY;
 
 @RestController
 @RequestMapping("/projects/{projectId}/milestones")
@@ -94,21 +96,19 @@ public class MilestoneController {
                                           @RequestParam(required = false) Long factFinishDateFrom,
                                           @RequestParam(required = false) Long factFinishDateTo,
                                           @RequestParam(required = false) Short progressPercent) {
-        final String fromRangeKey = "From";
-        final String toRangeKey = "To";
 
         SearchCriteria criteria = new SearchCriteriaBuilder()
                 .limit(limit)
                 .offset(offset)
                 .filter(Milestone_.NAME, name)
-                .filter(Milestone_.PLANNED_START_DATE + fromRangeKey, objToString(plannedStartDateFrom))
-                .filter(Milestone_.PLANNED_START_DATE + toRangeKey, objToString(plannedStartDateTo))
-                .filter(Milestone_.PLANNED_FINISH_DATE + fromRangeKey, objToString(plannedFinishDateFrom))
-                .filter(Milestone_.PLANNED_FINISH_DATE + toRangeKey, objToString(plannedFinishDateTo))
-                .filter(Milestone_.FACT_START_DATE + fromRangeKey, objToString(factStartDateFrom))
-                .filter(Milestone_.FACT_START_DATE + toRangeKey, objToString(factStartDateTo))
-                .filter(Milestone_.FACT_FINISH_DATE + fromRangeKey, objToString(factFinishDateFrom))
-                .filter(Milestone_.FACT_FINISH_DATE + toRangeKey, objToString(factFinishDateTo))
+                .filter(Milestone_.PLANNED_START_DATE + FROM_DATE_KEY, objToString(plannedStartDateFrom))
+                .filter(Milestone_.PLANNED_START_DATE + TO_DATE_KEY, objToString(plannedStartDateTo))
+                .filter(Milestone_.PLANNED_FINISH_DATE + FROM_DATE_KEY, objToString(plannedFinishDateFrom))
+                .filter(Milestone_.PLANNED_FINISH_DATE + TO_DATE_KEY, objToString(plannedFinishDateTo))
+                .filter(Milestone_.FACT_START_DATE + FROM_DATE_KEY, objToString(factStartDateFrom))
+                .filter(Milestone_.FACT_START_DATE + TO_DATE_KEY, objToString(factStartDateTo))
+                .filter(Milestone_.FACT_FINISH_DATE + FROM_DATE_KEY, objToString(factFinishDateFrom))
+                .filter(Milestone_.FACT_FINISH_DATE + TO_DATE_KEY, objToString(factFinishDateTo))
                 .filter(Milestone_.PROGRESS_PERCENT, objToString(progressPercent))
                 .order(orders)
                 .build();

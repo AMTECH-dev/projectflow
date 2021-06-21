@@ -1,6 +1,5 @@
 package io.amtech.projectflow.service.project.milestone.impl;
 
-import io.amtech.projectflow.app.exception.ObjectNotFoundException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.project.Milestone;
@@ -12,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.amtech.projectflow.util.DateUtil.secondsToInstant;
+import static io.amtech.projectflow.util.ConvertingUtil.secondToInstant;
 
 @Service
 @RequiredArgsConstructor
@@ -23,15 +22,15 @@ public class MilestoneServiceImpl implements MilestoneService {
 
     @Override
     public MilestoneDto create(final long projectId, final MilestoneCreateDto createDto) {
-        Project p = findProjectByIdOrThrow(projectId);
+        Project p = projectRepository.findByIdOrThrow(projectId);
 
         Milestone m = new Milestone()
                 .setName(createDto.getName())
                 .setDescription(createDto.getDescription())
-                .setPlannedStartDate(secondsToInstant(createDto.getPlannedStartDate()))
-                .setPlannedFinishDate(secondsToInstant(createDto.getPlannedFinishDate()))
-                .setFactStartDate(secondsToInstant(createDto.getFactStartDate()))
-                .setFactFinishDate(secondsToInstant(createDto.getFactFinishDate()))
+                .setPlannedStartDate(secondToInstant(createDto.getPlannedStartDate()))
+                .setPlannedFinishDate(secondToInstant(createDto.getPlannedFinishDate()))
+                .setFactStartDate(secondToInstant(createDto.getFactStartDate()))
+                .setFactFinishDate(secondToInstant(createDto.getFactFinishDate()))
                 .setProgressPercent(createDto.getProgressPercent());
 
         p.getMilestones().add(m);
@@ -42,21 +41,21 @@ public class MilestoneServiceImpl implements MilestoneService {
 
     @Override
     public MilestoneDto get(final long projectId, final long milestoneId) {
-        findProjectByIdOrThrow(projectId);
-        return new MilestoneDto(findMilestoneByIdOrThrow(milestoneId));
+        projectRepository.findByIdOrThrow(projectId);
+        return new MilestoneDto(milestoneRepository.findByIdOrThrow(milestoneId));
     }
 
     @Override
     public void update(final long projectId, final long milestoneId, final MilestoneUpdateDto newData) {
-        findProjectByIdOrThrow(projectId);
+        projectRepository.findByIdOrThrow(projectId);
 
-        Milestone m = findMilestoneByIdOrThrow(milestoneId);
+        Milestone m = milestoneRepository.findByIdOrThrow(milestoneId);
         m.setName(newData.getName());
         m.setDescription(newData.getDescription());
-        m.setPlannedStartDate(secondsToInstant(newData.getPlannedStartDate()));
-        m.setPlannedFinishDate(secondsToInstant(newData.getPlannedFinishDate()));
-        m.setFactStartDate(secondsToInstant(newData.getFactStartDate()));
-        m.setFactFinishDate(secondsToInstant(newData.getFactFinishDate()));
+        m.setPlannedStartDate(secondToInstant(newData.getPlannedStartDate()));
+        m.setPlannedFinishDate(secondToInstant(newData.getPlannedFinishDate()));
+        m.setFactStartDate(secondToInstant(newData.getFactStartDate()));
+        m.setFactFinishDate(secondToInstant(newData.getFactFinishDate()));
         m.setProgressPercent(newData.getProgressPercent());
     }
 
@@ -64,32 +63,22 @@ public class MilestoneServiceImpl implements MilestoneService {
     public void updateProgressPercent(final long projectId,
                                       final long milestoneId,
                                       final MilestoneUpdateProgressDto updateProgressDto) {
-        findProjectByIdOrThrow(projectId);
+        projectRepository.findByIdOrThrow(projectId);
 
-        Milestone m = findMilestoneByIdOrThrow(milestoneId);
+        Milestone m = milestoneRepository.findByIdOrThrow(milestoneId);
         m.setProgressPercent(updateProgressDto.getProgressPercent());
     }
 
     @Override
     public void delete(final long projectId, final long milestoneId) {
-        findProjectByIdOrThrow(projectId);
-        findMilestoneByIdOrThrow(milestoneId);
+        projectRepository.findByIdOrThrow(projectId);
+        milestoneRepository.findByIdOrThrow(milestoneId);
         milestoneRepository.deleteById(milestoneId);
     }
 
     @Override
     public PagedData<MilestoneDto> search(final long projectId, final SearchCriteria criteria) {
-        findProjectByIdOrThrow(projectId);
+        projectRepository.findByIdOrThrow(projectId);
         return milestoneRepository.search(projectId, criteria).map(MilestoneDto::new);
-    }
-
-    private Milestone findMilestoneByIdOrThrow(final long id) {
-        return milestoneRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(Milestone.class.getSimpleName(), id));
-    }
-
-    private Project findProjectByIdOrThrow(final long projectId) {
-        return projectRepository.findById(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), projectId));
     }
 }

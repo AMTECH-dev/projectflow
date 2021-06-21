@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
-import static io.amtech.projectflow.util.DateUtil.secondsToInstant;
+import static io.amtech.projectflow.util.ConvertingUtil.secondToInstant;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,10 +52,10 @@ public class MilestoneControllerTest extends IntegrationTest {
                                 .setId(1L)
                                 .setName("Разработка проектной документации")
                                 .setDescription("Разработана документация проекта")
-                                .setPlannedStartDate(secondsToInstant(1623320100L))
-                                .setPlannedFinishDate(secondsToInstant(1623420101L))
-                                .setFactStartDate(secondsToInstant(1623320100L))
-                                .setFactFinishDate(secondsToInstant(1623420101L))
+                                .setPlannedStartDate(secondToInstant(1623320100L))
+                                .setPlannedFinishDate(secondToInstant(1623420101L))
+                                .setFactStartDate(secondToInstant(1623320100L))
+                                .setFactFinishDate(secondToInstant(1623420101L))
                                 .setProgressPercent((short) 23)
                 ),
                 Arguments.arguments(
@@ -65,8 +65,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                         new Milestone()
                                 .setId(1L)
                                 .setName("Печать комплекта документов")
-                                .setPlannedStartDate(secondsToInstant(1623320100L))
-                                .setPlannedFinishDate(secondsToInstant(1623420101L))
+                                .setPlannedStartDate(secondToInstant(1623320100L))
+                                .setPlannedFinishDate(secondToInstant(1623420101L))
                                 .setProgressPercent((short) 13)
                 ),
                 Arguments.arguments(
@@ -77,8 +77,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                                 .setId(1L)
                                 .setName(maxNameValue)
                                 .setDescription(maxDescriptionValue)
-                                .setPlannedStartDate(secondsToInstant(1623320100L))
-                                .setPlannedFinishDate(secondsToInstant(1623420101L))
+                                .setPlannedStartDate(secondToInstant(1623320100L))
+                                .setPlannedFinishDate(secondToInstant(1623420101L))
                                 .setProgressPercent((short) 13)
                 )
         );
@@ -247,10 +247,10 @@ public class MilestoneControllerTest extends IntegrationTest {
                                 .setId(22L)
                                 .setName("Разработка проектной документации")
                                 .setDescription("Разработана документация проекта")
-                                .setPlannedStartDate(secondsToInstant(1623320100L))
-                                .setPlannedFinishDate(secondsToInstant(1623420101L))
-                                .setFactStartDate(secondsToInstant(1623320100L))
-                                .setFactFinishDate(secondsToInstant(1623420101L))
+                                .setPlannedStartDate(secondToInstant(1623320100L))
+                                .setPlannedFinishDate(secondToInstant(1623420101L))
+                                .setFactStartDate(secondToInstant(1623320100L))
+                                .setFactFinishDate(secondToInstant(1623420101L))
                                 .setProgressPercent((short) 50)
                 ),
                 Arguments.arguments(
@@ -259,8 +259,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                         new Milestone()
                                 .setId(22L)
                                 .setName("Разработка проектной документации")
-                                .setPlannedStartDate(secondsToInstant(1623320100L))
-                                .setPlannedFinishDate(secondsToInstant(1623420101L))
+                                .setPlannedStartDate(secondToInstant(1623320100L))
+                                .setPlannedFinishDate(secondToInstant(1623420101L))
                                 .setProgressPercent((short) 40)
                 )
         );
@@ -351,8 +351,8 @@ public class MilestoneControllerTest extends IntegrationTest {
                 .setId(11L)
                 .setName("do sth really important 1")
                 .setDescription("")
-                .setPlannedStartDate(secondsToInstant(1623320100L))
-                .setPlannedFinishDate(secondsToInstant(1623420101L))
+                .setPlannedStartDate(secondToInstant(1623320100L))
+                .setPlannedFinishDate(secondToInstant(1623420101L))
                 .setProgressPercent((short) 45);
 
         Assertions.assertThat(txUtil.txRun(() -> projectRepository.findById(projectId))).isPresent();

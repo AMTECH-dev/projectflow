@@ -10,7 +10,10 @@ import javax.persistence.criteria.Path;
 import java.util.Optional;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class OrderUtil {
+public class SearchUtil {
+    public static final String FROM_DATE_KEY = "From";
+    public static final String TO_DATE_KEY = "To";
+
     public static Order parseOrder(final Path<?> path, final String orderField) {
         Order order;
         try {
