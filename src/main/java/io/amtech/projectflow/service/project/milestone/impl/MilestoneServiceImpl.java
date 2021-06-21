@@ -35,9 +35,9 @@ public class MilestoneServiceImpl implements MilestoneService {
                 .setProgressPercent(createDto.getProgressPercent());
 
         p.getMilestones().add(m);
-        milestoneRepository.save(m);
+        Milestone savedMilestone = milestoneRepository.save(m);
 
-        return new MilestoneDto(m);
+        return new MilestoneDto(savedMilestone);
     }
 
     @Override
