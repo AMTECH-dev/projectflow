@@ -1,0 +1,6 @@
+{
+  "message": "Validation error",
+  "errors": {
+    "plannedFinishDate": "must not be null"
+  }
+}
