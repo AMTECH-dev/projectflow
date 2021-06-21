@@ -361,7 +361,9 @@ class EmployeeControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("updateSuccessArgs")
     @SneakyThrows
-    @Sql(scripts = {"classpath:db/EmployeeControllerTest/updateSuccessTest/createEmployees.sql"})
+    @Sql(scripts = {
+            "classpath:db/EmployeeControllerTest/updateSuccessTest/createEmployees.sql"}
+    )
     void updateSuccessTest(final long id, final String request, final Employee expect) {
         List<Employee> existEmpBefore = repository.findAll();
 
@@ -369,7 +371,6 @@ class EmployeeControllerTest extends IntegrationTest {
                 .createPut(BASE_URL + "/" + id)
                 .content(request))
                 .andExpect(status().isOk());
-
 
         for (Employee before : existEmpBefore) {
             if (before.getId() == id) {
