@@ -33,9 +33,8 @@ public class ProjectCommentCustomRepositoryImpl implements ProjectCommentCustomR
         CriteriaQuery<ProjectComment> query = builder.createQuery(ProjectComment.class);
         Root<Project> root = query.from(Project.class);
         Join<Project, ProjectComment> join = root.join(Project_.projectComments);
-        List<Predicate> predicates = new ArrayList<>() {{
-            add(builder.equal(root.get(Project_.ID), projectId));
-        }};
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(builder.equal(root.get(Project_.ID), projectId));
         criteria.getFilter(ProjectComment_.LOGIN)
                 .ifPresent(v -> predicates.add(builder.like(builder.lower(join.get(ProjectComment_.LOGIN)), "%" + v.toLowerCase() + "%")));
         criteria.getFilter(ProjectComment_.MESSAGE)
