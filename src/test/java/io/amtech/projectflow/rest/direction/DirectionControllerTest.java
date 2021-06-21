@@ -1,6 +1,7 @@
 package io.amtech.projectflow.rest.direction;
 
 import io.amtech.projectflow.domain.Direction;
+import io.amtech.projectflow.domain.employee.Employee;
 import io.amtech.projectflow.repository.DirectionRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -30,13 +31,17 @@ public class DirectionControllerTest extends IntegrationTest {
 
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
+        Employee lead=new Employee().setId(22L).setName("Пётр Петров").setEmail("petr@gmail.com")
+                //.setPosition("DIRECTION_LEAD")
+                .setPhone("222222222").setFired(false);
+
         return Stream.of(
                 Arguments.arguments(11L, buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
                         new Direction()
                                 .setId(1L)
                                 .setName("Основной Direction")
-                                //.setLead()
+                                .setLead(lead)
                 ),
                 Arguments.arguments("empty_nullable_params", 11L,
                         buildJson("createSuccessTest/empty_nullable_params_request.json"),
@@ -44,7 +49,7 @@ public class DirectionControllerTest extends IntegrationTest {
                         new Direction()
                                 .setId(1L)
                                 .setName("Основной Direction")
-                                //.setLead()
+                                .setLead(lead)
                         ),
                 Arguments.arguments("max_length", 11L,
                         buildJson("createSuccessTest/max_length_request.json"),
@@ -52,6 +57,7 @@ public class DirectionControllerTest extends IntegrationTest {
                         new Direction()
                                 .setId(1L)
                                 .setName(MAX_NAME_VALUE)
+                                .setLead(lead)
                         )
         );
     }
