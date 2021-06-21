@@ -7,6 +7,7 @@ import io.amtech.projectflow.domain.project.ProjectComment_;
 import io.amtech.projectflow.service.project_comment.ProjectCommentCreateDto;
 import io.amtech.projectflow.service.project_comment.ProjectCommentDto;
 import io.amtech.projectflow.service.project_comment.ProjectCommentService;
+import io.amtech.projectflow.util.SearchUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,8 +55,8 @@ public class ProjectCommentController {
                 .offset(offset)
                 .filter(ProjectComment_.LOGIN, login)
                 .filter(ProjectComment_.MESSAGE, message)
-                .filter(ProjectComment_.CREATE_DATE + "From", objToString(createDateFrom))
-                .filter(ProjectComment_.CREATE_DATE + "To", objToString(createDateTo))
+                .filter(ProjectComment_.CREATE_DATE + SearchUtil.FROM_DATE_KEY, objToString(createDateFrom))
+                .filter(ProjectComment_.CREATE_DATE + SearchUtil.TO_DATE_KEY, objToString(createDateTo))
                 .order(orders)
                 .build();
 
