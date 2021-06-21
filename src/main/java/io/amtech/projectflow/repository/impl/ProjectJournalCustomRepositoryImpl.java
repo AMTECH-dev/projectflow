@@ -16,7 +16,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.amtech.projectflow.util.OrderUtil.parseOrder;
+import static io.amtech.projectflow.util.SearchUtil.*;
 
 @Repository
 public class ProjectJournalCustomRepositoryImpl implements ProjectJournalCustomRepository {
@@ -34,10 +34,10 @@ public class ProjectJournalCustomRepositoryImpl implements ProjectJournalCustomR
         criteria.getFilter(ProjectJournal_.LOGIN)
                 .ifPresent(v -> predicates.add(builder.like(builder.lower(joinProjectJournal.get(ProjectJournal_.LOGIN)),
                         "%" + v.toLowerCase() + "%")));
-        criteria.getFilter(ProjectJournal_.UPDATE_DATE + "From")
+        criteria.getFilter(ProjectJournal_.UPDATE_DATE + FROM_DATE_KEY)
                 .ifPresent(v -> predicates.add(builder.greaterThanOrEqualTo(joinProjectJournal.get(ProjectJournal_.UPDATE_DATE),
                         Instant.ofEpochSecond(Long.parseLong(v)))));
-        criteria.getFilter(ProjectJournal_.UPDATE_DATE + "To")
+        criteria.getFilter(ProjectJournal_.UPDATE_DATE + TO_DATE_KEY)
                 .ifPresent(v -> predicates.add(builder.lessThanOrEqualTo(joinProjectJournal.get(ProjectJournal_.UPDATE_DATE),
                         Instant.ofEpochSecond(Long.parseLong(v)))));
         query.select(joinProjectJournal)

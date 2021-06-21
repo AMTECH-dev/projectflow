@@ -7,13 +7,13 @@ import io.amtech.projectflow.domain.project.ProjectJournal_;
 import io.amtech.projectflow.service.project_journal.ProjectJournalDto;
 import io.amtech.projectflow.service.project_journal.ProjectJournalService;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 
 import static io.amtech.projectflow.util.ConvertingUtil.objToString;
+import static io.amtech.projectflow.util.SearchUtil.*;
 
 @RestController
 @RequestMapping("/projects/{projectId}/projectJournals")
@@ -38,8 +38,8 @@ public class ProjectJournalController {
                 .offset(offset)
                 .order(orders)
                 .filter(ProjectJournal_.LOGIN, objToString(login))
-                .filter(ProjectJournal_.UPDATE_DATE + "From", objToString(updateDateFromInSecond))
-                .filter(ProjectJournal_.UPDATE_DATE + "To", objToString(updateDateToInSecond))
+                .filter(ProjectJournal_.UPDATE_DATE + FROM_DATE_KEY, objToString(updateDateFromInSecond))
+                .filter(ProjectJournal_.UPDATE_DATE + TO_DATE_KEY, objToString(updateDateToInSecond))
                 .build();
 
         return projectJournalService.search(projectId, searchCriteria);

@@ -10,15 +10,20 @@ import javax.persistence.criteria.Path;
 import java.util.Optional;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class OrderUtil {
+public class SearchUtil {
+    public static final String FROM_DATE_KEY = "From";
+    public static final String TO_DATE_KEY = "To";
+
     public static Order parseOrder(final Path<?> path, final String orderField) {
+        Order order;
         try {
-            return Optional.ofNullable(orderField)
-                    .filter(x -> x.startsWith("-"))
-                    .map(x -> new OrderImpl(path.get(x.substring(1)), false))
+            order = Optional.ofNullable(orderField)
+                    .filter(f -> f.startsWith("-"))
+                    .map(f -> new OrderImpl(path.get(f.substring(1)), false))
                     .orElseGet(() -> new OrderImpl(path.get(orderField)));
         } catch (IllegalArgumentException e) {
             throw new InvalidOrderException(orderField);
         }
+        return order;
     }
 }
