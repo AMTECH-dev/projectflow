@@ -1,4 +1,4 @@
-package io.amtech.projectflow.repository.direction;
+package io.amtech.projectflow.service.direction;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

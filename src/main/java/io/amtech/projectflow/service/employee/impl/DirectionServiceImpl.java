@@ -5,10 +5,11 @@ import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.Direction;
 import io.amtech.projectflow.repository.DirectionRepository;
-import io.amtech.projectflow.repository.direction.DirectionCreateDto;
-import io.amtech.projectflow.repository.direction.DirectionDto;
-import io.amtech.projectflow.repository.direction.DirectionService;
-import io.amtech.projectflow.repository.direction.DirectionUpdateDto;
+import io.amtech.projectflow.repository.EmployeeRepository;
+import io.amtech.projectflow.service.direction.DirectionCreateDto;
+import io.amtech.projectflow.service.direction.DirectionDto;
+import io.amtech.projectflow.service.direction.DirectionService;
+import io.amtech.projectflow.service.direction.DirectionUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,15 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class DirectionServiceImpl implements DirectionService {
 
     private final DirectionRepository directionRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Override
     public DirectionDto create(DirectionCreateDto createDto) {
         Direction d = new Direction()
                 .setName(createDto.getName())
-                .setLead(createDto.getLead());
+                .setLead(employeeRepository.findById(createDto.getLead_id()).get());
 
-        directionRepository.save(d);
-        return new DirectionDto(d);
+        Direction saved=directionRepository.save(d);
+        return new DirectionDto(saved);
     }
 
     @Override
@@ -45,7 +47,7 @@ public class DirectionServiceImpl implements DirectionService {
         Direction d=findByIdOrThrow(id);
 
         d.setName(newData.getName());
-        d.setLead(newData.getLead());
+        d.setLead(employeeRepository.findById(newData.getLead_id()).get());
     }
 
     @Override

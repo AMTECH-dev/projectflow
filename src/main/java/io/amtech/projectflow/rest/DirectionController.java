@@ -3,10 +3,10 @@ package io.amtech.projectflow.rest;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.app.general.SearchCriteriaBuilder;
-import io.amtech.projectflow.repository.direction.DirectionDto;
-import io.amtech.projectflow.repository.direction.DirectionCreateDto;
-import io.amtech.projectflow.repository.direction.DirectionService;
-import io.amtech.projectflow.repository.direction.DirectionUpdateDto;
+import io.amtech.projectflow.service.direction.DirectionDto;
+import io.amtech.projectflow.service.direction.DirectionCreateDto;
+import io.amtech.projectflow.service.direction.DirectionService;
+import io.amtech.projectflow.service.direction.DirectionUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,12 +32,12 @@ public class DirectionController {
     }
 
     @PutMapping("{id}")
-    public void update(@PathVariable("{id}") long id, DirectionUpdateDto dto) {
+    public void update(@PathVariable("id") long id, DirectionUpdateDto dto) {
         directionService.update(id, dto);
     }
 
     @DeleteMapping("{id}")
-    public void delete(@PathVariable("{id}") long id) {
+    public void delete(@PathVariable("id") long id) {
         directionService.delete(id);
     }
 

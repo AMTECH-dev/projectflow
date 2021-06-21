@@ -1,4 +1,4 @@
-package io.amtech.projectflow.repository.direction;
+package io.amtech.projectflow.service.direction;
 
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;

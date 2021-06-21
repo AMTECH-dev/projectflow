@@ -2,6 +2,7 @@ package io.amtech.projectflow.rest.direction;
 
 import io.amtech.projectflow.domain.Direction;
 import io.amtech.projectflow.domain.employee.Employee;
+import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.DirectionRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
@@ -13,9 +14,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.ResultHandler;
 
 import java.util.stream.Stream;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,11 +35,11 @@ public class DirectionControllerTest extends IntegrationTest {
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
         Employee lead=new Employee().setId(22L).setName("Пётр Петров").setEmail("petr@gmail.com")
-                //.setPosition("DIRECTION_LEAD")
+                .setPosition(UserPosition.DIRECTION_LEAD)
                 .setPhone("222222222").setFired(false);
 
         return Stream.of(
-                Arguments.arguments(11L, buildJson("createSuccessTest/full_request.json"),
+                Arguments.arguments("", 11L, buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
                         new Direction()
                                 .setId(1L)
@@ -76,24 +79,25 @@ public class DirectionControllerTest extends IntegrationTest {
             "classpath:db/clean.sql",
             "classpath:db/DirectionControllerTest/createSuccessTest/directions_are_exist.sql"
     })
-    void createSuccessTest(final long projectId, final String request, final String response, final Direction d) {
+    void createSuccessTest(final String name, final long projectId, final String request, final String response, final Direction d) {
         mvc.perform(TestUtils
-                .createPost(changeProjectIdInUrl(projectId))
+                .createPost(BASE_URL)//changeProjectIdInUrl(projectId))
                 .content(request))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
 
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
-                .hasSize(6);
+                .hasSize(3);
 
         Assertions.assertThat(txUtil.txRun(() -> repository.findById(1L)))
                 .isPresent()
                 .contains(d);
     }
 
-    private String changeProjectIdInUrl(final long projectId) {
+    /*private String changeProjectIdInUrl(final long projectId) {
         return DirectionControllerTest.BASE_URL.replace("{Id}", String.valueOf(projectId));
-    }
+    }*/
 
     @SuppressWarnings("unused")
     static Stream<Arguments> createFailTestArgs() {
@@ -112,7 +116,7 @@ public class DirectionControllerTest extends IntegrationTest {
     void createFailTest(@SuppressWarnings("unused") String testName, final long projectId,
                         final String request, final String response, final int httpStatus) {
         mvc.perform(TestUtils
-                .createPost(changeProjectIdInUrl(projectId))
+                .createPost(BASE_URL)
                 .content(request))
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
