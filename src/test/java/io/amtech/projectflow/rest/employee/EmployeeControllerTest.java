@@ -17,9 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTION_LEAD;
-import static io.amtech.projectflow.domain.employee.UserPosition.DIRECTOR;
-import static io.amtech.projectflow.domain.employee.UserPosition.PROJECT_LEAD;
+import static io.amtech.projectflow.domain.employee.UserPosition.*;
 import static io.amtech.projectflow.test.TestUtils.strMultiple;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,19 +26,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EmployeeControllerTest extends IntegrationTest {
     private static final String BASE_URL = "/employees";
     private static final String BASE_ID_URL = BASE_URL + "/%d";
-    @Autowired
-    private EmployeeRepository repository;
+
+    private final static String PATH_TO_CONTROLLER_TEST = "classpath:db/EmployeeControllerTest/";
+    private final static String INSERT_EMPLOYEES_FOR_UPDATE = PATH_TO_CONTROLLER_TEST +
+            "updateTest/create_employee.sql";
+    private final static String INSERT_EMPLOYEES_FOR_GET = PATH_TO_CONTROLLER_TEST +
+            "getTest/create_employee.sql";
+    private final static String INSERT_EMPLOYEES_FOR_SEARCH = PATH_TO_CONTROLLER_TEST +
+            "insert_for_search.sql";
+    private final static String INSERT_EMPLOYEES_FOR_DELETE = PATH_TO_CONTROLLER_TEST +
+            "deleteTest/create_employee.sql";
 
     private final static String MAX_NAME_VALUE = strMultiple("a", 255);
     private final static String MAX_EMAIL_VALUE = strMultiple("b", 38) + "@example.com";
     private final static String MAX_PHONE_VALUE = strMultiple("1", 50);
 
+    @Autowired
+    private EmployeeRepository repository;
+
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
-        final String fakeName = strMultiple("a", 255);
-        final String fakeEmail = strMultiple("b", 38) + "@example.com";
-        final String fakePhone = strMultiple("1", 50);
-
         return Stream.of(
                 Arguments.arguments(buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
@@ -49,49 +54,50 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setName("Иван Копыто")
                                 .setEmail("kopito@example.com")
                                 .setPhone("+7 128 123 12 12")
-                                .setPosition(PROJECT_LEAD)),
+                                .setPosition(PROJECT_LEAD)
+                ),
                 Arguments.arguments(buildJson("createSuccessTest/without_phone_request.json"),
                         buildJson("createSuccessTest/without_phone_response.json"),
                         new Employee()
                                 .setId(1L)
                                 .setName("А")
                                 .setEmail("a@b.ru")
-                                .setPosition(DIRECTOR)),
+                                .setPosition(DIRECTOR)
+                ),
                 Arguments.arguments(buildJson("default_request.json.template",
-                        fakeName,
-                        fakeEmail,
-                        fakePhone,
+                        MAX_NAME_VALUE,
+                        MAX_EMAIL_VALUE,
+                        MAX_PHONE_VALUE,
                         PROJECT_LEAD.name()),
                         buildJson("default_response.json.template",
                                 1,
-                                fakeName,
-                                fakeEmail,
-                                fakePhone,
+                                MAX_NAME_VALUE,
+                                MAX_EMAIL_VALUE,
+                                MAX_PHONE_VALUE,
                                 PROJECT_LEAD.name()),
                         new Employee()
                                 .setId(1L)
-                                .setName(fakeName)
-                                .setEmail(fakeEmail)
-                                .setPhone(fakePhone)
-                                .setPosition(PROJECT_LEAD))
-                );
+                                .setName(MAX_NAME_VALUE)
+                                .setEmail(MAX_EMAIL_VALUE)
+                                .setPhone(MAX_PHONE_VALUE)
+                                .setPosition(PROJECT_LEAD)
+                )
+        );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} createSuccessTest")
     @MethodSource("createSuccessTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/createSuccessTest/exists_employees.sql"
-    })
     void createSuccessTest(final String request, final String response, final Employee e) {
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(response, true));
 
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
-                .hasSize(3);
+                .hasSize(1);
 
         Assertions.assertThat(txUtil.txRun(() -> repository.findById(1L)))
                 .isPresent()
@@ -107,54 +113,58 @@ class EmployeeControllerTest extends IntegrationTest {
         return Stream.of(
                 Arguments.arguments(buildJson("createFailTest/name_is_missing_request.json"),
                         buildJson("createFailTest/name_is_missing_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
                 Arguments.arguments(buildJson("default_request.json.template",
                         longName, MAX_EMAIL_VALUE, MAX_PHONE_VALUE, PROJECT_LEAD),
                         buildJson("createFailTest/name_is_too_long_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-
+                        HttpStatus.BAD_REQUEST.value()
+                ),
                 Arguments.arguments(buildJson("createFailTest/invalid_email_format_request.json"),
                         buildJson("createFailTest/invalid_email_format_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
                 Arguments.arguments(buildJson("default_request.json.template",
                         MAX_NAME_VALUE, longEmail, MAX_PHONE_VALUE, DIRECTION_LEAD),
                         buildJson("createFailTest/email_is_too_long_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
                 Arguments.arguments(buildJson("createFailTest/email_is_missing_request.json"),
                         buildJson("createFailTest/email_is_missing_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-
+                        HttpStatus.BAD_REQUEST.value()
+                ),
                 Arguments.arguments(buildJson("default_request.json.template",
                         MAX_NAME_VALUE, MAX_EMAIL_VALUE, longPhone, DIRECTION_LEAD),
                         buildJson("createFailTest/phone_is_too_long_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
-
+                        HttpStatus.BAD_REQUEST.value()
+                ),
                 Arguments.arguments(buildJson("createFailTest/without_position_request.json"),
                         buildJson("createFailTest/without_position_response.json"),
-                        HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.BAD_REQUEST.value()
+                ),
                 Arguments.arguments(buildJson("createFailTest/wrong_position_request.json"),
                         buildJson("createFailTest/wrong_position_response.json.template",
                                 "I love my job", UserPosition.class.getSimpleName()),
-                        HttpStatus.BAD_REQUEST.value()),
-
+                        HttpStatus.BAD_REQUEST.value()
+                ),
                 Arguments.arguments(buildJson("createFailTest/empty_with_email_request.json"),
                         buildJson("createFailTest/empty_response.json"),
-                        HttpStatus.BAD_REQUEST.value())
+                        HttpStatus.BAD_REQUEST.value()
+                )
         );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} createFailTest")
     @MethodSource("createFailTestArgs")
     @SneakyThrows
-    void createFailTest(final String request, final String response, int httpStatus) {
-        // setup
+    void createFailTest(final String request, final String response, final int httpStatus) {
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
+                .andDo(print())
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
 
-        // then
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll()))
                 .isEmpty();
     }
@@ -177,14 +187,11 @@ class EmployeeControllerTest extends IntegrationTest {
         );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} searchSuccessTest")
     @MethodSource("searchSuccessTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/searchSuccessTest/data.sql"
-    })
+    @Sql(INSERT_EMPLOYEES_FOR_SEARCH)
     void searchSuccessTest(final String url, final String response) {
-        // setup
         mvc.perform(TestUtils.createGet(BASE_URL + url))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -199,17 +206,15 @@ class EmployeeControllerTest extends IntegrationTest {
                         HttpStatus.BAD_REQUEST.value()),
                 Arguments.arguments("?position=MEGA",
                         buildJson("searchFailTest/invalid_position_response.json"),
-                        HttpStatus.BAD_REQUEST.value()));
+                        HttpStatus.BAD_REQUEST.value())
+        );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} searchFailTest")
     @MethodSource("searchFailArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/searchFailTest/data.sql"
-    })
-    void searchFailTest(final String url, final String response, int status) {
-        // setup
+    @Sql(INSERT_EMPLOYEES_FOR_SEARCH)
+    void searchFailTest(final String url, final String response, final int status) {
         mvc.perform(TestUtils.createGet(BASE_URL + url))
                 .andDo(print())
                 .andExpect(status().is(status))
@@ -221,76 +226,81 @@ class EmployeeControllerTest extends IntegrationTest {
         return Stream.of(Arguments.arguments(1, 1000), Arguments.arguments(2000));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} deleteSuccessTest")
     @MethodSource("deleteSuccessTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/deleteTest/create_employee.sql"
-    })
-    void deleteSuccessTest(long id) {
+    @Sql(INSERT_EMPLOYEES_FOR_DELETE)
+    void deleteSuccessTest(final long id) {
         List<Employee> employeesBeforeDelete = repository.findAll();
+
+        Assertions.assertThat(txUtil.txRun(() -> repository.findById(id))).isPresent();
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll())).hasSize(4);
 
         mvc.perform(TestUtils
                 .createDelete(String.format(BASE_ID_URL, id)))
+                .andDo(print())
                 .andExpect(status().isOk());
 
-        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
-                .isFalse();
-
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id))).isFalse();
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll())).hasSize(3);
         Assertions.assertThat(employeesBeforeDelete.removeIf(x -> x.getId() == id)).isTrue();
+
         List<Employee> employeesAfterDelete = txUtil.txRun(() -> repository.findAll());
-        for (Employee employee : employeesBeforeDelete) {
+        for (Employee employee : employeesBeforeDelete)
             Assertions.assertThat(employeesAfterDelete.stream().filter(employee::equals).findFirst())
                     .isNotEmpty();
-        }
     }
 
     @SuppressWarnings("unused")
     static Stream<Arguments> deleteFailTestArgs() {
-        return Stream.of(Arguments.arguments(0, HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments(99, HttpStatus.NOT_FOUND.value()));
+        return Stream.of(
+                Arguments.arguments(0, HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments(99, HttpStatus.NOT_FOUND.value())
+        );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} deleteFailTest")
     @MethodSource("deleteFailTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/deleteTest/create_employee.sql"
-    })
-    void deleteFailTest(long id, int httpStatus) {
+    @Sql(INSERT_EMPLOYEES_FOR_DELETE)
+    void deleteFailTest(final long id, final int httpStatus) {
         List<Employee> employeesBeforeDelete = repository.findAll();
 
         mvc.perform(TestUtils
                 .createDelete(String.format(BASE_ID_URL, id)))
+                .andDo(print())
                 .andExpect(status().is(httpStatus));
 
-        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id)))
-                .isFalse();
+        Assertions.assertThat(txUtil.txRun(() -> repository.existsById(id))).isFalse();
 
         List<Employee> employeesAfterDelete = txUtil.txRun(() -> repository.findAll());
-        for (Employee employee : employeesAfterDelete) {
+        for (Employee employee : employeesAfterDelete)
             Assertions.assertThat(employeesBeforeDelete.stream().filter(employee::equals).findFirst())
                     .isNotEmpty();
-        }
+
+        Assertions.assertThat(txUtil.txRun(() -> repository.findAll())).hasSize(4);
     }
 
     @SuppressWarnings("unused")
     static Stream<Arguments> getSuccessTestArgs() {
-        return Stream.of(Arguments.arguments(1, buildJson("getSuccessTest/first_employee_response.json"),
-                HttpStatus.OK.value()),
+        return Stream.of(
+                Arguments.arguments(1, buildJson("getSuccessTest/first_employee_response.json"),
+                        HttpStatus.OK.value()),
                 Arguments.arguments(7, buildJson("getSuccessTest/7th_employee_response.json"),
-                        HttpStatus.OK.value()));
+                        HttpStatus.OK.value())
+        );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} getSuccessTest")
     @MethodSource("getSuccessTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
-    })
-    void getSuccessTest(final long id, final String response, int httpStatus) {
+    @Sql(INSERT_EMPLOYEES_FOR_GET)
+    void getSuccessTest(final long id, final String response, final int httpStatus) {
+        Assertions.assertThat(txUtil.txRun(() -> repository.findById(id))).isPresent();
+
         mvc.perform(TestUtils
-                .createGet(String.format(BASE_ID_URL,id)))
+                .createGet(String.format(BASE_ID_URL, id)))
+                .andDo(print())
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
     }
@@ -303,18 +313,18 @@ class EmployeeControllerTest extends IntegrationTest {
                 Arguments.arguments(0, buildJson("getFailTest/wrong_response.json"),
                         HttpStatus.NOT_FOUND.value()),
                 Arguments.arguments(-1, buildJson("getFailTest/wrong_response.json"),
-                        HttpStatus.NOT_FOUND.value()));
+                        HttpStatus.NOT_FOUND.value())
+        );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} getFailTest")
     @MethodSource("getFailTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/getTest/create_employee.sql"
-    })
-    void getFailTest(final long id, final String response, int httpStatus) {
+    @Sql(INSERT_EMPLOYEES_FOR_GET)
+    void getFailTest(final long id, final String response, final int httpStatus) {
         mvc.perform(TestUtils
-                .createGet(String.format(BASE_ID_URL,id)))
+                .createGet(String.format(BASE_ID_URL, id)))
+                .andDo(print())
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, false));
 
@@ -323,7 +333,7 @@ class EmployeeControllerTest extends IntegrationTest {
     }
 
     @SuppressWarnings("unused")
-    static Stream<Arguments> updateSuccessArgs() {
+    static Stream<Arguments> updateSuccessTestArgs() {
         return Stream.of(
                 Arguments.arguments(1L,
                         buildJson("updateSuccessTest/full_update_request.json"),
@@ -358,37 +368,35 @@ class EmployeeControllerTest extends IntegrationTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("updateSuccessArgs")
+    @ParameterizedTest(name = "{index} updateSuccessTest")
+    @MethodSource("updateSuccessTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/EmployeeControllerTest/updateSuccessTest/createEmployees.sql"}
-    )
-    void updateSuccessTest(final long id, final String request, final Employee expect) {
-        List<Employee> existEmpBefore = repository.findAll();
+    @Sql(INSERT_EMPLOYEES_FOR_UPDATE)
+    void updateSuccessTest(final long id, final String request, final Employee employeeAfterUpdate) {
+        Assertions.assertThat(txUtil.txRun(() -> repository.findById(id))).isPresent();
+
+        List<Employee> employeesBeforeUpdate = repository.findAll();
 
         mvc.perform(TestUtils
-                .createPut(BASE_URL + "/" + id)
+                .createPut(String.format(BASE_ID_URL, id))
                 .content(request))
+                .andDo(print())
                 .andExpect(status().isOk());
 
-        for (Employee before : existEmpBefore) {
-            if (before.getId() == id) {
+        for (Employee employeeBeforeUpdate : employeesBeforeUpdate) {
+            if (employeeBeforeUpdate.getId() == id)
                 Assertions.assertThat(txUtil.txRun(() -> repository.findById(id)))
-                        .isPresent()
                         .get()
-                        .isEqualTo(expect);
-            } else {
-                Assertions.assertThat(txUtil.txRun(() -> repository.findById(before.getId())))
-                        .isPresent()
+                        .isEqualTo(employeeAfterUpdate);
+            else
+                Assertions.assertThat(txUtil.txRun(() -> repository.findById(employeeBeforeUpdate.getId())))
                         .get()
-                        .isEqualTo(before);
-            }
+                        .isNotEqualTo(employeeAfterUpdate);
         }
     }
 
     @SuppressWarnings("unused")
-    static Stream<Arguments> updateFailedArgs() {
+    static Stream<Arguments> updateFailTestArgs() {
         return Stream.of(
                 Arguments.arguments(1L,
                         buildJson("updateFailTest/update_request_fired_is_null.json"),
@@ -399,24 +407,24 @@ class EmployeeControllerTest extends IntegrationTest {
                         buildJson("updateFailTest/update_empty_response.json"),
                         HttpStatus.BAD_REQUEST.value()),
                 Arguments.arguments(102L,
-                        buildJson("updateFailTest/unexisting_id_call_failed.json"),
-                        buildJson("updateFailTest/unexisting_id_call_failed_response.json"),
+                        buildJson("updateFailTest/wrong_id_request.json"),
+                        buildJson("updateFailTest/wrong_id_response.json"),
                         HttpStatus.NOT_FOUND.value())
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("updateFailedArgs")
+    @ParameterizedTest(name = "{index} updateFailTest")
+    @MethodSource("updateFailTestArgs")
     @SneakyThrows
-    @Sql(scripts = {"classpath:db/EmployeeControllerTest/updateSuccessTest/createEmployees.sql"})
-    void updateFailTest(final Long id, final String request, final String response, int expectedStatus) {
+    @Sql(INSERT_EMPLOYEES_FOR_UPDATE)
+    void updateFailTest(final long id, final String request, final String response, final int httpStatus) {
         mvc.perform(TestUtils
-                .createPut(BASE_URL + "/" + id)
+                .createPut(String.format(BASE_ID_URL, id))
                 .content(request))
-                .andExpect(status().is(expectedStatus))
+                .andDo(print())
+                .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
     }
-
 
     private static String buildJson(final String resource, Object... args) {
         String template = TestUtils.readClassPathResourceAsString(
