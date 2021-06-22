@@ -1,0 +1,18 @@
+{
+    "data": [
+        {
+            "id": 5,
+            "login": "anna",
+            "updateDate": 1583743743
+        },
+        {
+            "id": 7,
+            "login": "anna",
+            "updateDate": 1614469802
+        }
+    ],
+    "meta": {
+        "limit": 100,
+        "offset": 0
+    }
+}

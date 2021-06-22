@@ -112,7 +112,7 @@ public class TokenServiceImpl implements TokenService {
     @SneakyThrows
     private TokenPayload decode(final String token) {
         byte[] decodeTokenBytes = Base64.getDecoder().decode(token);
-        return objectMapper.readValue(decodeTokenBytes, new TypeReference<>() {});
+        return objectMapper.readValue(new String(decodeTokenBytes).replace(secret, ""), new TypeReference<>() {});
     }
 
     @SneakyThrows
