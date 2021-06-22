@@ -42,7 +42,7 @@ class EmployeeControllerTest extends IntegrationTest {
         final String fakePhone = strMultiple("1", 50);
 
         return Stream.of(
-                Arguments.arguments(buildJson("createSuccessTest/update_full_request.json"),
+                Arguments.arguments(buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
                         new Employee()
                                 .setId(1L)

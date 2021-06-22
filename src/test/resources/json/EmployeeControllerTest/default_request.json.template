@@ -1,6 +1,6 @@
 {
   "name": "%s",
-  "projectLeadId": "%s",
-  "directionId": "%s",
-  "description": "%s"
+  "email": "%s",
+  "phone": "%s",
+  "position": "%s"
 }
