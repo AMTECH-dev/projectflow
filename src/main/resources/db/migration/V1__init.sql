@@ -32,6 +32,11 @@ create table pf.auth_user (
     constraint auth_user_has_employee_fk foreign key (employee_id) references pf.employee (id) on delete cascade on update cascade
 );
 
+create table pf.token (
+    access_token varchar primary key,
+    refresh_token varchar not null
+);
+
 create unique index auth_user_login on pf.auth_user (lower(login));
 
 create table pf.direction
