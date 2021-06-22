@@ -2,22 +2,21 @@ package io.amtech.projectflow.repository;
 
 import io.amtech.projectflow.domain.Token;
 import io.amtech.projectflow.test.IntegrationTest;
-import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.stream.Stream;
 
 public class TokenRepositoryTest extends IntegrationTest {
+    private static final String INSERT_TOKEN = "classpath:db/repositoryTests/TokenRepositoryTest/insert_token.sql";
+
     @Autowired
     private TokenRepository tokenRepository;
-
-    private static final String INSERT_TOKEN = "classpath:db/repositoryTests/TokenRepositoryTest/insert_token.sql";
 
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
@@ -31,16 +30,15 @@ public class TokenRepositoryTest extends IntegrationTest {
         );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "createSuccessTest")
     @MethodSource("createSuccessTestArgs")
-    @SneakyThrows
     @Sql(INSERT_TOKEN)
     void createSuccessTest(final String accessToken, final String refreshToken, final Token t) {
-        Token token = new Token();
-        t.setAccessToken(accessToken);
-        t.setRefreshToken(refreshToken);
+        final Token token = new Token()
+                .setAccessToken(accessToken)
+                .setRefreshToken(refreshToken);
 
-        tokenRepository.save(token);
+        txUtil.txRun(() -> tokenRepository.save(token));
 
         Assertions.assertThat(txUtil.txRun(() -> tokenRepository.findById(accessToken))).isPresent();
         Assertions.assertThat(txUtil.txRun(() -> tokenRepository.findAll())).hasSize(6);
@@ -52,17 +50,16 @@ public class TokenRepositoryTest extends IntegrationTest {
         return Stream.of(Arguments.arguments(null, null));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "createFailTest")
     @MethodSource("createFailTestArgs")
-    @SneakyThrows
     @Sql(INSERT_TOKEN)
     void createFailTest(final String accessToken, final String refreshToken) {
-        Token token = new Token();
-        token.setAccessToken(accessToken);
-        token.setRefreshToken(refreshToken);
+        final Token token = new Token()
+                .setAccessToken(accessToken)
+                .setRefreshToken(refreshToken);
 
         Assertions.assertThatThrownBy(() -> txUtil.txRun(() -> tokenRepository.save(token)))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(JpaSystemException.class);
         Assertions.assertThat(txUtil.txRun(() -> tokenRepository.findAll())).hasSize(5);
     }
 
@@ -76,9 +73,8 @@ public class TokenRepositoryTest extends IntegrationTest {
         );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "getSuccessTest")
     @MethodSource("getSuccessTestArgs")
-    @SneakyThrows
     @Sql(INSERT_TOKEN)
     void getSuccessTest(final String accessToken, final Token t) {
         Assertions.assertThat(txUtil.txRun(() -> tokenRepository.findById(accessToken)))
@@ -88,18 +84,31 @@ public class TokenRepositoryTest extends IntegrationTest {
 
     @SuppressWarnings("unused")
     static Stream<Arguments> getFailTestArgs() {
-        return Stream.of(
-                Arguments.arguments((String) null),
-                Arguments.arguments("wrong_access_token")
-        );
+        return Stream.of(Arguments.arguments("wrongAccessToken"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "getFailTest")
     @MethodSource("getFailTestArgs")
-    @SneakyThrows
     @Sql(INSERT_TOKEN)
     void getFailTest(final String accessToken) {
         Assertions.assertThat(txUtil.txRun(() -> tokenRepository.findById(accessToken)))
                 .isNotPresent();
+    }
+
+    @SuppressWarnings("unused")
+    static Stream<Arguments> deleteSuccessTestArgs() {
+        return Stream.of(Arguments.arguments("123qwerty"));
+    }
+
+    @ParameterizedTest(name = "deleteSuccessTest")
+    @MethodSource("deleteSuccessTestArgs")
+    @Sql(INSERT_TOKEN)
+    void deleteSuccessTest(final String accessToken) {
+        Assertions.assertThat(txUtil.txRun(() -> tokenRepository.findById(accessToken))).isPresent();
+
+        txUtil.txRun(() -> tokenRepository.deleteById(accessToken));
+
+        Assertions.assertThat(txUtil.txRun(() -> tokenRepository.findById(accessToken))).isNotPresent();
+        Assertions.assertThat(txUtil.txRun(() -> tokenRepository.findAll())).hasSize(4);
     }
 }

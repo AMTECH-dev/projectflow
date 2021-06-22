@@ -3,10 +3,7 @@ package io.amtech.projectflow.domain;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @Accessors(chain = true)
@@ -14,7 +11,7 @@ import javax.persistence.Table;
 @Table(name = "token", schema = "pf")
 public class Token {
     @Id
-    @Column(name = "access_token")
+    @Column(name = "access_token", unique = true, nullable = false)
     private String accessToken;
 
     @Column(name = "refresh_token", nullable = false)
