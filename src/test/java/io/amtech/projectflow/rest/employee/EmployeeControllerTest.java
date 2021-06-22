@@ -52,6 +52,7 @@ class EmployeeControllerTest extends IntegrationTest {
                                 .setPosition(PROJECT_LEAD)),
                 Arguments.arguments(buildJson("createSuccessTest/without_phone_request.json"),
                         buildJson("createSuccessTest/without_phone_response.json"),
+
                         new Employee()
                                 .setId(1L)
                                 .setName("А")
