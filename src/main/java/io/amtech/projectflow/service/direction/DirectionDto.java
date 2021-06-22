@@ -7,12 +7,12 @@ import lombok.Value;
 @Value
 public class DirectionDto {
     long id;
-    Employee lead;
+    long leadId;
     String name;
 
     public DirectionDto(final Direction direction) {
         this.id=direction.getId();
-        this.lead=direction.getLead();
+        this.leadId=direction.getLead().getId();
         this.name=direction.getName();
     }
 

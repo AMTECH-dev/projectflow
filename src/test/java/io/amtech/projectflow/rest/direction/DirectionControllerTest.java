@@ -79,7 +79,7 @@ public class DirectionControllerTest extends IntegrationTest {
             "classpath:db/clean.sql",
             "classpath:db/DirectionControllerTest/createSuccessTest/directions_are_exist.sql"
     })
-    void createSuccessTest(final String name, final long projectId, final String request, final String response, final Direction d) {
+    void createSuccessTest(@SuppressWarnings("unused") final String name, final long projectId, final String request, final String response, final Direction d) {
         mvc.perform(TestUtils
                 .createPost(BASE_URL)//changeProjectIdInUrl(projectId))
                 .content(request))

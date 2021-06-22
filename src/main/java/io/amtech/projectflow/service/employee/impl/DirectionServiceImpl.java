@@ -4,6 +4,7 @@ import io.amtech.projectflow.app.exception.ObjectNotFoundException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.Direction;
+import io.amtech.projectflow.domain.employee.Employee;
 import io.amtech.projectflow.repository.DirectionRepository;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.service.direction.DirectionCreateDto;
@@ -26,7 +27,7 @@ public class DirectionServiceImpl implements DirectionService {
     public DirectionDto create(DirectionCreateDto createDto) {
         Direction d = new Direction()
                 .setName(createDto.getName())
-                .setLead(employeeRepository.findById(createDto.getLead_id()).get());
+                .setLead(findEmployeeByIdOrThrow(createDto.getLeadId()));
 
         Direction saved=directionRepository.save(d);
         return new DirectionDto(saved);
@@ -42,12 +43,17 @@ public class DirectionServiceImpl implements DirectionService {
                 .orElseThrow(() -> new ObjectNotFoundException(Direction.class.getSimpleName(), id));
     }
 
+    private Employee findEmployeeByIdOrThrow(long id) {
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException(Employee.class.getSimpleName(), id));
+    }
+
     @Override
     public void update(long id, DirectionUpdateDto newData) {
         Direction d=findByIdOrThrow(id);
 
         d.setName(newData.getName());
-        d.setLead(employeeRepository.findById(newData.getLead_id()).get());
+        d.setLead(findEmployeeByIdOrThrow(newData.getLeadId()));
     }
 
     @Override

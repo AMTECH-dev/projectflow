@@ -11,8 +11,7 @@ import javax.validation.constraints.NotNull;
 public class DirectionCreateDto {
 
     @NotNull
-    @Name("lead_id")
-    Long lead_id;
+    Long leadId;
 
     @Length(max=255)
     @NotNull
