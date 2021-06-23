@@ -37,6 +37,7 @@ public class MilestoneController {
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "404", description = "Веха проекта не найдена")
+    @ApiResponse(responseCode = "403", description = "Не авторизован или недостаточно прав доступа")
     @GetMapping("{milestoneId}")
     public MilestoneDto get(@PathVariable long projectId,
                             @PathVariable long milestoneId) {
@@ -48,6 +49,7 @@ public class MilestoneController {
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "404", description = "Веха проекта не найдена")
     @ApiResponse(responseCode = "400", description = "Некорректное заполнение полей вехи")
+    @ApiResponse(responseCode = "403", description = "Не авторизован или недостаточно прав доступа")
     @PutMapping("{milestoneId}")
     public void update(@PathVariable long projectId,
                        @PathVariable long milestoneId,
@@ -60,6 +62,7 @@ public class MilestoneController {
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "404", description = "Веха проекта не найдена")
     @ApiResponse(responseCode = "400", description = "Некорректное заполнение процента выполнения вехи проекта")
+    @ApiResponse(responseCode = "403", description = "Не авторизован или недостаточно прав доступа")
     @PatchMapping("{milestoneId}")
     public void updateProgressPercent(@PathVariable long projectId,
                                       @PathVariable long milestoneId,
@@ -71,6 +74,7 @@ public class MilestoneController {
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "404", description = "Веха проекта не найдена")
+    @ApiResponse(responseCode = "403", description = "Не авторизован или недостаточно прав доступа")
     @DeleteMapping("{milestoneId}")
     public void delete(@PathVariable long projectId,
                        @PathVariable long milestoneId) {
@@ -81,6 +85,7 @@ public class MilestoneController {
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "400", description = "Некорректный параметр orders")
+    @ApiResponse(responseCode = "403", description = "Не авторизован или недостаточно прав доступа")
     @GetMapping
     public PagedData<MilestoneDto> search(@PathVariable long projectId,
                                           @RequestParam(required = false, defaultValue = "100") Integer limit,

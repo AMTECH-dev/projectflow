@@ -7,10 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("health")
 public class HealthController {
-
     @GetMapping
     public HealthDto getHealth() {
         return new HealthDto();
     }
-
 }

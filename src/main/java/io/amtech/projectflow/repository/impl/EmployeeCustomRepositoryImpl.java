@@ -1,47 +1,51 @@
 package io.amtech.projectflow.repository.impl;
 
-import io.amtech.projectflow.app.exception.InvalidOrderException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.employee.Employee;
+import io.amtech.projectflow.domain.employee.Employee_;
 import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.EmployeeCustomRepository;
-import org.hibernate.query.criteria.internal.OrderImpl;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.amtech.projectflow.util.SearchUtil.parseOrder;
+
 @Repository
 public class EmployeeCustomRepositoryImpl implements EmployeeCustomRepository {
 
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
 
     @Override
     public PagedData<Employee> search(SearchCriteria criteria) {
-        var builder = em.getCriteriaBuilder();
+        CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Employee> query = builder.createQuery(Employee.class);
         Root<Employee> root = query.from(Employee.class);
         List<Predicate> predicates = new ArrayList<>();
-        criteria.getFilter("name")
-                .ifPresent(v -> predicates.add(builder.like(builder.lower(root.get("name")),
+        criteria.getFilter(Employee_.NAME)
+                .ifPresent(v -> predicates.add(builder.like(builder.lower(root.get(Employee_.NAME)),
                         "%" + v.toLowerCase() + "%")));
-        criteria.getFilter("email")
-                .ifPresent(v -> predicates.add(builder.like(root.get("email"), "%" + v.toLowerCase() + "%")));
-        criteria.getFilter("phone")
-                .ifPresent(v -> predicates.add(builder.like(root.get("phone"), "%" + v.toLowerCase() + "%")));
-        criteria.getFilter("position")
-                .ifPresent(v -> predicates.add(builder.equal(root.get("position"),
+        criteria.getFilter(Employee_.EMAIL)
+                .ifPresent(v -> predicates.add(builder.like(root.get(Employee_.EMAIL),
+                        "%" + v.toLowerCase() + "%")));
+        criteria.getFilter(Employee_.PHONE)
+                .ifPresent(v -> predicates.add(builder.like(root.get(Employee_.PHONE),
+                        "%" + v.toLowerCase() + "%")));
+        criteria.getFilter(Employee_.POSITION)
+                .ifPresent(v -> predicates.add(builder.equal(root.get(Employee_.POSITION),
                         UserPosition.getByName(v.toUpperCase()))));
-        criteria.getFilter("fired")
-                .ifPresent(v -> predicates.add(builder.equal(root.get("isFired"), Boolean.valueOf(v))));
+        criteria.getFilter(Employee_.IS_FIRED)
+                .ifPresent(v -> predicates.add(builder.equal(root.get(Employee_.IS_FIRED),
+                        Boolean.valueOf(v))));
         query.where(predicates.toArray(new Predicate[0]))
                 .orderBy(parseOrder(root, criteria.getOrder()));
 
@@ -51,17 +55,5 @@ public class EmployeeCustomRepositoryImpl implements EmployeeCustomRepository {
                 .getResultList();
 
         return new PagedData<>(result, criteria);
-    }
-
-    private Order parseOrder(Root<?> root, final String order) {
-        try {
-            if (order.startsWith("-")) {
-                return new OrderImpl(root.get(order.substring(1)), false);
-            }
-
-            return new OrderImpl(root.get(order));
-        } catch (IllegalArgumentException e) {
-            throw new InvalidOrderException(order);
-        }
     }
 }

@@ -1,6 +1,5 @@
 package io.amtech.projectflow.service.employee.impl;
 
-import io.amtech.projectflow.app.exception.ObjectNotFoundException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.employee.Employee;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class EmployeeServiceImpl implements EmployeeService {
-    private static final String OBJ_DESC = "Employee";
     private final EmployeeRepository employeeRepository;
 
     @Override
@@ -27,24 +25,19 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .setEmail(createDto.getEmail())
                 .setPhone(createDto.getPhone())
                 .setPosition(createDto.getPosition());
-        employeeRepository.save(e);
+        Employee savedEmployee = employeeRepository.save(e);
 
-        return new EmployeeDto(e);
+        return new EmployeeDto(savedEmployee);
     }
 
     @Override
-    public EmployeeDto get(long id) {
-        return new EmployeeDto(findByIdOrThrow(id));
-    }
-
-    private Employee findByIdOrThrow(long id) {
-        return employeeRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(OBJ_DESC, id));
+    public EmployeeDto get(final long id) {
+        return new EmployeeDto(employeeRepository.findByIdOrThrow(id));
     }
 
     @Override
-    public void update(long id, EmployeeUpdateDto newData) {
-        Employee e = findByIdOrThrow(id);
+    public void update(final long id, final EmployeeUpdateDto newData) {
+        Employee e = employeeRepository.findByIdOrThrow(id);
         e.setName(newData.getName());
         e.setEmail(newData.getEmail());
         e.setPhone(newData.getPhone());
@@ -53,14 +46,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void delete(long id) {
-        findByIdOrThrow(id);
-
+    public void delete(final long id) {
+        employeeRepository.findByIdOrThrow(id);
         employeeRepository.deleteById(id);
     }
 
     @Override
-    public PagedData<EmployeeDto> search(SearchCriteria criteria) {
+    public PagedData<EmployeeDto> search(final SearchCriteria criteria) {
         return employeeRepository.search(criteria).map(EmployeeDto::new);
     }
 }
