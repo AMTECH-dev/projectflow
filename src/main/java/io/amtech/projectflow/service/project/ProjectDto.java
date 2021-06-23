@@ -3,6 +3,7 @@ package io.amtech.projectflow.service.project;
 import io.amtech.projectflow.domain.project.Project;
 import io.amtech.projectflow.domain.project.ProjectStatus;
 import lombok.Getter;
+import lombok.Value;
 
 import static io.amtech.projectflow.util.ConvertingUtil.instantToSecond;
 

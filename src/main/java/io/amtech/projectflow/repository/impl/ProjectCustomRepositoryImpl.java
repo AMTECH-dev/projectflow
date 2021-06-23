@@ -3,8 +3,11 @@ package io.amtech.projectflow.repository.impl;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.Direction;
+import io.amtech.projectflow.domain.Direction_;
 import io.amtech.projectflow.domain.employee.Employee;
+import io.amtech.projectflow.domain.employee.Employee_;
 import io.amtech.projectflow.domain.project.Project;
+import io.amtech.projectflow.domain.project.ProjectStatus;
 import io.amtech.projectflow.domain.project.Project_;
 import io.amtech.projectflow.repository.ProjectCustomRepository;
 import org.springframework.stereotype.Repository;
@@ -43,11 +46,11 @@ public class ProjectCustomRepositoryImpl implements ProjectCustomRepository {
 
         criteria.getFilter(Project_.PROJECT_LEAD)
                 .ifPresent(v -> predicates.add(builder.like(builder.lower
-                        (joinWithEmployeeTable.get(Project_.PROJECT_LEAD)), "%" + v.toLowerCase() + "%")));
+                        (joinWithEmployeeTable.get(Employee_.NAME)), "%" + v.toLowerCase() + "%")));
 
         criteria.getFilter(Project_.DIRECTION)
                 .ifPresent(v -> predicates.add(builder.like(builder.lower
-                        (joinDirectionalTable.get(Project_.DIRECTION)), "%" + v.toLowerCase() + "%")));
+                        (joinDirectionalTable.get(Direction_.NAME)), "%" + v.toLowerCase() + "%")));
 
 
         criteria.getFilter(Project_.CREATE_DATE + FROM_DATE_KEY)
@@ -63,8 +66,8 @@ public class ProjectCustomRepositoryImpl implements ProjectCustomRepository {
                         "%" + v.toLowerCase() + "%")));
 
         criteria.getFilter(Project_.PROJECT_STATUS)
-                .ifPresent(v -> predicates.add(builder.like(root.get(Project_.PROJECT_STATUS),
-                        "%" + v.toUpperCase() + "%")));
+                .ifPresent(v -> predicates.add(builder.equal(root.get(Project_.PROJECT_STATUS),
+                        ProjectStatus.getByName(v.toUpperCase()))));
 
 
         query.select(root)
