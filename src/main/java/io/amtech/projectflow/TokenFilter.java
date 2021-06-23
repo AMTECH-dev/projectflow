@@ -14,9 +14,9 @@ import java.io.IOException;
 
 public class TokenFilter extends AbstractAuthenticationProcessingFilter {
     @Autowired
-    TokenService tokenService;
+    private TokenService tokenService;
     @Autowired
-    AuthUserRepository authUserRepository;
+    private AuthUserRepository authUserRepository;
 
     protected TokenFilter(String defaultFilterProcessesUrl) {
         super("/**");

@@ -8,18 +8,20 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuthenticationManagerImpl implements AuthenticationManager {
     @Autowired
-    AuthUserRepository authUserRepository;
+    private AuthUserRepository authUserRepository;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     static final List<GrantedAuthority> AUTHORITIES = new ArrayList<GrantedAuthority>();
-
     static {
-//        AUTHORITIES.add("ROLE_USER");
+//        AUTHORITIES.add("ALL_ROLE_USER");
     }
 
     @Override
@@ -32,6 +34,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
         }
         throw new BadCredentialsException("Bad Credentials");
 
-        return authentication;
+//        return authentication;
     }
 }
