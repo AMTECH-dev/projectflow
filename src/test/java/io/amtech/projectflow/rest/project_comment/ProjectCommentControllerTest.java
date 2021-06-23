@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProjectCommentControllerTest extends IntegrationTest {
     private static final String BASE_URL = "/projects/{id}/comments";
     private static final String BASE_ID_URL = BASE_URL + "/%d";
-
+    private static final String SQL = "classpath:db/ProjectCommentControllerTest/exists_projects.sql";
     @Autowired
     private ProjectCommentRepository commentRepository;
 
@@ -53,9 +53,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("createProjectCommentSuccessTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void createProjectCommentSuccessTest(long projectId, long commentId, final String request, final ProjectComment pc) {
         String url = BASE_URL.replace("{id}", String.valueOf(projectId));
 
@@ -86,9 +84,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("createProjectCommentFiledTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void createProjectCommentFailedTest(long projectId, final String request, int expectedHttpStatus) {
         String url = BASE_URL.replace("{id}", String.valueOf(projectId));
 
@@ -131,9 +127,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("getProjectCommentSuccessArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void getProjectCommentSuccessTest(long projectId, long commentId, final String response, final ProjectComment comment) {
         String url = String.format(BASE_ID_URL.replace("{id}", String.valueOf(projectId)), commentId);
 
@@ -160,9 +154,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("getProjectCommentFailedArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void getProjectCommentFailedTest(long projectId, long commentId) {
         String url = String.format(BASE_ID_URL.replace("{id}", String.valueOf(projectId)), commentId);
 
@@ -203,9 +195,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("searchSuccessTestArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void searchSuccessTest(long projectId, final String url, final String response) {
         String url2 = BASE_URL.replace("{id}", String.valueOf(projectId)) + "/" + url;
 
@@ -234,9 +224,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("searchFailArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void searchFailTest(long projectId, final String url, final String response, int status) {
         String url2 = BASE_URL.replace("{id}", String.valueOf(projectId)) + "/" + url;
 
@@ -272,9 +260,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("updateProjectCommentSuccessArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void updateProjectCommentSuccessTest(long projectId, long commentId, String request, ProjectComment expected) {
         String url = String.format(BASE_ID_URL.replace("{id}", String.valueOf(projectId)), commentId);
 
@@ -311,6 +297,15 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @SuppressWarnings("unused")
     static Stream<Arguments> updateProjectCommentFailedArgs() {
         return Stream.of(
+                Arguments.arguments(100, 1,
+                        buildJson("updateFailTest/updateFailTest2.json"),
+                        new ProjectComment()
+                                .setId(1L)
+                                .setLogin("KiraLis39")
+                                .setCreateDate(Instant.ofEpochMilli(1623063603))
+                                .setMessage("sgsggsgsgseghsh"),
+                        HttpStatus.NOT_FOUND.value()
+                ),
                 Arguments.arguments(1, 1,
                         buildJson("updateFailTest/updateFailTest.json"),
                         new ProjectComment()
@@ -335,11 +330,10 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("updateProjectCommentFailedArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void updateProjectCommentFailedTest(long projectId, long commentId, String request, ProjectComment expected, int expectedCode) {
         String url = String.format(BASE_ID_URL.replace("{id}", String.valueOf(projectId)), commentId);
+        System.out.println(">>>" + url);
 
         mvc.perform(TestUtils
                 .createPut(url)
@@ -364,9 +358,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("deleteProjectCommentSuccessArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void deleteProjectCommentSuccessTest(long projectId, long commentId) {
         String url = String.format(BASE_ID_URL.replace("{id}", String.valueOf(projectId)), commentId);
 
@@ -393,9 +385,7 @@ class ProjectCommentControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("deleteProjectCommentFailedArgs")
     @SneakyThrows
-    @Sql(scripts = {
-            "classpath:db/ProjectCommentControllerTest/exists_projects.sql"
-    })
+    @Sql(scripts = {SQL})
     void deleteProjectCommentFailedTest(long projectId, long commentId) {
         String url = String.format(BASE_ID_URL.replace("{id}", String.valueOf(projectId)), commentId);
 
@@ -411,7 +401,6 @@ class ProjectCommentControllerTest extends IntegrationTest {
     private static String buildJson(final String resource, Object... args) {
         String template = TestUtils.readClassPathResourceAsString(
                 "json/ProjectCommentControllerTest/" + resource);
-
         return String.format(template, args);
     }
 }
