@@ -1,0 +1,58 @@
+{
+  "data": [
+{
+"id": 600,
+"name": "Calculation",
+"leadId": 66
+},
+{
+"id": 500,
+"name": "Delivery",
+"leadId": 55
+},
+    {
+      "id": 700,
+      "name": "Gas",
+      "leadId": 66
+    },
+    {
+      "id": 400,
+      "name": "HR",
+      "leadId": 44
+    },
+{
+"id": 300,
+"name": "IT",
+"leadId": 33
+},
+{
+"id": 800,
+"name": "Oil",
+"leadId": 66
+},
+{
+"id": 1000,
+"name": "Rubbish",
+"leadId": 66
+},
+{
+"id": 200,
+"name": "sales",
+"leadId": 22
+},
+{
+"id": 900,
+"name": "Water",
+"leadId": 66
+},
+    {
+      "id": 100,
+      "name": "Основной Direction",
+      "leadId": 11
+    }
+  ],
+  "meta": {
+    "limit": 100,
+    "offset": 0
+  }
+}

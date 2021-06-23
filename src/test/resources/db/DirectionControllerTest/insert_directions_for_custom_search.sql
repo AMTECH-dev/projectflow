@@ -7,6 +7,13 @@ values  (11, 'Иван Иванов', 'ivan@gmail.com', '111111111', 'DIRECTOR',
         (66, 'Евгения Евгеньева', 'eva@gmail.com', '666666666', 'PROJECT_LEAD', false);
 
 insert into pf.direction(id, lead_id, name)
-values (100, 22, 'Основной Direction'),
-       (200, 44, 'sales'),
-       (300, 66, 'IT');
+values (100, 11, 'Основной Direction'),
+       (200, 22, 'sales'),
+       (300, 33, 'IT'),
+       (400, 44, 'HR'),
+       (500, 55, 'Delivery'),
+       (600, 66, 'Calculation'),
+       (700, 66, 'Gas'),
+       (800, 66, 'Oil'),
+       (900, 66, 'Water'),
+       (1000, 66, 'Rubbish');

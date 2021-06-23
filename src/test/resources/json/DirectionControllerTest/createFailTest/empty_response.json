@@ -1,6 +1,7 @@
 {
   "message": "Validation error",
   "errors": {
-    "name" : "must not be blank"
+    "name" : "must not be null",
+    "leadId" : "must not be null"
   }
 }

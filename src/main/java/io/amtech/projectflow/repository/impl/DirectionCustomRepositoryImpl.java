@@ -33,9 +33,9 @@ public class DirectionCustomRepositoryImpl implements DirectionCustomRepository 
         criteria.getFilter(Direction_.NAME)
                 .ifPresent(p -> predicates.add(builder.like(root.get(Direction_.NAME),
                         "%" + p.toLowerCase() + "%")));
-        /*criteria.getFilter(Direction_.LEAD)
+        criteria.getFilter(Direction_.LEAD)
                 .ifPresent(p -> predicates.add(builder.like(root.get(Direction_.LEAD),
-                        "%" + p.toLowerCase() + "%")));*/
+                        "%" + p.toLowerCase() + "%")));
 
         query.where(predicates.toArray(new Predicate[0]))
                 .orderBy(new OrderImpl(root.get(criteria.getOrder())));
