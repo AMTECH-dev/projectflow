@@ -4,13 +4,13 @@
       "id": 1,
       "message": "Comment 01",
       "createDate": 1624005449,
-      "login": "KiraLis39"
+      "author": "KiraLis39"
     },
     {
       "id": 3,
       "message": "Comment 03",
       "createDate": 1624005449,
-      "login": "KiraLis39"
+      "author": "KiraLis39"
     }
   ],
   "meta": {

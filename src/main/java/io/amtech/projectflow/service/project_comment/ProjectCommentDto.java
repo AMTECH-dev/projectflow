@@ -10,12 +10,12 @@ public class ProjectCommentDto {
     long id;
     String message;
     long createDate;
-    String login;
+    String author;
 
     public ProjectCommentDto(final ProjectComment comment) {
         this.id = comment.getId();
         this.message = comment.getMessage();
         this.createDate = instantToSecond(comment.getCreateDate());
-        this.login = comment.getLogin();
+        this.author = comment.getLogin();
     }
 }
