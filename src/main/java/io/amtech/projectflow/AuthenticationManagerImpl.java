@@ -12,8 +12,11 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         if (authentication.getName().equals(authentication.getCredentials())) {
-            return new UsernamePasswordAuthenticationToken(authentication.getName(),
-                    authentication.getCredentials(), Collections.emptyList());
+            return new UsernamePasswordAuthenticationToken(
+                    authentication.getName(),
+                    authentication.getCredentials(),
+                    Collections.emptyList()
+            );
         }
         throw new BadCredentialsException("Bad Credentials");
     }
