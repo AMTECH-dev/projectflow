@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "swagger")
-@PropertySource("classpath:application.yml")
+@PropertySource(value = "classpath:swagger.properties", encoding = "UTF-8")
 public class SwaggerProperties {
     private boolean enabled;
     private String title;
