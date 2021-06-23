@@ -2,10 +2,10 @@ package io.amtech.projectflow.service.token;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class TokenRefreshDto {
-    @NotNull
+    @NotBlank
     private String refreshToken;
 }

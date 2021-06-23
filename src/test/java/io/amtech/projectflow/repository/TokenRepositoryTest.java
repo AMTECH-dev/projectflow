@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.stream.Stream;
@@ -47,10 +47,15 @@ public class TokenRepositoryTest extends IntegrationTest {
 
     @SuppressWarnings("unused")
     static Stream<Arguments> createFailTestArgs() {
-        return Stream.of(Arguments.arguments(null, null));
+        return Stream.of(
+                Arguments.arguments(null, null),
+                Arguments.arguments(null, "ytrewq54321"),
+                Arguments.arguments("123qwerty", null),
+                Arguments.arguments("newToken", null)
+        );
     }
 
-    @ParameterizedTest(name = "createFailTest")
+    @ParameterizedTest(name = "{index} createFailTest")
     @MethodSource("createFailTestArgs")
     @Sql(INSERT_TOKEN)
     void createFailTest(final String accessToken, final String refreshToken) {
@@ -59,7 +64,7 @@ public class TokenRepositoryTest extends IntegrationTest {
                 .setRefreshToken(refreshToken);
 
         Assertions.assertThatThrownBy(() -> txUtil.txRun(() -> tokenRepository.save(token)))
-                .isInstanceOf(JpaSystemException.class);
+                .isInstanceOf(DataAccessException.class);
         Assertions.assertThat(txUtil.txRun(() -> tokenRepository.findAll())).hasSize(5);
     }
 
