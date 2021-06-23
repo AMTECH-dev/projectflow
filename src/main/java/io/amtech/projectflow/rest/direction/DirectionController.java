@@ -1,12 +1,15 @@
-package io.amtech.projectflow.rest;
+package io.amtech.projectflow.rest.direction;
 
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.app.general.SearchCriteriaBuilder;
+import io.amtech.projectflow.domain.Direction_;
+import io.amtech.projectflow.domain.project.Milestone_;
 import io.amtech.projectflow.service.direction.DirectionDto;
 import io.amtech.projectflow.service.direction.DirectionCreateDto;
 import io.amtech.projectflow.service.direction.DirectionService;
 import io.amtech.projectflow.service.direction.DirectionUpdateDto;
+import io.amtech.projectflow.util.ConvertingUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,15 +17,18 @@ import javax.validation.Valid;
 import java.util.Objects;
 import java.util.Optional;
 
+import static io.amtech.projectflow.util.ConvertingUtil.objToString;
+import static io.amtech.projectflow.util.SearchUtil.FROM_DATE_KEY;
+import static io.amtech.projectflow.util.SearchUtil.TO_DATE_KEY;
+
 @RestController
 @RequestMapping("/directions")
 @RequiredArgsConstructor
 public class DirectionController {
-
     private final DirectionService directionService;
 
     @PostMapping
-    DirectionDto create(@RequestBody @Valid DirectionCreateDto dto) {
+    public DirectionDto create(@RequestBody @Valid DirectionCreateDto dto) {
         return directionService.create(dto);
     }
 
@@ -32,7 +38,7 @@ public class DirectionController {
     }
 
     @PutMapping("{id}")
-    public void update(@PathVariable("id") long id, DirectionUpdateDto dto) {
+    public void update(@PathVariable("id") long id, @RequestBody @Valid DirectionUpdateDto dto) {
         directionService.update(id, dto);
     }
 
@@ -48,11 +54,11 @@ public class DirectionController {
                                           @RequestParam(required = false) String name,
                                           @RequestParam(required = false) Long leadId,
                                           @RequestParam(required = false) String leadName) {
-        SearchCriteria criteria=new SearchCriteriaBuilder()
+        SearchCriteria criteria = new SearchCriteriaBuilder()
                 .limit(limit)
                 .offset(offset)
-                .filter("name",name)
-                .filter("leadId", Optional.ofNullable(leadId).map(Objects::toString).orElse(null))
+                .filter(Direction_.NAME,name)
+                .filter("leadId", ConvertingUtil.objToString(leadId))
                 .filter("leadName",leadName)
                 .order(orders)
                 .build();

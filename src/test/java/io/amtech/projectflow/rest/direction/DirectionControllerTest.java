@@ -10,16 +10,12 @@ import io.amtech.projectflow.test.TestUtils;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
-
-import static io.amtech.projectflow.test.TestUtils.strMultiple;
-import static io.amtech.projectflow.util.ConvertingUtil.secondToInstant;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -29,48 +25,51 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class DirectionControllerTest extends IntegrationTest {
+    private static final String MAX_NAME_VALUE = TestUtils.strMultiple("n", 255);
+    private static final Employee LEAD = new Employee()
+            .setId(22L)
+            .setName("Пётр Петров")
+            .setEmail("petr@gmail.com")
+            .setPosition(UserPosition.DIRECTION_LEAD)
+            .setPhone("222222222").setFired(false);
+    private static final Employee NEW_LEAD = new Employee()
+            .setId(33L)
+            .setName("Сидор Сидоров")
+            .setEmail("sidor@gmail.com")
+            .setPosition(UserPosition.DIRECTION_LEAD)
+            .setPhone("333333333").setFired(false);
 
     private static final String BASE_URL = "/directions";
     private static final String BASE_ID_URL = BASE_URL + "/%d";
 
     @Autowired
     private DirectionRepository repository;
-
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    private static final String MAX_NAME_VALUE = org.apache.commons.lang3.StringUtils.leftPad("", 255, "n");
-
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
-        Employee lead=new Employee().setId(22L).setName("Пётр Петров").setEmail("petr@gmail.com")
-                .setPosition(UserPosition.DIRECTION_LEAD)
-                .setPhone("222222222").setFired(false);
-
         return Stream.of(
                 Arguments.arguments("", buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
                         new Direction()
                                 .setId(1L)
                                 .setName("Основной Direction")
-                                .setLead(lead)
-                ),
+                                .setLead(LEAD)),
                 Arguments.arguments("empty_nullable_params",
-                        buildJson("createSuccessTest/empty_nullable_params_request.json"),
-                        buildJson("createSuccessTest/empty_nullable_params_response.json"),
+                        buildJson("createSuccessTest/some_params_request.json"),
+                        buildJson("createSuccessTest/some_params_response.json"),
                         new Direction()
                                 .setId(1L)
                                 .setName("Основной Direction")
-                                .setLead(lead)
-                        ),
+                                .setLead(LEAD)),
                 Arguments.arguments("max_length",
                         buildJson("createSuccessTest/max_length_request.json"),
                         buildJson("createSuccessTest/max_length_response.json"),
                         new Direction()
                                 .setId(1L)
                                 .setName(MAX_NAME_VALUE)
-                                .setLead(lead)
-                        )
+                                .setLead(LEAD))
         );
     }
 
@@ -78,11 +77,11 @@ public class DirectionControllerTest extends IntegrationTest {
     @MethodSource("createSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionControllerTest/createSuccessTest/directions_are_exist.sql"
+            "classpath:db/DirectionControllerTest/directions_are_exist.sql"
     })
     void createSuccessTest(@SuppressWarnings("unused") final String name, final String request, final String response, final Direction d) {
         mvc.perform(TestUtils
-                .createPost(BASE_URL)//changeProjectIdInUrl(projectId))
+                .createPost(BASE_URL)
                 .content(request))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -102,22 +101,27 @@ public class DirectionControllerTest extends IntegrationTest {
                 Arguments.arguments("name_is_too_long",
                         buildJson("createFailTest/name_is_too_long_request.json"),
                         buildJson("createFailTest/name_is_too_long_response.json"),
-                        HttpStatus.BAD_REQUEST.value()
-                ),
+                        HttpStatus.BAD_REQUEST.value()),
+                Arguments.arguments("lead_not_found",
+                        buildJson("createFailTest/lead_not_found_request.json"),
+                        buildJson("createFailTest/lead_not_found_response.json"),
+                        HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments("lead_is_null",
+                        buildJson("createFailTest/lead_is_null_request.json"),
+                        buildJson("createFailTest/lead_is_null_response.json"),
+                        HttpStatus.BAD_REQUEST.value()),
                 Arguments.arguments(
                         "create_fail_empty_request",
                         buildJson("createFailTest/empty_request.json"),
                         buildJson("createFailTest/empty_response.json"),
-                        HttpStatus.BAD_REQUEST.value()
-                )
+                        HttpStatus.BAD_REQUEST.value())
         );
     }
 
     @ParameterizedTest(name = "{index} {0}")
     @MethodSource("createFailTestArgs")
     @SneakyThrows
-    void createFailTest(@SuppressWarnings("unused") String testName,
-                        final String request, final String response, final int httpStatus) {
+    void createFailTest(@SuppressWarnings("unused") String testName, final String request, final String response, final int httpStatus) {
         mvc.perform(TestUtils
                 .createPost(BASE_URL)
                 .content(request))
@@ -134,13 +138,11 @@ public class DirectionControllerTest extends IntegrationTest {
                 Arguments.arguments(
                         "get_success_first_object", 100L,
                         buildJson("getSuccessTest/get_first_object_response.json"),
-                        HttpStatus.OK.value()
-                ),
+                        HttpStatus.OK.value()),
                 Arguments.arguments(
                         "get_success_last_object", 300L,
                         buildJson("getSuccessTest/get_last_object_response.json"),
-                        HttpStatus.OK.value()
-                )
+                        HttpStatus.OK.value())
         );
     }
 
@@ -148,33 +150,26 @@ public class DirectionControllerTest extends IntegrationTest {
     @MethodSource("getSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionControllerTest/createSuccessTest/directions_are_exist.sql"
+            "classpath:db/DirectionControllerTest/directions_are_exist.sql"
     })
     void getSuccessTest(@SuppressWarnings("unused") final String testName, final long directionId,
                         final String response, final int httpStatus) {
-        Assertions.assertThat(txUtil.txRun(() -> repository.findById(directionId))).isPresent();
-
         mvc.perform(TestUtils
                 .createGet(String.format(BASE_ID_URL, directionId)))
                 .andDo(print())
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, true));
+
+        Assertions.assertThat(txUtil.txRun(() -> repository.findById(directionId)))
+                .isPresent();
     }
 
     @SuppressWarnings("unused")
     static Stream<Arguments> getFailTestArgs() {
         return Stream.of(
-                Arguments.arguments(
-                        "get_fail_wrong_direction_id", 11L, -1,
+                Arguments.arguments("get_fail_wrong_direction_id", -1,
                         buildJson("getFailTest/wrong_direction_id_response.json"),
-                        HttpStatus.NOT_FOUND.value()
-                )/*,
-                Arguments.arguments(
-                        "get_fail_wrong_employee_id", 1111L, 0L,
-                        buildJson("getFailTest/wrong_direction_id_response.json"),
-                        buildJson("getFailTest/wrong_employee_id_response.json"),
-                        HttpStatus.NOT_FOUND.value()
-                )*/
+                        HttpStatus.NOT_FOUND.value())
         );
     }
 
@@ -182,48 +177,35 @@ public class DirectionControllerTest extends IntegrationTest {
     @MethodSource("getFailTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionControllerTest/createSuccessTest/directions_are_exist.sql"
+            "classpath:db/DirectionControllerTest/directions_are_exist.sql"
     })
-    void getFailTest(@SuppressWarnings("unused") final String testName, final long employeetId,
-                     final long directionId, final String response, final int httpStatus) {
-        Assertions.assertThat(txUtil.txRun(() -> employeeRepository.findById(employeetId).isPresent()));
-
+    void getFailTest(@SuppressWarnings("unused") final String testName, final long directionId, final String response,
+                     final int httpStatus) {
         mvc.perform(TestUtils
                 .createGet(String.format(BASE_ID_URL, directionId)))
                 .andDo(print())
                 .andExpect(status().is(httpStatus))
                 .andExpect(content().json(response, false));
 
-        if (txUtil.txRun(() -> employeeRepository.findById(employeetId).isPresent()))
-            Assertions.assertThat(txUtil.txRun(() -> repository.existsById(directionId)))
-                    .isFalse();
-        else Assertions.assertThat(txUtil.txRun(() -> repository.existsById(directionId)))
-                .isFalse();
+        Assertions.assertThat(txUtil.txRun(() -> repository.findById(directionId)))
+                .isNotPresent();
     }
 
     @SuppressWarnings("unused")
     static Stream<Arguments> updateSuccessTestArgs() {
-        Employee lead=new Employee().setId(22L).setName("Пётр Петров").setEmail("petr@gmail.com")
-                .setPosition(UserPosition.DIRECTION_LEAD)
-                .setPhone("222222222").setFired(false);
-
         return Stream.of(
-                Arguments.arguments(
-                        "update_success_full_update", 300L, 22L,
+                Arguments.arguments("update_success_full_update", 300L,
                         buildJson("updateSuccessTest/full_update_request.json"),
                         new Direction()
-                                .setId(22L)
+                                .setId(300L)
                                 .setName("Дополнительный Direction")
-                                .setLead(lead)
-                )/*,
-                Arguments.arguments(
-                        "update_success_with_null_request", 22L, 22L,
-                        buildJson("updateSuccessTest/update_with_null_request.json"),
+                                .setLead(LEAD)),
+                Arguments.arguments("update_leadId_success_full_update", 300L,
+                        buildJson("updateSuccessTest/full_update_leadId_request.json"),
                         new Direction()
-                                .setId(22L)
-                                //.setName("Разработка проектной документации")
-                                .setLead(lead)
-                )*/
+                                .setId(300L)
+                                .setName("Дополнительный Direction")
+                                .setLead(NEW_LEAD))
         );
     }
 
@@ -231,53 +213,60 @@ public class DirectionControllerTest extends IntegrationTest {
     @MethodSource("updateSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionControllerTest/createSuccessTest/directions_are_exist.sql"
+            "classpath:db/DirectionControllerTest/directions_are_exist.sql"
     })
     void updateSuccessTest(@SuppressWarnings("unused") final String testName, final long directionId,
-                           final long employeeId,final String request, final Direction directionAfterUpdate) {
-        Assertions.assertThat(txUtil.txRun(() -> employeeRepository.findById(employeeId))).isPresent();
-        Assertions.assertThat(txUtil.txRun(() -> repository.findById(directionId))).isPresent();
+                           final String request, final Direction directionAfterUpdate) {
+        Assertions.assertThat(txUtil.txRun(() -> repository.findById(directionId)))
+                .isPresent();
 
         List<Direction> directionsBeforeUpdate = repository.findAll();
 
-        /*mvc.perform(TestUtils
+        mvc.perform(TestUtils
                 .createPut(String.format(BASE_ID_URL, directionId))
                 .content(request))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        /*for (Direction directionBeforeUpdate : directionsBeforeUpdate) {
+        for (Direction directionBeforeUpdate : directionsBeforeUpdate) {
             if (directionBeforeUpdate.getId() == directionId)
                 Assertions.assertThat(txUtil.txRun(() -> repository.findById(directionId)))
-                        .get()
-                        .isEqualTo(directionAfterUpdate);
+                        .isPresent()
+                        .contains(directionAfterUpdate);
             else
                 Assertions.assertThat(txUtil.txRun(() -> repository.findById(directionBeforeUpdate.getId())))
+                        .isPresent()
                         .get()
                         .isNotEqualTo(directionAfterUpdate);
-        }*/
+        }
     }
 
     @SuppressWarnings("unused")
     static Stream<Arguments> updateFailTestArgs() {
         return Stream.of(
-                /*Arguments.arguments(
+                Arguments.arguments(
                         "update_fail_strings_are_too_long", 300L,
                         buildJson("updateFailTest/strings_are_too_long_request_update.json"),
                         buildJson("updateFailTest/strings_are_too_long_response_update.json"),
                         HttpStatus.BAD_REQUEST.value()
                 ),
-                /*Arguments.arguments(
-                        "update_fail_without_not_nullable_params", 300L,
-                        buildJson("updateFailTest/without_not_nullable_params_request.json"),
-                        buildJson("updateFailTest/without_not_nullable_params_response.json"),
+                Arguments.arguments(
+                        "update_fail_empty_params", 300L,
+                        buildJson("updateFailTest/empty_request.json"),
+                        buildJson("updateFailTest/empty_response.json"),
                         HttpStatus.BAD_REQUEST.value()
-                ),*/
+                ),
                 Arguments.arguments(
                         "update_fail_wrong_id", 1111L,
-                        buildJson("updateFailTest/wrong_id_request.json"),
-                        buildJson("updateFailTest/wrong_id_response.json"),
+                        buildJson("updateFailTest/wrong_lead_id_request.json"),
+                        buildJson("updateFailTest/wrong_lead_id_response.json"),
                         HttpStatus.NOT_FOUND.value()
+                ),
+                Arguments.arguments(
+                        "update_fail_null_lead_id", 1111L,
+                        buildJson("updateFailTest/null_lead_id_request.json"),
+                        buildJson("updateFailTest/null_lead_id_response.json"),
+                        HttpStatus.BAD_REQUEST.value()
                 )
         );
     }
@@ -286,7 +275,7 @@ public class DirectionControllerTest extends IntegrationTest {
     @MethodSource("updateFailTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionControllerTest/createSuccessTest/directions_are_exist.sql"
+            "classpath:db/DirectionControllerTest/directions_are_exist.sql"
     })
     void updateFailTest(@SuppressWarnings("unused") final String testName, final long directionId,
                         final String request, final String response, final int httpStatus) {
@@ -298,41 +287,47 @@ public class DirectionControllerTest extends IntegrationTest {
                 .andExpect(content().json(response, true));
     }
 
-    @Test
+    @SuppressWarnings("unused")
+    static Stream<Arguments> deleteSuccessTestArgs() {
+        return Stream.of(
+                Arguments.arguments("delete_one_direction", 100L, HttpStatus.OK.value()),
+                Arguments.arguments("delete_one_direction", 200L, HttpStatus.OK.value()),
+                Arguments.arguments("delete_one_direction", 300L, HttpStatus.OK.value())
+        );
+    }
+
+    @ParameterizedTest(name = "{index} {0}")
+    @MethodSource("deleteSuccessTestArgs")
     @DisplayName("delete_success_test")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionControllerTest/createSuccessTest/directions_are_exist.sql"
+            "classpath:db/DirectionControllerTest/directions_are_exist.sql"
     })
-    void deleteSuccessTest() {
-        final long directionId = 300L;
-        final long employeeId = 66L;
-
-        Assertions.assertThat(txUtil.txRun(() -> employeeRepository.findById(employeeId))).isPresent();
+    void deleteSuccessTest(@SuppressWarnings("unused") final String testName, final long directionId, final int httpStatus) {
         Assertions.assertThat(txUtil.txRun(() -> repository.findById(directionId))).isPresent();
         Assertions.assertThat(txUtil.txRun(() -> repository.findAll())).hasSize(3);
 
-        List<Direction> milestonesBeforeDelete = repository.findAll();
+        List<Direction> directionsBeforeDelete = repository.findAll();
 
         mvc.perform(TestUtils
                 .createDelete(String.format(BASE_ID_URL, directionId)))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().is(httpStatus));
 
         Assertions.assertThat(txUtil.txRun(() -> repository.existsById(directionId))).isFalse();
-        Assertions.assertThat(milestonesBeforeDelete.removeIf(m -> m.getId() == directionId)).isTrue();
+        Assertions.assertThat(directionsBeforeDelete.removeIf(m -> m.getId() == directionId)).isTrue();
 
-        List<Direction> milestonesAfterDelete = txUtil.txRun(() -> repository.findAll());
-        Assertions.assertThat(milestonesAfterDelete).hasSize(2);
+        List<Direction> directionsAfterDelete = txUtil.txRun(() -> repository.findAll());
+        Assertions.assertThat(directionsAfterDelete).hasSize(2);
     }
 
     @SuppressWarnings("unused")
     static Stream<Arguments> deleteFailTestArgs() {
         return Stream.of(
-                Arguments.arguments("delete_fail_zero_id", 22L, 0L, HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments("delete_fail_negative_id", 22L, -1L, HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments("delete_fail_unknown_id", 22L, 1111L, HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments("delete_fail_wrong_employee_id", 1111L, 1111L, HttpStatus.NOT_FOUND.value())
+                Arguments.arguments("delete_fail_zero_id", 0L, HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments("delete_fail_negative_id", -1L, HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments("delete_fail_unknown_id", 1111L, HttpStatus.NOT_FOUND.value()),
+                Arguments.arguments("delete_fail_wrong_employee_id", 1111L, HttpStatus.NOT_FOUND.value())
         );
     }
 
@@ -340,15 +335,9 @@ public class DirectionControllerTest extends IntegrationTest {
     @MethodSource("deleteFailTestArgs")
     @SneakyThrows
     @Sql(scripts = {
-            "classpath:db/DirectionControllerTest/createSuccessTest/directions_are_exist.sql"
+            "classpath:db/DirectionControllerTest/directions_are_exist.sql"
     })
-    void deleteFailTest(@SuppressWarnings("unused") final String testName, final long employeeId,
-                        final long directionId, final int httpStatus) {
-        if (txUtil.txRun(() -> employeeRepository.findById(employeeId).isPresent())) {
-            Assertions.assertThat(txUtil.txRun(() -> repository.existsById(directionId))).isFalse();
-            Assertions.assertThat(txUtil.txRun(() -> repository.findAll())).hasSize(3);
-        }
-
+    void deleteFailTest(@SuppressWarnings("unused") final String testName, final long directionId, final int httpStatus) {
         mvc.perform(TestUtils
                 .createDelete(String.format(BASE_ID_URL, directionId)))
                 .andDo(print())
@@ -360,32 +349,21 @@ public class DirectionControllerTest extends IntegrationTest {
     @SuppressWarnings("unused")
     static Stream<Arguments> searchSuccessTestArgs() {
         return Stream.of(
-                Arguments.arguments(
-                        "search_success_all", 22L,
-                        "",
-                        buildJson("searchSuccessTest/all_directions_response.json")
-                ),
-                Arguments.arguments(
-                        "search_success_all_with_limit_and_offset", 33L,
-                        "?limit=3&offset=1&orders=-name",
-                        buildJson("searchSuccessTest/reverse_order_with_limit_and_offset_response.json")
-                ),
-                Arguments.arguments(
-                        "search_success_by_name", 55L,
-                        "?name=А",
-                        buildJson("searchSuccessTest/filter_by_name_response.json")
-                )
+                Arguments.arguments("search_success_all", "",
+                        buildJson("searchSuccessTest/all_directions_response.json")),
+                Arguments.arguments("search_success_all_with_limit_and_offset", "?limit=3&offset=1&orders=-name",
+                        buildJson("searchSuccessTest/reverse_order_with_limit_and_offset_response.json")),
+                Arguments.arguments("search_success_by_name", "?name=W",
+                        buildJson("searchSuccessTest/filter_by_name_response.json"))
         );
     }
 
     @ParameterizedTest(name = "{index} {0}")
     @MethodSource("searchSuccessTestArgs")
     @SneakyThrows
-    @Sql("classpath:db/" +
-            "DirectionControllerTest/insert_directions_for_custom_search.sql")
-    void searchSuccessTest(@SuppressWarnings("unused") final String testName, final long employeeId,
+    @Sql("classpath:db/DirectionControllerTest/insert_directions_for_custom_search.sql")
+    void searchSuccessTest(@SuppressWarnings("unused") final String testName,
                            final String url, final String response) {
-        Assertions.assertThat(txUtil.txRun(() -> employeeRepository.findById(employeeId))).isPresent();
 
         mvc.perform(TestUtils.createGet(BASE_URL + url))
                 .andDo(print())
@@ -396,27 +374,17 @@ public class DirectionControllerTest extends IntegrationTest {
     @SuppressWarnings("unused")
     static Stream<Arguments> searchFailTestArgs() {
         return Stream.of(
-                Arguments.arguments(
-                        "search_fail_wrong_field_name", 11L,
-                        "?orders=wrong_field_name",
+                Arguments.arguments("search_fail_wrong_field_name", "?orders=wrong_field_name",
                         buildJson("searchFailTest/invalid_order_response.json"),
-                        HttpStatus.BAD_REQUEST.value()
-                ),
-                Arguments.arguments(
-                        "search_fail_wrong_employee_id", 1111L,
-                        "?orders=-name",
-                        buildJson("searchFailTest/wrong_employee_id_response.json"),
-                        HttpStatus.NOT_FOUND.value()
-                )
+                        HttpStatus.BAD_REQUEST.value())
         );
     }
 
     @ParameterizedTest(name = "{index} {0}")
     @MethodSource("searchFailTestArgs")
     @SneakyThrows
-    @Sql("classpath:db/" +
-            "DirectionControllerTest/insert_directions_for_custom_search.sql")
-    void searchFailTest(@SuppressWarnings("unused") final String testName, final long employeeId,
+    @Sql("classpath:db/DirectionControllerTest/insert_directions_for_custom_search.sql")
+    void searchFailTest(@SuppressWarnings("unused") final String testName,
                         final String url, final String response, final int httpStatus) {
         mvc.perform(TestUtils
                 .createGet(BASE_URL + url))
@@ -431,11 +399,4 @@ public class DirectionControllerTest extends IntegrationTest {
 
         return String.format(template, args);
     }
-
-    /*private String changeProjectIdInUrl(final long projectId) {
-        return DirectionControllerTest.BASE_URL.replace("{Id}", String.valueOf(projectId));
-    }*/
-    /*private String putIdInUrl(final String url, final long projectId) {
-        return url.replace("{projectId}", String.valueOf(projectId));
-    }*/
 }

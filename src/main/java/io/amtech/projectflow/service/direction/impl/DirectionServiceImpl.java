@@ -1,4 +1,4 @@
-package io.amtech.projectflow.service.employee.impl;
+package io.amtech.projectflow.service.direction.impl;
 
 import io.amtech.projectflow.app.exception.ObjectNotFoundException;
 import io.amtech.projectflow.app.general.PagedData;

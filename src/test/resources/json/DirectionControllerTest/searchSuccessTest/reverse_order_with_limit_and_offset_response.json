@@ -1,58 +1,12 @@
-{
-  "data": [
-    {
-      "id": 100,
-      "name": "Основной Direction",
-      "leadId": 11
-    },
-    {
-      "id": 200,
-      "name": "sales",
-      "leadId": 22
-    },
-    {
-      "id": 300,
-      "name": "IT",
-      "leadId": 33
-    },
-    {
-      "id": 400,
-      "name": "HR",
-      "leadId": 44
-    },
-    {
-      "id": 500,
-      "name": "Delivery",
-      "leadId": 55
-    },
-    {
-      "id": 600,
-      "name": "Calculation",
-      "leadId": 66
-    },
-    {
-      "id": 700,
-      "name": "Gas",
-      "leadId": 66
-    },
-    {
-      "id": 800,
-      "name": "Oil",
-      "leadId": 66
-    },
-    {
-      "id": 900,
-      "name": "Water",
-      "leadId": 66
-    },
-    {
-      "id": 1000,
-      "name": "Rubbish",
-      "leadId": 66
-    }
-  ],
-  "meta": {
-    "limit": 3,
-    "offset": 1
+{"data":
+[
+  {"id":900,"leadId":66,"name":"Water","leadName":"Евгения Евгеньева"},
+  {"id":200,"leadId":22,"name":"sales","leadName":"Пётр Петров"},
+  {"id":1000,"leadId":66,"name":"Rubbish","leadName":"Евгения Евгеньева"}
+],
+  "meta":
+  {
+    "limit":3,
+    "offset":1
   }
 }

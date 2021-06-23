@@ -1,5 +1,6 @@
 {
   "id" : 300,
   "name": "IT",
-  "leadId": 66
+  "leadId": 66,
+  "leadName": "Евгения Евгеньева"
 }

@@ -1,5 +1,6 @@
 {
   "id" : 100,
   "name": "Основной Direction",
-  "leadId": 22
+  "leadId": 22,
+  "leadName": "Пётр Петров"
 }
