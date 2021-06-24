@@ -49,7 +49,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public TokenDto refresh(final TokenRefreshDto dto) {
         String refreshToken = dto.getRefreshToken();
-        if (isValid(refreshToken)) {
+        if (!isValid(refreshToken)) {
             throw new ExpiredTokenException(refreshToken);
         }
 
@@ -63,7 +63,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public void delete(final String accessToken) {
-        if (isValid(accessToken)) {
+        if (!isValid(accessToken)) {
             throw new ExpiredTokenException(accessToken);
         }
 
