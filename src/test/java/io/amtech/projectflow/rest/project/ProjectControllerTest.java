@@ -132,7 +132,8 @@ class ProjectControllerTest extends IntegrationTest {
     @MethodSource("updateSuccessArgs")
     @SneakyThrows
     @Sql(scripts = {"classpath:db/ProjectControllerTest/updateSuccessTest/update_project.sql"})
-    void updateSuccessTest(final long id, final String request, final Project expect, final long projectLeadId, final long directionId) {
+    void updateSuccessTest(final long id, final String request, final Project expect,
+                           final long projectLeadId, final long directionId) {
         List<Project> existEmpBefore = projectRepository.findAll();
 
         mvc.perform(TestUtils

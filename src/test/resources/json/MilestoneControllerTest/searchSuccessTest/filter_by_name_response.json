@@ -1,0 +1,48 @@
+{
+  "data": [
+    {
+      "id": 22,
+      "name": "Вторая",
+      "description": "",
+      "plannedStartDate" : 1623320100,
+      "plannedFinishDate" : 1623420101,
+      "factStartDate" : null,
+      "factFinishDate" : null,
+      "progressPercent" : 80
+    },
+    {
+      "id": 11,
+      "name": "Первая",
+      "description": "",
+      "plannedStartDate" : 1623320100,
+      "plannedFinishDate" : 1623420101,
+      "factStartDate" : null,
+      "factFinishDate" : null,
+      "progressPercent" : 90
+    },
+    {
+      "id": 55,
+      "name": "Пятая",
+      "description": "",
+      "plannedStartDate" : 1623320100,
+      "plannedFinishDate" : 1623700101,
+      "factStartDate" : null,
+      "factFinishDate" : null,
+      "progressPercent" : 50
+    },
+    {
+      "id": 44,
+      "name": "Четвертая",
+      "description": "",
+      "plannedStartDate" : 1623320100,
+      "plannedFinishDate" : 1623420101,
+      "factStartDate" : null,
+      "factFinishDate" : null,
+      "progressPercent" : 60
+    }
+  ],
+  "meta": {
+    "limit": 100,
+    "offset": 0
+  }
+}

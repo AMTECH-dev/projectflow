@@ -1,0 +1,7 @@
+{
+  "message": "Validation error",
+  "errors": {
+    "name": "length must be between 0 and 255",
+    "description": "length must be between 0 and 2048"
+  }
+}

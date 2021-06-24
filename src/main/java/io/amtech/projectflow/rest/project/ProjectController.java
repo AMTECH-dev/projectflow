@@ -37,7 +37,7 @@ public class ProjectController {
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "403", description = "Не авторизован или недостаточно прав доступа")
     @ApiResponse(responseCode = "400", description = "Некорректное заполнение полей проекта")
-    @PutMapping({"id"})
+    @PutMapping("{id}")
     public void update(@PathVariable long id, @RequestBody @Valid ProjectUpdateDto dto) {
         projectService.update(id, dto);
     }
@@ -46,7 +46,7 @@ public class ProjectController {
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "403", description = "Не авторизован или недостаточно прав доступа")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
-    @GetMapping({"{id}"})
+    @GetMapping("{id}")
     public ProjectGetByIdDto get(@PathVariable long id) {
         return projectService.get(id);
     }

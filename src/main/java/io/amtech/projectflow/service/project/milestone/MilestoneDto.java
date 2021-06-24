@@ -1,4 +1,4 @@
-package io.amtech.projectflow.service.project;
+package io.amtech.projectflow.service.project.milestone;
 
 import io.amtech.projectflow.domain.project.Milestone;
 import lombok.Value;
@@ -10,13 +10,13 @@ public class MilestoneDto {
     long id;
     String name;
     String description;
-    long plannedStartDate;
-    long plannedFinishDate;
-    long factStartDate;
-    long factFinishDate;
+    Long plannedStartDate;
+    Long plannedFinishDate;
+    Long factStartDate;
+    Long factFinishDate;
     short progressPercent;
 
-    public MilestoneDto(Milestone milestone) {
+    public MilestoneDto(final Milestone milestone) {
         this.id = milestone.getId();
         this.name = milestone.getName();
         this.description = milestone.getDescription();
