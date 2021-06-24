@@ -22,7 +22,7 @@ import static io.amtech.projectflow.util.SearchUtil.TO_DATE_KEY;
 public class MilestoneController {
     private final MilestoneService milestoneService;
 
-    @ApiOperation("Создание вехи проекта")
+    @ApiOperation("${milestone.create}")
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "400", description = "Некорректное заполнение полей вехи")
@@ -33,7 +33,7 @@ public class MilestoneController {
         return milestoneService.create(projectId, dto);
     }
 
-    @ApiOperation("Получение вехи проекта по id")
+    @ApiOperation("${milestone.get}")
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "404", description = "Веха проекта не найдена")
@@ -43,7 +43,7 @@ public class MilestoneController {
         return milestoneService.get(projectId, milestoneId);
     }
 
-    @ApiOperation("Обновление вехи проекта")
+    @ApiOperation("${milestone.update}")
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "404", description = "Веха проекта не найдена")
@@ -55,7 +55,7 @@ public class MilestoneController {
         milestoneService.update(projectId, milestoneId, dto);
     }
 
-    @ApiOperation("Обновление процента выполнения вехи проекта")
+    @ApiOperation("${milestone.updateProgressPercent}")
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "404", description = "Веха проекта не найдена")
@@ -67,7 +67,7 @@ public class MilestoneController {
         milestoneService.updateProgressPercent(projectId, milestoneId, updateProgressDto);
     }
 
-    @ApiOperation("Удаление вехи проекта")
+    @ApiOperation("${milestone.delete}")
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "404", description = "Веха проекта не найдена")
@@ -77,7 +77,7 @@ public class MilestoneController {
         milestoneService.delete(projectId, milestoneId);
     }
 
-    @ApiOperation("Поиск вех проекта по параметрам")
+    @ApiOperation("${milestone.search}")
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "400", description = "Некорректный параметр orders")

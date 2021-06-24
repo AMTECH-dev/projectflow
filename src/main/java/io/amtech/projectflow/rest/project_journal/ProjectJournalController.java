@@ -22,7 +22,7 @@ public class ProjectJournalController {
     private final ProjectJournalService projectJournalService;
 
     @GetMapping
-    @ApiOperation("Поиск записей в журнале")
+    @ApiOperation("${project_journal.search}")
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "400", description = "Некорректный параметер orders")
@@ -46,7 +46,7 @@ public class ProjectJournalController {
     }
 
     @GetMapping("{id}")
-    @ApiOperation("Получение записи в журнале по id")
+    @ApiOperation("${project_journal.get}")
     @ApiResponse(responseCode = "200", description = "Успешно")
     @ApiResponse(responseCode = "404", description = "Проект не найден")
     @ApiResponse(responseCode = "404", description = "Запись в журнале не найдена")
