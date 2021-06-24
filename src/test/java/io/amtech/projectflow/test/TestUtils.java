@@ -31,6 +31,11 @@ public class TestUtils {
                 .characterEncoding(StandardCharsets.UTF_8.name());
     }
 
+    public static MockHttpServletRequestBuilder createPatch(String url) {
+        return MockMvcRequestBuilders.patch(url, new Object[0]).contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8.name());
+    }
+
     public static MockHttpServletRequestBuilder createDelete(String url) {
         return MockMvcRequestBuilders.delete(url, new Object[0]).contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8.name());
