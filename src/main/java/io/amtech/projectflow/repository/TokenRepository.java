@@ -10,7 +10,9 @@ import java.util.Optional;
 @Repository
 public interface TokenRepository extends JpaRepository<Token, String> {
     Optional<Token> findByAccessToken(String accessToken);
+
     Optional<Token> findByRefreshToken(String refreshToken);
+
     void deleteByAccessToken(String accessToken);
 
     default Token findByRefreshTokenOrThrow(String refreshToken) {
@@ -22,6 +24,4 @@ public interface TokenRepository extends JpaRepository<Token, String> {
         return findByAccessToken(accessToken)
                 .orElseThrow(() -> new ObjectNotFoundException(Token.class.getSimpleName(), accessToken));
     }
-@Repository
-public interface TokenRepository extends JpaRepository<Token, String> {
 }

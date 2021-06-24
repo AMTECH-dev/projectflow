@@ -2,9 +2,9 @@ package io.amtech.projectflow.service.token.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.amtech.projectflow.app.exception.NotAuthenticationException;
 import io.amtech.projectflow.app.exception.ExpiredTokenException;
 import io.amtech.projectflow.app.exception.InvalidPasswordException;
+import io.amtech.projectflow.app.exception.NotAuthenticationException;
 import io.amtech.projectflow.domain.Token;
 import io.amtech.projectflow.domain.employee.AuthUser;
 import io.amtech.projectflow.repository.AuthUserRepository;
@@ -12,7 +12,6 @@ import io.amtech.projectflow.repository.TokenRepository;
 import io.amtech.projectflow.service.token.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -35,14 +34,11 @@ public class TokenServiceImpl implements TokenService {
     private final AuthUserRepository authUserRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${expireTimeAccessToken}")
-    private long expireTimeAccessToken;
+    private long expireTimeAccessToken = 0;
 
-    @Value("${expireTimeRefreshToken}")
-    private long expireTimeRefreshToken;
+    private long expireTimeRefreshToken = 0;
 
-    @Value("${secret}")
-    private String secret;
+    private String secret = "secret";
 
     @PostConstruct
     public void init() {
@@ -118,7 +114,8 @@ public class TokenServiceImpl implements TokenService {
     @SneakyThrows
     private TokenPayload decode(final String token) {
         byte[] decodeTokenBytes = Base64.getDecoder().decode(token);
-        return objectMapper.readValue(new String(decodeTokenBytes).replace(secret, ""), new TypeReference<>() {});
+        return objectMapper.readValue(new String(decodeTokenBytes).replace(secret, ""), new TypeReference<>() {
+        });
     }
 
     @SneakyThrows
