@@ -1,0 +1,9 @@
+{
+  "id": %d,
+  "name": "%s",
+  "projectLeadId": %d,
+  "directionId": %d,
+  "description": "%s",
+  "createDate": %d,
+  "projectStatus": "%s"
+}
