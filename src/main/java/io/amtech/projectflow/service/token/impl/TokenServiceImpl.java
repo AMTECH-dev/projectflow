@@ -31,8 +31,6 @@ import java.util.Base64;
 public class TokenServiceImpl implements TokenService {
     private final TokenRepository tokenRepository;
     private final ObjectMapper objectMapper;
-    private final AuthUserRepository authUserRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Value("${expireTimeAccessToken}")
     private long expireTimeAccessToken;
@@ -50,12 +48,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDto generate(final AuthDto dto) {
-        AuthUser user = authUserRepository.findByLoginOrThrow(dto.getUsername());
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new InvalidPasswordException(dto.getPassword());
-        }
-
-        Token token = createToken(user.getLogin());
+        Token token = createToken(dto.getUsername());
         Token savedToken = tokenRepository.save(token);
         return new TokenDto(savedToken);
     }
@@ -88,17 +81,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public boolean isValid(final String token) {
         TokenPayload data = decode(token);
-        authUserRepository.findByLoginOrThrow(data.getUsername());
         return Instant.now().isBefore(data.getExpireAt());
-    }
-
-    @Override
-    public String resolveToken(final HttpServletRequest request) {
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.replace("Bearer ", "");
-        }
-        throw new NotAuthenticationException();
     }
 
     private Token createToken(final String username) {
@@ -109,8 +92,9 @@ public class TokenServiceImpl implements TokenService {
                 .setRefreshToken(encode(refreshToken));
     }
 
+    @Override
     @SneakyThrows
-    private TokenPayload decode(final String token) {
+    public TokenPayload decode(final String token) {
         byte[] decodeTokenBytes = Base64.getDecoder().decode(token);
         return objectMapper.readValue(new String(decodeTokenBytes).replace(secret, ""), new TypeReference<>() {});
     }
