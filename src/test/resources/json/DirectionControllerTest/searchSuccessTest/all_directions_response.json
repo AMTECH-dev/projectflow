@@ -1,0 +1,19 @@
+{"data":
+[
+  {"id":600,"leadId":66,"name":"Calculation","leadName":"Евгения Евгеньева"},
+  {"id":500,"leadId":55,"name":"Delivery","leadName":"Николай Николаев"},
+  {"id":700,"leadId":66,"name":"Gas","leadName":"Евгения Евгеньева"},
+  {"id":400,"leadId":44,"name":"HR","leadName":"Фёдор Фёдоров"},
+  {"id":300,"leadId":33,"name":"IT","leadName":"Сидор Сидоров"},
+  {"id":800,"leadId":66,"name":"Oil","leadName":"Евгения Евгеньева"},
+  {"id":1000,"leadId":66,"name":"Rubbish","leadName":"Евгения Евгеньева"},
+  {"id":200,"leadId":22,"name":"sales","leadName":"Пётр Петров"},
+  {"id":900,"leadId":66,"name":"Water","leadName":"Евгения Евгеньева"},
+  {"id":100,"leadId":11,"name":"Основной Direction","leadName":"Иван Иванов"}
+],
+  "meta":
+  {
+    "limit":100,
+    "offset":0
+  }
+}

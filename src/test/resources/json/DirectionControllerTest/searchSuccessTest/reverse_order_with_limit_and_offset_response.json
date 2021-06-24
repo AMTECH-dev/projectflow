@@ -1,0 +1,12 @@
+{"data":
+[
+  {"id":900,"leadId":66,"name":"Water","leadName":"Евгения Евгеньева"},
+  {"id":200,"leadId":22,"name":"sales","leadName":"Пётр Петров"},
+  {"id":1000,"leadId":66,"name":"Rubbish","leadName":"Евгения Евгеньева"}
+],
+  "meta":
+  {
+    "limit":3,
+    "offset":1
+  }
+}

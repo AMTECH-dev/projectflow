@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "id": 900,
+      "name": "Water",
+      "leadId": 66,
+      "leadName": "Евгения Евгеньева"
+    }
+  ],
+  "meta": {
+    "limit": 100,
+    "offset": 0
+  }
+}
