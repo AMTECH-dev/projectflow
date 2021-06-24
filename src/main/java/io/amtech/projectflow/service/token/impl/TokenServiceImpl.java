@@ -2,25 +2,18 @@ package io.amtech.projectflow.service.token.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.amtech.projectflow.app.exception.NotAuthenticationException;
 import io.amtech.projectflow.app.exception.ExpiredTokenException;
-import io.amtech.projectflow.app.exception.InvalidPasswordException;
 import io.amtech.projectflow.domain.Token;
-import io.amtech.projectflow.domain.employee.AuthUser;
-import io.amtech.projectflow.repository.AuthUserRepository;
 import io.amtech.projectflow.repository.TokenRepository;
 import io.amtech.projectflow.service.token.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.Base64;
 
