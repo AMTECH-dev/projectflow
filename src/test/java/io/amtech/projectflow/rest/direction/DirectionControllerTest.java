@@ -4,7 +4,6 @@ import io.amtech.projectflow.domain.Direction;
 import io.amtech.projectflow.domain.employee.Employee;
 import io.amtech.projectflow.domain.employee.UserPosition;
 import io.amtech.projectflow.repository.DirectionRepository;
-import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.test.IntegrationTest;
 import io.amtech.projectflow.test.TestUtils;
 import lombok.SneakyThrows;
@@ -44,8 +43,6 @@ public class DirectionControllerTest extends IntegrationTest {
 
     @Autowired
     private DirectionRepository repository;
-    @Autowired
-    private EmployeeRepository employeeRepository;
 
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
