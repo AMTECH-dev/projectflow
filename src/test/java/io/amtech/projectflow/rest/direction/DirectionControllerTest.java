@@ -326,8 +326,7 @@ public class DirectionControllerTest extends IntegrationTest {
         return Stream.of(
                 Arguments.arguments("delete_fail_zero_id", 0L, HttpStatus.NOT_FOUND.value()),
                 Arguments.arguments("delete_fail_negative_id", -1L, HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments("delete_fail_unknown_id", 1111L, HttpStatus.NOT_FOUND.value()),
-                Arguments.arguments("delete_fail_wrong_employee_id", 1111L, HttpStatus.NOT_FOUND.value())
+                Arguments.arguments("delete_fail_unknown_id", 1111L, HttpStatus.NOT_FOUND.value())
         );
     }
 
