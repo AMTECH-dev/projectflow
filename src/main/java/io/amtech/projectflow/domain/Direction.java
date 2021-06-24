@@ -9,8 +9,6 @@ import lombok.experimental.Accessors;
 import javax.persistence.*;
 
 @Data
-@EqualsAndHashCode(exclude = "lead")
-@ToString(exclude = "lead")
 @Accessors(chain = true)
 @Entity
 @Table(name = "direction", schema = "pf")
@@ -22,6 +20,8 @@ public class Direction {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="lead_id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Employee lead;
 
     @Column(name = "name", nullable = false)

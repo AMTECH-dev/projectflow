@@ -50,7 +50,7 @@ public class DirectionControllerTest extends IntegrationTest {
     @SuppressWarnings("unused")
     static Stream<Arguments> createSuccessTestArgs() {
         return Stream.of(
-                Arguments.arguments("", buildJson("createSuccessTest/full_request.json"),
+                Arguments.arguments("full_params", buildJson("createSuccessTest/full_request.json"),
                         buildJson("createSuccessTest/full_response.json"),
                         new Direction()
                                 .setId(1L)
@@ -73,7 +73,7 @@ public class DirectionControllerTest extends IntegrationTest {
         );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} {0}")
     @MethodSource("createSuccessTestArgs")
     @SneakyThrows
     @Sql(scripts = {
@@ -257,13 +257,13 @@ public class DirectionControllerTest extends IntegrationTest {
                         HttpStatus.BAD_REQUEST.value()
                 ),
                 Arguments.arguments(
-                        "update_fail_wrong_id", 1111L,
+                        "update_fail_wrong_id", 300L,
                         buildJson("updateFailTest/wrong_lead_id_request.json"),
                         buildJson("updateFailTest/wrong_lead_id_response.json"),
                         HttpStatus.NOT_FOUND.value()
                 ),
                 Arguments.arguments(
-                        "update_fail_null_lead_id", 1111L,
+                        "update_fail_null_lead_id", 300L,
                         buildJson("updateFailTest/null_lead_id_request.json"),
                         buildJson("updateFailTest/null_lead_id_response.json"),
                         HttpStatus.BAD_REQUEST.value()

@@ -1,10 +1,8 @@
 package io.amtech.projectflow.service.direction.impl;
 
-import io.amtech.projectflow.app.exception.ObjectNotFoundException;
 import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.domain.Direction;
-import io.amtech.projectflow.domain.employee.Employee;
 import io.amtech.projectflow.repository.DirectionRepository;
 import io.amtech.projectflow.repository.EmployeeRepository;
 import io.amtech.projectflow.service.direction.DirectionCreateDto;
@@ -27,7 +25,7 @@ public class DirectionServiceImpl implements DirectionService {
     public DirectionDto create(DirectionCreateDto createDto) {
         Direction d = new Direction()
                 .setName(createDto.getName())
-                .setLead(findEmployeeByIdOrThrow(createDto.getLeadId()));
+                .setLead(employeeRepository.findByIdOrThrow(createDto.getLeadId()));
 
         Direction saved=directionRepository.save(d);
         return new DirectionDto(saved);
@@ -35,30 +33,20 @@ public class DirectionServiceImpl implements DirectionService {
 
     @Override
     public DirectionDto get(long id) {
-        return new DirectionDto(findByIdOrThrow(id));
-    }
-
-    private Direction findByIdOrThrow(long id) {
-        return directionRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(Direction.class.getSimpleName(), id));
-    }
-
-    private Employee findEmployeeByIdOrThrow(long id) {
-        return employeeRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(Employee.class.getSimpleName(), id));
+        return new DirectionDto(directionRepository.findByIdOrThrow(id));
     }
 
     @Override
     public void update(long id, DirectionUpdateDto newData) {
-        Direction d=findByIdOrThrow(id);
+        Direction d=directionRepository.findByIdOrThrow(id);
 
         d.setName(newData.getName());
-        d.setLead(findEmployeeByIdOrThrow(newData.getLeadId()));
+        d.setLead(employeeRepository.findByIdOrThrow(newData.getLeadId()));
     }
 
     @Override
     public void delete(long id) {
-        findByIdOrThrow(id);
+        directionRepository.findByIdOrThrow(id);
         directionRepository.deleteById(id);
     }
 

@@ -4,9 +4,8 @@ import io.amtech.projectflow.app.general.PagedData;
 import io.amtech.projectflow.app.general.SearchCriteria;
 import io.amtech.projectflow.app.general.SearchCriteriaBuilder;
 import io.amtech.projectflow.domain.Direction_;
-import io.amtech.projectflow.domain.project.Milestone_;
-import io.amtech.projectflow.service.direction.DirectionDto;
 import io.amtech.projectflow.service.direction.DirectionCreateDto;
+import io.amtech.projectflow.service.direction.DirectionDto;
 import io.amtech.projectflow.service.direction.DirectionService;
 import io.amtech.projectflow.service.direction.DirectionUpdateDto;
 import io.amtech.projectflow.util.ConvertingUtil;
@@ -14,12 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Objects;
-import java.util.Optional;
-
-import static io.amtech.projectflow.util.ConvertingUtil.objToString;
-import static io.amtech.projectflow.util.SearchUtil.FROM_DATE_KEY;
-import static io.amtech.projectflow.util.SearchUtil.TO_DATE_KEY;
 
 @RestController
 @RequestMapping("/directions")
