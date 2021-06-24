@@ -24,7 +24,7 @@ public class TokenFilter extends AbstractAuthenticationProcessingFilter {
         Authentication authentication = tokenService.getAuthentication(request);
         authentication.setAuthenticated(false);
 
-        boolean isAuthCorrect = tokenService.isValid(tokenService.resolveToken(authentication));
+        boolean isAuthCorrect = tokenService.isValid(tokenService.resolveToken(request));
         authentication.setAuthenticated(isAuthCorrect);
 
         return authentication;

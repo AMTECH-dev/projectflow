@@ -22,4 +22,6 @@ public interface TokenRepository extends JpaRepository<Token, String> {
         return findByAccessToken(accessToken)
                 .orElseThrow(() -> new ObjectNotFoundException(Token.class.getSimpleName(), accessToken));
     }
+@Repository
+public interface TokenRepository extends JpaRepository<Token, String> {
 }

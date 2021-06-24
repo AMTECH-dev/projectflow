@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,6 +100,11 @@ public class TokenServiceImpl implements TokenService {
             return authHeader.replace("Bearer ", "");
         }
         throw new NotAuthenticationException();
+    }
+
+    @Override
+    public Authentication getAuthentication(HttpServletRequest request) {
+        return null;
     }
 
     private Token createToken(final String username) {

@@ -1,5 +1,7 @@
 package io.amtech.projectflow.service.token;
 
+import org.springframework.security.core.Authentication;
+
 import javax.servlet.http.HttpServletRequest;
 
 public interface TokenService {
@@ -8,4 +10,5 @@ public interface TokenService {
     void delete(String accessToken);
     boolean isValid(String token);
     String resolveToken(HttpServletRequest request);
+    Authentication getAuthentication(HttpServletRequest request);
 }
