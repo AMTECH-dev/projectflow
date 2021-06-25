@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 import javax.servlet.http.HttpServletRequest;
 
 public interface AuthService {
-    boolean isPasswordCorrect(String userPass, String passwordFromDb);
-    Authentication authentication(AuthDto dto);
+    boolean validate(AuthDto dto);
+    Authentication authentication(String username, String token);
     Authentication getAuthentication(HttpServletRequest request);
 }
