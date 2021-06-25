@@ -1,5 +1,7 @@
 package io.amtech.projectflow.service.token;
 
+import io.amtech.projectflow.service.auth.AuthDto;
+
 public interface TokenService {
     TokenPayload decode(String token);
     TokenDto generate(AuthDto dto);

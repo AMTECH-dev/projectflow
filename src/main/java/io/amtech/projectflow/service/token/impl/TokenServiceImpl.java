@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.amtech.projectflow.app.exception.ExpiredTokenException;
 import io.amtech.projectflow.domain.Token;
 import io.amtech.projectflow.repository.TokenRepository;
+import io.amtech.projectflow.service.auth.AuthDto;
 import io.amtech.projectflow.service.token.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -54,11 +55,11 @@ public class TokenServiceImpl implements TokenService {
         }
 
         Token tokenFromDb = tokenRepository.findByRefreshTokenOrThrow(refreshToken);
+        tokenRepository.delete(tokenFromDb);
         TokenPayload data = decode(refreshToken);
         Token token = createToken(data.getUsername());
-        tokenFromDb.setAccessToken(token.getAccessToken())
-                .setRefreshToken(token.getRefreshToken());
-        return new TokenDto(tokenFromDb);
+        Token savedToken = tokenRepository.save(token);
+        return new TokenDto(savedToken);
     }
 
     @Override
@@ -77,19 +78,20 @@ public class TokenServiceImpl implements TokenService {
         return Instant.now().isBefore(data.getExpireAt());
     }
 
+    @Override
+    @SneakyThrows
+    public TokenPayload decode(final String token) {
+        byte[] decodeTokenBytes = Base64.getDecoder().decode(token);
+        return objectMapper.readValue(new String(decodeTokenBytes).replace(secret, ""), new TypeReference<>() {
+        });
+    }
+
     private Token createToken(final String username) {
         TokenPayload accessToken = new TokenPayload(username, Instant.now().plusMillis(expireTimeAccessToken));
         TokenPayload refreshToken = new TokenPayload(username, Instant.now().plusMillis(expireTimeRefreshToken));
         return new Token()
                 .setAccessToken(encode(accessToken))
                 .setRefreshToken(encode(refreshToken));
-    }
-
-    @Override
-    @SneakyThrows
-    public TokenPayload decode(final String token) {
-        byte[] decodeTokenBytes = Base64.getDecoder().decode(token);
-        return objectMapper.readValue(new String(decodeTokenBytes).replace(secret, ""), new TypeReference<>() {});
     }
 
     @SneakyThrows
