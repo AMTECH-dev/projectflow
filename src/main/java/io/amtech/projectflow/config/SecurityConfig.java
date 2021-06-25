@@ -26,8 +26,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        TokenFilter filter = tokenFilter();
-
         http
                 .cors()
                 .and()
@@ -38,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterAfter(filter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterAfter(tokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
@@ -56,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new CustomAuthenticationManager(authUserRepository, authService);
     }
 
+    @Bean
     @SneakyThrows
     public TokenFilter tokenFilter() {
         return new TokenFilter("/**", authService, authenticationManagerBean());
