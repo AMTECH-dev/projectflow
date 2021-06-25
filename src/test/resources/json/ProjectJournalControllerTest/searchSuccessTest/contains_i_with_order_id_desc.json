@@ -1,0 +1,18 @@
+{
+    "data": [
+        {
+            "id": 4,
+            "login": "zina",
+            "updateDate": 1423471743
+        },
+        {
+            "id": 2,
+            "login": "sim",
+            "updateDate": 1359793743
+        }
+    ],
+    "meta": {
+        "limit": 100,
+        "offset": 0
+    }
+}

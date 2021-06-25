@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    default Project findProjectByIdOrThrow(long projectId) {
-        return findById(projectId)
-                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), projectId));
+    default Project findByIdOrThrow(long id) {
+        return findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException(Project.class.getSimpleName(), id));
     }
 }
